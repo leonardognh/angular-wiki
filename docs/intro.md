@@ -42,7 +42,7 @@ Integrar bibliotecas externas ficou mais simples e direto. Isso reduz as chances
 
 ## 💡 Bora aprender mais?
 
-Se você está se sentindo perdido ou quer aprender tudo do zero, fique tranquilo. A comunidade Angular está cheia de conteúdo bacana, tutoriais e exemplos práticos. E claro, dá uma olhada aqui no blog porque sempre vai ter algo novo e útil pra você. 😉
+Se você está se sentindo perdido ou quer aprender tudo do zero, fique tranquilo. A comunidade Angular está cheia de conteúdo bacana, tutoriais e exemplos práticos. E claro, dá uma olhada aqui na documentação porque sempre vai ter algo novo e útil pra você. 😉
 
 E aí, o que você achou das vantagens do Angular? Já começou a explorar? Conta nos comentários (ou manda um sinal de fumaça 🚀) que vou adorar trocar uma ideia! 😊
 
