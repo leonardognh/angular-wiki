@@ -16,6 +16,10 @@ O NgRx (Angular Reactive Extensions) é uma biblioteca para gerenciamento de est
 
 - **Selectors:** Recuperam partes específicas do estado.
 
+### Fonte
+
+Para saber mais, acesse [NgRx](https://ngrx.io/docs).
+
 ## Estado Global
 
 Estado acessível em toda a aplicação. Ideal para dados que precisam ser compartilhados entre múltiplos módulos ou componentes.

@@ -12,6 +12,10 @@ Testes unitários verificam o comportamento de unidades isoladas do código, com
 
 O Angular utiliza **Jasmine** e **Karma** por padrão.
 
+### Fonte
+
+Para saber mais, acesse [Jasmine](https://jasmine.github.io/pages/docs_home.html) e [Karma](https://karma-runner.github.io/latest/index.html).
+
 ```tsx
 describe("Nome da Unidade", () => {
   it("Deve realizar uma ação", () => {
@@ -51,6 +55,10 @@ beforeEach(() => {
   Cada teste deve funcionar independentemente de outros.
 
 ## Utilizando o Jest (Alternativa ao Jasmine)
+
+### Fonte
+
+Para saber mais, acesse [Jest](https://jestjs.io/docs/getting-started).
 
 ### Instalação
 

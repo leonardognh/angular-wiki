@@ -8,6 +8,10 @@ sidebar_position: 2
 
 O RxJS (Reactive Extensions for JavaScript) é uma biblioteca poderosa usada no Angular para lidar com programação reativa. Ele é a base para o sistema de Observables no Angular, oferecendo uma ampla gama de operadores para manipular fluxos de dados assíncronos de maneira eficiente.
 
+### Fonte
+
+Para saber mais, acesse [RxJS](https://rxjs.dev/guide/overview).
+
 ## Principais Recursos do RxJS
 
 - Observables: Representam um fluxo de dados assíncronos.

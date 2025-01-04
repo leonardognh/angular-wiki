@@ -109,7 +109,7 @@ Arquivo principal que referencia outros arquivos de configuração. Serve como p
 
 ### Fluxo de Herança entre Arquivos
 
-```
+```plaintext
 tsconfig.json
   ├── tsconfig.base.json
   ├── tsconfig.app.json

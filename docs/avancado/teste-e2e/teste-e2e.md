@@ -8,6 +8,10 @@ sidebar_position: 8
 
 Testes End-to-End verificam a aplicação como um todo, simulando interações reais do usuário. No Angular, o **Cypress** é uma alternativa moderna e amigável ao Protractor.
 
+### Fonte
+
+Para saber mais, acesse [Cypress](https://docs.cypress.io/app/get-started/why-cypress).
+
 ## Instalação do Cypress
 
 - Adicione o Cypress ao projeto Angular
@@ -88,13 +92,13 @@ Para acompanhar os testes do cypress, deve-se rodar o projeto localmente e execu
 
 - Rode o projeto local
 
-  ```plaintext
+  ```bash
   npm start
   ```
 
 - Execute o comando do cypress
 
-  ```plaintext
+  ```bash
   npm run cypress:open
   ```
 

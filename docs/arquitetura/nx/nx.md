@@ -8,6 +8,10 @@ sidebar_position: 5
 
 Nx é uma plataforma de build avançada para monorepos, que ajuda no gerenciamento de múltiplos aplicativos e bibliotecas dentro de um único repositório.Oferece ferramentas para desenvolvimento, build, lint, e testes de aplicações Angular, React, Node.js, e outras tecnologias. Foi projetado para facilitar a escalabilidade e colaboração em projetos grandes.
 
+### Fonte
+
+Para saber mais, acesse [Nx](https://nx.dev/nx-api/angular).
+
 ## Principais Recursos do Nx
 
 - **Monorepo:** Gerencie múltiplos projetos (front-end e back-end) em um único repositório.
@@ -56,7 +60,7 @@ Necessidade de compartilhar código entre aplicativos, como componentes ou servi
 
 ### Estrutura do Workspace
 
-```
+```plaintext
 meu-workspace/
 ├── apps/                  # Aplicativos completos (Angular, React, etc.)
 │   ├── admin/
@@ -76,10 +80,7 @@ meu-workspace/
 - **Criar um Aplicativo**
 
   ```bash
-  bash
-  Copiar código
   nx generate @nrwl/angular:application meu-app
-
   ```
 
   Adiciona o aplicativo na pasta `apps/meu-app`.

@@ -43,7 +43,7 @@ ng generate component shared/header
 
 **Estrutura Criada**
 
-```
+```plaintext
 src/app/shared/header/
 ├── header.component.ts       # Lógica do componente
 ├── header.component.html     # Template

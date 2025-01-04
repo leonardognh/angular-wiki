@@ -213,7 +213,7 @@ Ative a compressão no servidor para reduzir o tamanho dos arquivos transferidos
 
 **Exemplo no Nginx:**
 
-```
+```plaintext
 gzip on;
 gzip_types text/plain text/css application/json application/javascript;
 ```
@@ -228,7 +228,7 @@ Reduz o tamanho dos arquivos removendo espaços, comentários e outros caractere
 
 Já é configurado por padrão no Angular em builds de produção. Verifique o servidor (ex.: Nginx ou Apache) para garantir compressão:
 
-```
+```plaintext
 gzip on;
 gzip_types text/plain text/css application/json application/javascript;
 ```
