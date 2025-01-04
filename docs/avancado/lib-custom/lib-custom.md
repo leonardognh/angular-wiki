@@ -6,62 +6,187 @@ sidebar_position: 14
 
 ## O que é?
 
-Bibliotecas customizadas são pacotes reutilizáveis desenvolvidos para encapsular funcionalidades, componentes, diretivas, serviços, e pipes. Podem ser compartilhadas entre projetos ou publicadas no **npm**.
+Criar e publicar uma biblioteca no Angular permite compartilhar componentes, serviços ou utilitários reutilizáveis entre projetos ou até mesmo com a comunidade.
 
-## Benefícios de Criar Bibliotecas
+## Como Criar?
 
-- **Reutilização:** Compartilhe código entre diferentes projetos.
+### Configurar o Workspace
 
-- **Manutenção:** Centralize atualizações em um único lugar.
+Use o Angular CLI para criar um workspace monorepo com suporte a bibliotecas.
 
-- **Encapsulamento:** Isola funcionalidades em módulos reutilizáveis.
+```bash
+ng new my-workspace --create-application=false
+cd my-workspace
+```
 
-## Criando uma Biblioteca Customizada
+### Criar a Biblioteca
 
-- **Criação do Workspace com Suporte a Bibliotecas**
+```bash
+ng generate library my-library
+```
 
-  ```bash
-  npx create-nx-workspace meu-workspace --preset=angular
-  ```
+Isso cria uma pasta `projects/my-library` contendo os arquivos da biblioteca.
 
-- **Adicione uma Biblioteca**
+## Estrutura Básica da Biblioteca
 
-  ```bash
-  nx generate @nrwl/angular:library minha-biblioteca
-  ```
+A biblioteca gerada contém:
 
-- **Estrutura do Projeto**
+- `src/lib`: Código-fonte da biblioteca (componentes, serviços, etc.).
+- `public-api.ts`: Arquivo que define os elementos exportados pela biblioteca.
+- `package.json`: Informações de metadados da biblioteca.
 
-  ```
-  meu-workspace/
-  ├── libs/
-  │   └── minha-biblioteca/
-  │       ├── src/
-  │       │   ├── lib/
-  │       │   │   └── meu-componente/
-  │       │   │       ├── meu-componente.component.ts
-  │       │   │       ├── meu-componente.component.html
-  │       │   │       └── meu-componente.component.css
-  │       │   ├── public-api.ts
-  ├── apps/
-  ```
+### Adicionar um Componente
 
-- **Exportação dos Componentes no `public-api.ts`**
+```tsx
+// projects/my-library/src/lib/custom-button/custom-button.component.ts
+import { Component, Input } from "@angular/core";
 
-  ```tsx
-  export * from "./lib/meu-componente/meu-componente.component";
-  ```
+@Component({
+  selector: "lib-custom-button",
+  template: `<button [style.background-color]="color">{{ label }}</button>`,
+  styles: [
+    `
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+    `,
+  ],
+})
+export class CustomButtonComponent {
+  @Input() label: string = "Clique aqui";
+  @Input() color: string = "blue";
+}
+```
 
-- **Build da Biblioteca**
+Registrar no `public-api.ts`.
 
-  ```bash
-  nx build minha-biblioteca
-  ```
+```tsx
+export \* from './lib/custom-button/custom-button.component';
+```
 
-- **Uso no Projeto Principal**
+## Testando a Biblioteca no Projeto
 
-  Importe a biblioteca gerada
+Para usar a biblioteca localmente antes de publicá-la.
 
-  ```tsx
-  import { MinhaBibliotecaModule } from "@meu-workspace/minha-biblioteca";
-  ```
+```bash
+ng build my-library
+```
+
+Instale a biblioteca compilada em outro projeto.
+
+```bash
+npm install dist/my-library
+```
+
+## Tornando a Biblioteca Customizável
+
+Você pode usar Tokens de Injeção ou Inputs para permitir configurações.
+
+```tsx
+import { InjectionToken } from "@angular/core";
+
+export const LIB_CONFIG = new InjectionToken<LibConfig>("LIB_CONFIG");
+
+export interface LibConfig {
+  defaultColor: string;
+}
+```
+
+```tsx
+import { Inject, Injectable } from "@angular/core";
+import { LIB_CONFIG, LibConfig } from "./lib.config";
+
+@Injectable({
+  providedIn: "root",
+})
+export class CustomButtonService {
+  constructor(@Inject(LIB_CONFIG) private config: LibConfig) {}
+
+  getDefaultColor(): string {
+    return this.config.defaultColor;
+  }
+}
+```
+
+```tsx
+providers: [{ provide: LIB_CONFIG, useValue: { defaultColor: "green" } }];
+```
+
+## Publicação no NPM
+
+### Configurar o `package.json`
+
+Atualize o `projects/my-library/package.json`.
+
+```json
+{
+  "name": "my-library",
+  "version": "1.0.0",
+  "author": "Seu Nome",
+  "license": "MIT",
+  "main": "bundles/my-library.umd.js",
+  "module": "fesm2015/my-library.js",
+  "es2015": "fesm2015/my-library.js",
+  "typings": "my-library.d.ts",
+  "peerDependencies": {
+    "@angular/common": "^12.0.0",
+    "@angular/core": "^12.0.0"
+  }
+}
+```
+
+### Compilar a Biblioteca
+
+```bash
+ng build my-library
+```
+
+### Publicar no NPM
+
+```bash
+npm login
+```
+
+```bash
+cd dist/my-library
+npm publish
+```
+
+## Usando a Biblioteca Publicada
+
+Após publicada, você pode instalá-la em qualquer projeto Angular.
+
+```bash
+npm install my-library
+```
+
+```tsx
+import { MyLibraryModule } from "my-library";
+
+@NgModule({
+  imports: [MyLibraryModule],
+})
+export class AppModule {}
+```
+
+```html
+<lib-custom-button label="Enviar" color="red"></lib-custom-button>
+```
+
+## Atualizando a Biblioteca
+
+Ao fazer alterações na biblioteca.
+
+Atualize a versão no `package.json` (ex.: 1.0.1).
+
+```bash
+npm publish
+```
+
+## Boas Práticas
+
+- Documentação: Inclua instruções claras de uso `README.md`.
+- Customização: Permita configurações globais e locais.
+- Compatibilidade: Declare dependências no peerDependencies para evitar conflitos.
+- Teste Localmente: Certifique-se de testar a biblioteca antes de publicá-la.
