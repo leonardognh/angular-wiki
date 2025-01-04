@@ -8,12 +8,12 @@ const config: Config = {
   title: "My Site",
   tagline: "Dinosaurs are cool",
   favicon: "img/favicon.ico",
-  trailingSlash: true,
+  trailingSlash: false,
   // Set the production url of your site here
   url: "https://leonardognh.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: "/angular-wiki",
+  baseUrl: "/angular-wiki/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
