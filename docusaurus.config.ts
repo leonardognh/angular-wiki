@@ -8,7 +8,7 @@ const config: Config = {
   title: "My Site",
   tagline: "Dinosaurs are cool",
   favicon: "img/favicon.ico",
-  trailingSlash: true,
+  trailingSlash: false,
   // Set the production url of your site here
   url: "https://leonardognh.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
