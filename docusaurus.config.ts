@@ -7,7 +7,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "Angular Wiki",
   tagline: "Angular Wiki",
-  favicon: "img/favicon.ico",
+  favicon: "img/angular.png",
   trailingSlash: false,
   // Set the production url of your site here
   url: "https://leonardognh.github.io",
