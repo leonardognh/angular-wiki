@@ -157,7 +157,96 @@ Observer: Valor 2
 
 Os operadores são métodos que permitem transformar, filtrar ou combinar fluxos de dados.
 
-### Map
+### of
+
+O of é um operador do RxJS que cria um Observable síncrono a partir de uma lista de valores ou argumentos. Ele emite cada valor sequencialmente e, após emitir todos os valores, completa automaticamente o Observable.
+
+É frequentemente usado para criar fluxos de dados rapidamente para testes, simular chamadas assíncronas em cenários de desenvolvimento e emissão de valores estáticos ou imediatos.
+
+- Síncrono: Os valores são emitidos imediatamente após a assinatura.
+- Completa automaticamente: Após emitir os valores fornecidos, ele finaliza o Observable.
+- Flexível: Aceita valores de qualquer tipo (números, strings, objetos, arrays, etc.).
+
+```tsx
+import { of } from "rxjs";
+
+const observable = of([1, 2, 3]);
+
+observable.subscribe({
+  next: (valor) => console.log("Valor emitido:", valor),
+  complete: () => console.log("Observable completo!"),
+});
+```
+
+```plaintext
+Valor emitido: [1, 2, 3]
+Observable completo!
+```
+
+### from
+
+O operador from no RxJS é usado para criar um Observable a partir de diferentes tipos de fontes de dados, como:
+
+- Arrays
+- Promises
+- Iteráveis
+- Objetos Observable-like
+
+Ele emite os valores individualmente, um de cada vez, e completa automaticamente após emitir todos os valores.
+
+- Emissão individual: Cada item de uma coleção (como um array) é emitido como um valor separado.
+- Completa automaticamente: Após emitir todos os valores, o Observable é completado.
+- Flexível: Pode ser usado com arrays, promessas, strings, iteráveis ou Observables existentes.
+
+```tsx
+import { from } from "rxjs";
+
+const observable = from([10, 20, 30]);
+
+observable.subscribe({
+  next: (valor) => console.log("Valor emitido:", valor),
+  complete: () => console.log("Observable completo!"),
+});
+```
+
+```plaintext
+Valor emitido: 1
+Valor emitido: 2
+Valor emitido: 3
+Observable completo!
+```
+
+### from vs of
+
+- `from`: Converte arrays, promessas ou iteráveis em Observables, emitindo um valor por vez.
+- `of`: Cria um Observable que emite o valor completo como um único evento.
+
+```tsx
+import { of, from } from "rxjs";
+
+// 'of' trata o array como um único valor
+of([1, 2, 3]).subscribe((valor) => console.log("of:", valor));
+
+// 'from' emite cada valor do array separadamente
+from([1, 2, 3]).subscribe((valor) => console.log("from:", valor));
+```
+
+```plaintext
+of: [1, 2, 3]
+from: 1
+from: 2
+from: 3
+```
+
+**Resumo**
+
+| **Característica** | **`from`**                            | **`of`**                                |
+| ------------------ | ------------------------------------- | --------------------------------------- |
+| **Entrada**        | Arrays, Promises, Strings, Iteráveis. | Valores individuais ou arrays inteiros. |
+| **Comportamento**  | Emite cada item individualmente.      | Emite o valor como está.                |
+| **Uso Principal**  | Converter coleções em Observables.    | Criar Observables rápidos e estáticos.  |
+
+### map
 
 Transforma os valores emitidos.
 
@@ -174,7 +263,7 @@ of(1, 2, 3)
 2, 4, 6
 ```
 
-### Filter
+### filter
 
 Filtra os valores emitidos.
 
@@ -191,7 +280,7 @@ of(1, 2, 3, 4)
 2, 4
 ```
 
-### SwitchMap
+### switchMap
 
 Troca o Observable atual por um novo.
 
@@ -209,7 +298,7 @@ Angular é incrível!
 RxJS é incrível!
 ```
 
-### CombineLatest
+### combineLatest
 
 Combina os valores de múltiplos Observables.
 
@@ -228,7 +317,7 @@ combineLatest([obs1, obs2]).subscribe(([letra, numero]) => {
 B3
 ```
 
-### Merge
+### merge
 
 Combina múltiplos Observables e emite seus valores conforme eles chegam.
 
@@ -246,3 +335,24 @@ merge(obs1, obs2).subscribe((valor) => console.log(valor));
   B
   C
 ```
+
+### Resumo
+
+- **Tipos de Subjects**
+
+| **Tipo**            | **Uso Principal**                                              |
+| ------------------- | -------------------------------------------------------------- |
+| **Subject**         | Comunicação entre componentes ou eventos manuais.              |
+| **BehaviorSubject** | Compartilhar estado com Observers.                             |
+| **ReplaySubject**   | Reproduzir valores anteriores para novos Observers.            |
+| **AsyncSubject**    | Emitir apenas o último valor após o Observable ser completado. |
+
+- **Operadores do RxJS**
+
+| **Operador**      | **Função**                                  |
+| ----------------- | ------------------------------------------- |
+| **map**           | Transforma os valores emitidos.             |
+| **filter**        | Filtra valores com base em uma condição.    |
+| **switchMap**     | Troca o Observable atual por um novo.       |
+| **combineLatest** | Combina valores de múltiplos Observables.   |
+| **merge**         | Combina Observables e emite valores juntos. |
