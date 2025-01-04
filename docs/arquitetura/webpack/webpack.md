@@ -8,6 +8,10 @@ sidebar_position: 6
 
 Webpack é um **module bundler** (empacotador de módulos) para JavaScript. Ele processa arquivos e dependências em uma aplicação, criando um ou mais pacotes (bundles) otimizados para o navegador. Suporta não apenas JavaScript, mas também CSS, imagens, fontes e outros recursos.
 
+### Fonte
+
+Para saber mais, acesse [WebPack](https://v5.angular.io/guide/webpack).
+
 ## Principais Recursos
 
 - **Code Splitting:** Divide o código em partes menores, carregadas sob demanda.

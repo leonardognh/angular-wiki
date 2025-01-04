@@ -16,6 +16,10 @@ Angular Universal é uma tecnologia para renderizar aplicações Angular no serv
 
 - **Suporte para dispositivos lentos:** Dispositivos com pouca capacidade de processamento renderizam mais rápido.
 
+### Fonte
+
+Para saber mais, acesse [SSR](https://angular.dev/guide/ssr).
+
 ## Como o SSR Funciona?
 
 O servidor processa as rotas e gera o HTML inicial com o conteúdo renderizado. O navegador recebe o HTML e exibe o conteúdo rapidamente. O Angular "hidrata" o aplicativo no lado do cliente, ativando interatividade.

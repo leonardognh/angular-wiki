@@ -8,6 +8,10 @@ sidebar_position: 2
 
 Angular Material é uma biblioteca de componentes baseada no Material Design, criada especificamente para aplicações Angular. Ela oferece componentes estilizados, prontos para uso e consistentes com as diretrizes do Google.
 
+### Fonte
+
+Para saber mais, acesse [Angular Material](https://material.angular.io/components/categories).
+
 ## Como Utilizar?
 
 ### Instalação

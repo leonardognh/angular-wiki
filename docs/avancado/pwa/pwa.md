@@ -8,6 +8,10 @@ sidebar_position: 12
 
 - **Progressive Web Apps (PWAs)** são aplicações web que utilizam tecnologias modernas para oferecer experiência similar a aplicativos nativos.
 
+### Fonte
+
+Para saber mais, acesse [PWA](https://developer.mozilla.org/pt-BR/docs/Web/Progressive_web_apps).
+
 ## Características principais
 
 - **Responsividade:** Funciona em diferentes dispositivos e tamanhos de tela.

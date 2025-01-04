@@ -8,6 +8,10 @@ sidebar_position: 1
 
 Bootstrap é um framework CSS que oferece estilos prontos e componentes responsivos. Ele é amplamente usado por sua simplicidade e suporte a dispositivos móveis.
 
+### Fonte
+
+Para saber mais, acesse [Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
+
 ## Como Utilizar?
 
 ### Instalação

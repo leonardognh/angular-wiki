@@ -14,6 +14,10 @@ WCAG (Web Content Accessibility Guidelines) são diretrizes internacionais para 
 
 - **AAA:** Conformidade avançada (para casos específicos).
 
+### Fonte
+
+Para saber mais, acesse [WCAG](https://developer.mozilla.org/en-US/docs/Web/Accessibility/Understanding_WCAG).
+
 ## Princípios Fundamentais (POUR)
 
 ### Perceptível (Perceivable)

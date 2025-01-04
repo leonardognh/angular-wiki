@@ -8,6 +8,10 @@ sidebar_position: 1
 
 O Angular CDK (Component Dev Kit) é uma biblioteca de utilitários e ferramentas fornecida pelo Angular para ajudar os desenvolvedores a criar componentes reutilizáveis e acessíveis. Ao contrário do Angular Material, que é focado em componentes visuais seguindo o Material Design, o CDK é mais técnico e oferece funcionalidades de baixo nível, como manipulação de layout, acessibilidade, arrastar e soltar, e muito mais.
 
+### Fonte
+
+Para saber mais, acesse [Angular CDK](https://material.angular.io/cdk/categories).
+
 ## Principais Módulos do Angular CDK
 
 ### A11y (Acessibilidade)
