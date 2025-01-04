@@ -52,3 +52,12 @@ observable.subscribe({
   complete: () => console.log("Observable completo!"),
 });
 ```
+
+```plaintext
+Valor recebido: 1
+Valor recebido: 2
+Valor recebido: 3
+Valor recebido: 4
+Valor recebido: 5
+Observable completo!
+```
