@@ -40,7 +40,7 @@ O comando cria uma aplicação SSR com um servidor Node.js usando **Express**.
 
 ### Estrutura Gerada
 
-```
+```plaintext
 meu-projeto/
 ├── server.ts                # Configuração do servidor
 ├── angular.json             # Configuração para builds SSR

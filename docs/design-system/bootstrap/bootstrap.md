@@ -16,7 +16,7 @@ Para saber mais, acesse [Bootstrap](https://getbootstrap.com/docs/5.3/getting-st
 
 ### Instalação
 
-```plaintext
+```bash
 npm install bootstrap
 ```
 

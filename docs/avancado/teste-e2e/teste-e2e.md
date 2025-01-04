@@ -92,13 +92,13 @@ Para acompanhar os testes do cypress, deve-se rodar o projeto localmente e execu
 
 - Rode o projeto local
 
-  ```plaintext
+  ```bash
   npm start
   ```
 
 - Execute o comando do cypress
 
-  ```plaintext
+  ```bash
   npm run cypress:open
   ```
 

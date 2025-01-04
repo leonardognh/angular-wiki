@@ -40,7 +40,7 @@ Adiciona um service worker.
 
 **Arquivos Relevantes**
 
-```
+```plaintext
 src/
 ├── manifest.webmanifest  # Configurações do aplicativo
 ├── ngsw-config.json      # Configuração do Service Worker
@@ -273,7 +273,7 @@ navigator.serviceWorker
 
 - **Exemplo de Envio Manual via API REST**
 
-  ```bash
+  ```plaintext
   curl -X POST -H "Authorization: key=SEU-SERVER-KEY" \
       -H "Content-Type: application/json" \
       -d '{

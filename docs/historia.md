@@ -35,7 +35,7 @@ Ferramentas necessárias:
 
 3. Criar um novo projeto:
 
-   ```arduino
+   ```bash
    ng new meu-projeto
    cd meu-projeto
    ng serve

@@ -278,7 +278,6 @@ Aqui, o `<ng-container>` agrupa o `*ngIf` e o `*ngFor`, evitando conflitos, já 
 O `<ng-content>` é usado em componentes para projetar conteúdo dinâmico. Ele permite que desenvolvedores insiram elementos personalizados nos templates.
 
 ```html
-html Copiar código
 <!-- no componente pai -->
 <app-card>
   <h3>Título Personalizado</h3>
@@ -287,7 +286,6 @@ html Copiar código
 ```
 
 ```html
-html Copiar código
 <!-- template do app-card -->
 <div class="card">
   <ng-content></ng-content>

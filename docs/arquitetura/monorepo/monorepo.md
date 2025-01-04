@@ -20,11 +20,11 @@ Melhoria no gerenciamento de versionamento.
 
 Usar **Nx** ou **Lerna** para gerenciar um monorepo Angular.
 
-## **Estrutura Monorepo com Nx**
+## Estrutura Monorepo com Nx
 
 Gerencia o projeto como um todo, mas mantém cada funcionalidade modularizada.
 
-```
+```plaintext
 apps/
 ├── cursos/
 ├── certificados/

@@ -12,9 +12,9 @@ Angular oferece duas abordagens para trabalhar com formulários:
 
 - **Reactive Forms:** Baseados em código TypeScript, oferecem maior controle, validação e escalabilidade.
 
-## **Reactive Forms**
+## Reactive Forms
 
-### **FormGroup**
+### FormGroup
 
 `FormGroup` é uma classe usada para criar e gerenciar grupos de controles de formulário.
 
@@ -60,7 +60,7 @@ Os controles precisam ser declarados manualmente, tornando o código mais explí
   }
   ```
 
-### **FormBuilder**
+### FormBuilder
 
 `FormBuilder` é uma classe que fornece métodos convenientes para criar `FormGroup` e `FormControl`.
 
@@ -108,7 +108,7 @@ Reduz a verbosidade do código e melhora a legibilidade, especialmente em formul
   }
   ```
 
-### **FormArray**
+### FormArray
 
 Um conjunto de `FormControl` ou `FormGroup` em forma de array.
 
@@ -156,9 +156,9 @@ export class UsuariosComponent {
 }
 ```
 
-## **Validações em Reactive Forms**
+## Validações em Reactive Forms
 
-### **Validações Simples**
+### Validações Simples
 
 Validadores como `Validators.required`, `Validators.minLength`, etc.
 
@@ -171,7 +171,7 @@ this.registroForm = this.fb.group({
 });
 ```
 
-### **Validações Personalizadas**
+### Validações Personalizadas
 
 Criar funções validadoras personalizadas.
 
@@ -199,7 +199,7 @@ this.registroForm = this.fb.group({
 | **Uso Comum** | Formulários estáticos. | Criação concisa de formulários. | Coleções dinâmicas.                                |
 | **Exemplo**   | `new FormGroup({...})` | `this.fb.group({...})`          | `this.fb.array([...])` ou `new FormArray([{...}])` |
 
-### **Comparação FormGroup vs. FormBuilder**
+### Comparação FormGroup vs. FormBuilder
 
 | Aspecto                  | **FormGroup**                        | **FormBuilder**                    |
 | ------------------------ | ------------------------------------ | ---------------------------------- |
@@ -208,7 +208,7 @@ this.registroForm = this.fb.group({
 | **Criação de controles** | Feita com `FormControl` manualmente. | Feita com métodos como `fb.group`. |
 | **Código**               | Mais explícito.                      | Mais dinâmico e eficiente.         |
 
-## **Quando Usar Cada Um?**
+## Quando Usar Cada Um?
 
 - **Use `FormGroup`** se você prefere configurar cada aspecto do formulário manualmente e precisa de maior controle.
 - **Use `FormBuilder`** se deseja simplificar a configuração do formulário, economizando tempo e tornando o código mais legível.

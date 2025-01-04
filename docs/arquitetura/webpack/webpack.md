@@ -62,7 +62,7 @@ Para saber mais, acesse [WebPack](https://v5.angular.io/guide/webpack).
 
 - **Estrutura Inicial**
 
-  ```
+  ```plaintext
   projeto/
   ├── src/
   │   └── index.js
@@ -194,8 +194,6 @@ Permite atualizar partes do código em tempo real, sem recarregar a página inte
 - **Adicione o script no `package.json`**
 
   ```json
-  json
-  Copiar código
   "scripts": {
     "start": "webpack serve"
   }

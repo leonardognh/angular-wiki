@@ -109,7 +109,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie um Dockerfile
 
-  ```plaintext
+  ```yml
   FROM nginx:alpine
   COPY dist/seu-projeto /usr/share/nginx/html
   ```
@@ -129,7 +129,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie o arquivo `.github/workflows/deploy.yml`
 
-  ```yaml
+  ```yml
   name: Build and Deploy Angular
 
   on:
@@ -180,7 +180,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie o arquivo `.gitlab-ci.yml`
 
-  ```yaml
+  ```yml
   stages:
     - build
     - deploy

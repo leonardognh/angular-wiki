@@ -60,7 +60,7 @@ Necessidade de compartilhar código entre aplicativos, como componentes ou servi
 
 ### Estrutura do Workspace
 
-```
+```plaintext
 meu-workspace/
 ├── apps/                  # Aplicativos completos (Angular, React, etc.)
 │   ├── admin/
@@ -80,10 +80,7 @@ meu-workspace/
 - **Criar um Aplicativo**
 
   ```bash
-  bash
-  Copiar código
   nx generate @nrwl/angular:application meu-app
-
   ```
 
   Adiciona o aplicativo na pasta `apps/meu-app`.

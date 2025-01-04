@@ -16,7 +16,7 @@ Para saber mais, acesse [Angular Material](https://material.angular.io/component
 
 ### Instalação
 
-```plaintext
+```bash
 ng add @angular/material
 ```
 
