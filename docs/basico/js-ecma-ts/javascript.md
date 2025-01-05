@@ -39,7 +39,7 @@ const ano = 2023;
 
   Uma função declarativa é definida com a palavra-chave function e tem um nome.
 
-  ```jsx live showLineNumbers
+  ```jsx showLineNumbers
   function somar(a, b) {
     return a + b;
   }
