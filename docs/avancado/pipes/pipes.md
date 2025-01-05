@@ -10,7 +10,7 @@ Pipes são usados para transformar dados em templates.
 
 Pipes personalizados permitem criar transformações específicas.
 
-```tsx
+```tsx showLineNumbers title="capitalize.pipe.ts"
 import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
@@ -23,7 +23,7 @@ export class CapitalizePipe implements PipeTransform {
 }
 ```
 
-```html
+```html showLineNumbers
 <p>{{ 'angular' | capitalize }}</p>
 <!-- Resultado: Angular -->
 ```
@@ -34,7 +34,7 @@ export class CapitalizePipe implements PipeTransform {
 
   Executam a transformação apenas quando os dados de entrada mudam.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Pipe({
     name: 'meuPipe',
     pure: true,
@@ -45,7 +45,7 @@ export class CapitalizePipe implements PipeTransform {
 
   Executam em cada ciclo de detecção de mudanças.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Pipe({
     name: 'meuPipe',
     pure: false,
@@ -63,7 +63,7 @@ Simplifica o consumo de Observables ou Promises no template.
 
 Dispensa a necessidade de `subscribe`.
 
-```tsx
+```tsx showLineNumbers title="async-example.component.ts"
 import { Component } from "@angular/core";
 import { Observable, of } from "rxjs";
 
@@ -80,6 +80,6 @@ export class AsyncExampleComponent {
 
 Utilizar múltiplos pipes para transformação sequencial.
 
-```html
+```html showLineNumbers
 <p>{{ '2023-01-02T12:00:00' | date:'fullDate' | uppercase }}</p>
 ```

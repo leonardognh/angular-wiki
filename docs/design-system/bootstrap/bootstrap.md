@@ -24,7 +24,7 @@ npm install bootstrap
 
 Adicione o CSS no arquivo `angular.json`.
 
-```json
+```json showLineNumbers
 "styles": [
   "node_modules/bootstrap/dist/css/bootstrap.min.css",
   "src/styles.css"
@@ -35,7 +35,7 @@ Adicione o CSS no arquivo `angular.json`.
 
 - Grid System (Responsividade)
 
-  ```html
+  ```html showLineNumbers
   <div class="row">
     <div class="col-md-6">Coluna 1</div>
     <div class="col-md-6">Coluna 2</div>
@@ -44,14 +44,14 @@ Adicione o CSS no arquivo `angular.json`.
 
 - Botões
 
-  ```html
+  ```html showLineNumbers
   <button class="btn btn-primary">Botão Primário</button>
   <button class="btn btn-secondary">Botão Secundário</button>
   ```
 
 - Formulários
 
-  ```html
+  ```html showLineNumbers
   <form>
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>

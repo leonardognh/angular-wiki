@@ -50,7 +50,7 @@ O conteúdo deve ser interpretável por tecnologias assistivas (ex.: leitores de
 
 Adicione descrições significativas com o atributo `alt`.
 
-```html
+```html showLineNumbers
 <img src="foto.jpg" alt="Paisagem de uma montanha ao pôr do sol" />
 ```
 
@@ -58,7 +58,7 @@ Adicione descrições significativas com o atributo `alt`.
 
 Use rótulos claros e conecte-os aos campos usando o atributo `for`.
 
-```html
+```html showLineNumbers
 <label for="nome">Nome:</label> <input type="text" id="nome" name="nome" />
 ```
 
@@ -74,7 +74,7 @@ Certifique-se de que o contraste entre o texto e o fundo seja suficiente. Use fe
 
 Teste a aplicação com leitores de tela como JAWS, NVDA ou VoiceOver. Use o atributo `aria-label` para fornecer descrições adicionais:
 
-```html
+```html showLineNumbers
 <button aria-label="Enviar formulário">Enviar</button>
 ```
 
@@ -82,7 +82,7 @@ Teste a aplicação com leitores de tela como JAWS, NVDA ou VoiceOver. Use o atr
 
 Use elementos HTML apropriados para cada conteúdo (ex.: `<header>`, `<nav>`, `<article>`).
 
-```html
+```html showLineNumbers
 <nav>
   <ul>
     <li><a href="#inicio">Início</a></li>
@@ -93,7 +93,7 @@ Use elementos HTML apropriados para cada conteúdo (ex.: `<header>`, `<nav>`, `<
 
 ### Exemplo Prático de Página Acessível
 
-```html
+```html showLineNumbers
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>

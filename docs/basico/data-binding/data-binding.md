@@ -22,13 +22,13 @@ Data Binding é a ligação entre a lógica do componente e a interface (templat
 
 Utilizada para exibir dados diretamente no template. Sintaxe: `{{ expressao }}`. Interpolação só funciona com valores em formato de string.
 
-```tsx
+```tsx showLineNumbers title="app.component.ts"
 export class AppComponent {
   titulo = "Data Binding com Angular!";
 }
 ```
 
-```html
+```html showLineNumbers
 <h1>{{ titulo }}</h1>
 ```
 
@@ -36,13 +36,13 @@ export class AppComponent {
 
 Liga propriedades do DOM a valores no componente. Sintaxe: `[propriedade]="expressao"`. Property Binding permite atribuir valores não-string, como objetos.
 
-```tsx
+```tsx showLineNumbers title="app.component.ts"
 export class AppComponent {
   imagemUrl = "https://angular.io/assets/images/logos/angular/angular.png";
 }
 ```
 
-```html
+```html showLineNumbers
 <img [src]="imagemUrl" alt="Logo Angular" />
 ```
 
@@ -50,7 +50,7 @@ export class AppComponent {
 
 Liga eventos do template a métodos do componente. Sintaxe: `(evento)="expressao"`.
 
-```tsx
+```tsx showLineNumbers title="app.component.ts"
 export class AppComponent {
   saudacao(): void {
     console.log("Olá, Angular!");
@@ -58,7 +58,7 @@ export class AppComponent {
 }
 ```
 
-```html
+```html showLineNumbers
 <button (click)="saudacao()">Clique aqui</button>
 ```
 
@@ -66,13 +66,13 @@ export class AppComponent {
 
 Sincroniza dados entre o template e o componente. Requer o uso da diretiva `[(ngModel)]`.
 
-```tsx
+```tsx showLineNumbers title="app.component.ts"
 export class AppComponent {
   nome = "";
 }
 ```
 
-```html
+```html showLineNumbers
 <input [(ngModel)]="nome" placeholder="Digite seu nome" />
 <p>Olá, {{ nome }}!</p>
 ```

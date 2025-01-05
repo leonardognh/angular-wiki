@@ -24,7 +24,7 @@ Para saber mais, acesse [RxJS](https://rxjs.dev/guide/overview).
 
 O Subject é um Observable que permite emitir valores manualmente e compartilhar o fluxo de dados com múltiplos Observers.
 
-```tsx
+```tsx showLineNumbers title="communication.service.ts"
 import { Subject } from "rxjs";
 
 // Serviço compartilhado
@@ -40,8 +40,7 @@ export class CommunicationService {
 }
 ```
 
-```tsx
-// Componente Emissor
+```tsx showLineNumbers title="emissor.component.ts"
 @Component({
   selector: "app-emissor",
   template: `<button (click)="emitir()">Emitir Evento</button>`,
@@ -55,8 +54,7 @@ export class EmissorComponent {
 }
 ```
 
-```tsx
-// Componente Receptor
+```tsx showLineNumbers title="receptor.component.ts"
 @Component({
   selector: "app-receptor",
   template: `<p>{{ mensagem }}</p>`,
@@ -78,7 +76,7 @@ export class ReceptorComponent implements OnInit {
 
 O BehaviorSubject armazena o último valor emitido e o entrega imediatamente para novos Observers.
 
-```tsx
+```tsx showLineNumbers title="estado.service.ts"
 import { BehaviorSubject } from "rxjs";
 
 @Injectable({ providedIn: "root" })
@@ -92,8 +90,7 @@ export class EstadoService {
 }
 ```
 
-```tsx
-// Consumindo no Componente
+```tsx showLineNumbers title="estado.component.ts"
 @Component({
   selector: "app-estado",
   template: `<div>Estado Atual: {{ estado }}</div>`,
@@ -117,7 +114,7 @@ export class EstadoComponent implements OnInit {
 
 O ReplaySubject armazena múltiplos valores emitidos e os entrega para novos Observers, baseado em uma configuração de "buffer".
 
-```tsx
+```tsx showLineNumbers
 import { ReplaySubject } from "rxjs";
 
 const replaySubject = new ReplaySubject<string>(3); // Armazena os últimos 3 valores
@@ -140,7 +137,7 @@ Observer: Evento 4
 
 O AsyncSubject emite apenas o último valor produzido, mas somente após o Observable ser completado.
 
-```tsx
+```tsx showLineNumbers
 import { AsyncSubject } from "rxjs";
 
 const asyncSubject = new AsyncSubject<string>();
@@ -171,7 +168,7 @@ O of é um operador do RxJS que cria um Observable síncrono a partir de uma lis
 - Completa automaticamente: Após emitir os valores fornecidos, ele finaliza o Observable.
 - Flexível: Aceita valores de qualquer tipo (números, strings, objetos, arrays, etc.).
 
-```tsx
+```tsx showLineNumbers
 import { of } from "rxjs";
 
 const observable = of([1, 2, 3]);
@@ -202,7 +199,7 @@ Ele emite os valores individualmente, um de cada vez, e completa automaticamente
 - Completa automaticamente: Após emitir todos os valores, o Observable é completado.
 - Flexível: Pode ser usado com arrays, promessas, strings, iteráveis ou Observables existentes.
 
-```tsx
+```tsx showLineNumbers
 import { from } from "rxjs";
 
 const observable = from([10, 20, 30]);
@@ -225,7 +222,7 @@ Observable completo!
 - `from`: Converte arrays, promessas ou iteráveis em Observables, emitindo um valor por vez.
 - `of`: Cria um Observable que emite o valor completo como um único evento.
 
-```tsx
+```tsx showLineNumbers
 import { of, from } from "rxjs";
 
 // 'of' trata o array como um único valor
@@ -254,7 +251,7 @@ from: 3
 
 Transforma os valores emitidos.
 
-```tsx
+```tsx showLineNumbers
 import { of } from "rxjs";
 import { map } from "rxjs/operators";
 
@@ -271,7 +268,7 @@ of(1, 2, 3)
 
 Filtra os valores emitidos.
 
-```tsx
+```tsx showLineNumbers
 import { of } from "rxjs";
 import { filter } from "rxjs/operators";
 
@@ -288,7 +285,7 @@ of(1, 2, 3, 4)
 
 Troca o Observable atual por um novo.
 
-```tsx
+```tsx showLineNumbers
 import { of } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
@@ -306,7 +303,7 @@ RxJS é incrível!
 
 Combina os valores de múltiplos Observables.
 
-```tsx
+```tsx showLineNumbers
 import { combineLatest, of } from "rxjs";
 
 const obs1 = of("A", "B");
@@ -325,7 +322,7 @@ B3
 
 Combina múltiplos Observables e emite seus valores conforme eles chegam.
 
-```tsx
+```tsx showLineNumbers
 import { merge, of } from "rxjs";
 
 const obs1 = of("A");

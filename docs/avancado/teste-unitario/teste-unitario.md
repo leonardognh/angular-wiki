@@ -16,7 +16,7 @@ O Angular utiliza **Jasmine** e **Karma** por padrão.
 
 Para saber mais, acesse [Jasmine](https://jasmine.github.io/pages/docs_home.html) e [Karma](https://karma-runner.github.io/latest/index.html).
 
-```tsx
+```tsx showLineNumbers
 describe("Nome da Unidade", () => {
   it("Deve realizar uma ação", () => {
     // Arrange: Configurar o estado inicial
@@ -30,7 +30,7 @@ describe("Nome da Unidade", () => {
 
 `TestBed` é uma classe usada para configurar e inicializar um ambiente de teste no Angular.
 
-```tsx
+```tsx showLineNumbers
 beforeEach(() => {
   TestBed.configureTestingModule({
     declarations: [MeuComponente], // Componentes a serem testados
@@ -70,7 +70,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Crie o arquivo `jest.config.js`
 
-  ```jsx
+  ```jsx showLineNumbers title="jest.config.js"
   module.exports = {
     preset: "jest-preset-angular",
     testEnvironment: "jsdom",
@@ -87,7 +87,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Crie o arquivo `setup-jest.ts`
 
-  ```tsx
+  ```tsx showLineNumbers title="setup-jest.ts"
   import "jest-preset-angular/setup-jest";
   ```
 
@@ -95,7 +95,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
   Ajuste para suportar o Jest
 
-  ```json
+  ```json showLineNumbers title="tsconfig.spec.json"
   {
     "compilerOptions": {
       "types": ["jest"]
@@ -105,7 +105,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Adicionar Script no `package.json`
 
-  ```json
+  ```json showLineNumbers title="package.json"
   "scripts": {
     "test": "jest"
   }
@@ -135,7 +135,7 @@ npm install --save-dev ng-mocks
 
 Utilização
 
-```tsx
+```tsx showLineNumbers title="home.component.spec.ts"
 import { MockModule } from 'ng-mocks';
 
 describe('HomeComponent', () => {

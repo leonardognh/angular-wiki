@@ -26,14 +26,14 @@ Siga as instruções para escolher tema e configurações durante a instalação
 
 - Botões
 
-  ```html
+  ```html showLineNumbers
   <button mat-button>Botão Simples</button>
   <button mat-raised-button color="primary">Botão Elevado</button>
   ```
 
 - Input
 
-  ```html
+  ```html showLineNumbers
   <mat-form-field appearance="fill">
     <mat-label>Email</mat-label>
     <input matInput placeholder="Digite seu email" />
@@ -42,7 +42,7 @@ Siga as instruções para escolher tema e configurações durante a instalação
 
 - Tabelas
 
-  ```html
+  ```html showLineNumbers
   <table mat-table [dataSource]="dados" class="mat-elevation-z8">
     <ng-container matColumnDef="nome">
       <th mat-header-cell *matHeaderCellDef>Nome</th>
@@ -55,7 +55,7 @@ Siga as instruções para escolher tema e configurações durante a instalação
 
 - Cards
 
-  ```html
+  ```html showLineNumbers
   <mat-card>
     <mat-card-header>
       <mat-card-title>Título</mat-card-title>

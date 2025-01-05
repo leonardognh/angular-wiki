@@ -14,15 +14,15 @@ Componentes são a base da construção de interfaces no Angular. Cada component
 
 - **Estilo:** Gerencia o design (CSS/SCSS).
 
-```tsx
+```tsx showLineNumbers title="example.component.ts"
 import { Component } from "@angular/core";
 
 @Component({
-  selector: "app-exemplo",
-  templateUrl: "./exemplo.component.html",
-  styleUrls: ["./exemplo.component.css"],
+  selector: "app-example",
+  templateUrl: "./example.component.html",
+  styleUrls: ["./example.component.css"],
 })
-export class ExemploComponent {
+export class ExampleComponent {
   titulo: string = "Meu Componente";
 }
 ```

@@ -109,7 +109,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie um Dockerfile
 
-  ```yml
+  ```yml showLineNumbers
   FROM nginx:alpine
   COPY dist/seu-projeto /usr/share/nginx/html
   ```
@@ -129,7 +129,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie o arquivo `.github/workflows/deploy.yml`
 
-  ```yml
+  ```yml showLineNumbers
   name: Build and Deploy Angular
 
   on:
@@ -180,7 +180,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   Crie o arquivo `.gitlab-ci.yml`
 
-  ```yml
+  ```yml showLineNumbers
   stages:
     - build
     - deploy
@@ -215,7 +215,7 @@ Isso cria a pasta `dist/seu-projeto` com os arquivos minificados e otimizados.
 
   No arquivo `Jenkinsfile`
 
-  ```groovy
+  ```groovy showLineNumbers
   pipeline {
     agent any
 

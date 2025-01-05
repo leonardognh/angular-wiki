@@ -19,7 +19,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - Suporte para JSON.
 
-  ```jsx
+  ```jsx showLineNumbers
   "use strict";
   const numeros = [1, 2, 3, 4];
   const dobrados = numeros.map((n) => n * 2);
@@ -42,7 +42,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - **Modules (import/export):** Modularização nativa.
 
-  ```jsx
+  ```jsx showLineNumbers
   const pessoa = { nome: "Maria", idade: 25 };
   const { nome, idade } = pessoa;
   console.log(`Nome: ${nome}, Idade: ${idade}`);
@@ -54,7 +54,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - Método `Array.prototype.includes()`.
 
-  ```jsx
+  ```jsx showLineNumbers
   const numeros = [1, 2, 3];
   console.log(numeros.includes(2)); // true
   console.log(2 ** 3); // 8
@@ -66,7 +66,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - Métodos: `Object.entries()`, `Object.values()`.
 
-  ```jsx
+  ```jsx showLineNumbers
   async function fetchDados() {
     const resposta = await fetch("https://api.exemplo.com");
     const dados = await resposta.json();
@@ -80,7 +80,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - **Promise.prototype.finally():** Finalizar Promises.
 
-  ```jsx
+  ```jsx showLineNumbers
   const usuario = { nome: "João", idade: 30 };
   const copia = { ...usuario, ativo: true };
   console.log(copia);
@@ -92,7 +92,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - `Object.fromEntries()`.
 
-  ```jsx
+  ```jsx showLineNumbers
   const pares = [
     ["nome", "João"],
     ["idade", 30],
@@ -107,7 +107,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - **Optional Chaining (`?.`):** Acessar propriedades de forma segura.
 
-  ```jsx
+  ```jsx showLineNumbers
   const usuario = null;
   console.log(usuario?.nome ?? "Usuário não encontrado");
   ```
@@ -118,7 +118,7 @@ O ECMAScript (ES) é a especificação que padroniza o JavaScript. Desde sua cri
 
 - Operadores lógicos compostos: `&&=`, `||=`, `??=`.
 
-  ```jsx
+  ```jsx showLineNumbers
   let mensagem = "Olá, Angular! Angular é incrível.";
   mensagem = mensagem.replaceAll("Angular", "TypeScript");
   console.log(mensagem);

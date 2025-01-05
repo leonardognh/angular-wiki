@@ -8,7 +8,7 @@ sidebar_position: 9
 
 O `tsconfig.json` é o arquivo de configuração principal do TypeScript em um projeto. Ele define as opções de compilação e quais arquivos ou diretórios devem ser incluídos ou excluídos no processo de build.
 
-```json
+```json showLineNumbers
 {
   "compilerOptions": {
     "target": "ES2015", // Versão do JavaScript gerado
@@ -39,7 +39,7 @@ Arquivos como `tsconfig.app.json`, `tsconfig.spec.json` e `tsconfig.base.json` p
 
 Contém configurações compartilhadas entre todos os arquivos de configuração. Serve como base para configurações específicas como `tsconfig.app.json` e `tsconfig.spec.json`.
 
-```json
+```json showLineNumbers
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -57,7 +57,7 @@ Contém configurações compartilhadas entre todos os arquivos de configuração
 
 Configuração específica para o código da aplicação. Geralmente inclui arquivos `.ts` da aplicação e exclui testes ou arquivos de configuração.
 
-```json
+```json showLineNumbers
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
@@ -73,7 +73,7 @@ Configuração específica para o código da aplicação. Geralmente inclui arqu
 
 Configuração específica para arquivos de teste. Inclui configurações necessárias para testes unitários, como bibliotecas de testes e arquivos `.spec.ts`.
 
-```json
+```json showLineNumbers
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
@@ -88,7 +88,7 @@ Configuração específica para arquivos de teste. Inclui configurações necess
 
 Arquivo principal que referencia outros arquivos de configuração. Serve como ponto de entrada para o TypeScript.
 
-```json
+```json showLineNumbers
 {
   "files": [],
   "references": [
@@ -180,7 +180,7 @@ Ativa o modo estrito do TypeScript, habilitando todas as verificações estritas
 
 Especifica o diretório onde os arquivos JavaScript compilados serão gerados.
 
-```json
+```json showLineNumbers
 "outDir": "./dist"
 ```
 
@@ -188,7 +188,7 @@ Especifica o diretório onde os arquivos JavaScript compilados serão gerados.
 
 Define o diretório base para resoluções de caminhos relativos.
 
-```json
+```json showLineNumbers
 "baseUrl": "./src"
 ```
 
@@ -196,7 +196,7 @@ Define o diretório base para resoluções de caminhos relativos.
 
 Define atalhos para importações no código.
 
-```json
+```json showLineNumbers
 "paths": {
   "@shared/*": ["app/shared/*"]
 }
@@ -206,7 +206,7 @@ Define atalhos para importações no código.
 
 Gera arquivos `.map` que mapeiam o código TypeScript para o JavaScript gerado, facilitando o debug.
 
-```json
+```json showLineNumbers
 "sourceMap": true
 ```
 
@@ -214,7 +214,7 @@ Gera arquivos `.map` que mapeiam o código TypeScript para o JavaScript gerado, 
 
 Gera arquivos `.d.ts` contendo definições de tipos, útil para bibliotecas.
 
-```json
+```json showLineNumbers
 "declaration": true
 ```
 
@@ -222,7 +222,7 @@ Gera arquivos `.d.ts` contendo definições de tipos, útil para bibliotecas.
 
 Gera erro para variáveis ou parâmetros cujo tipo não seja explicitamente definido.
 
-```json
+```json showLineNumbers
 "noImplicitAny": true
 ```
 
@@ -230,7 +230,7 @@ Gera erro para variáveis ou parâmetros cujo tipo não seja explicitamente defi
 
 Ignora verificações de tipos em arquivos de definições de bibliotecas (`.d.ts`).
 
-```json
+```json showLineNumbers
 "skipLibCheck": true
 ```
 
@@ -248,7 +248,7 @@ Define como o TypeScript encontra os módulos importados.
 
 Habilita compatibilidade com módulos ES6 e CommonJS.
 
-```json
+```json showLineNumbers
 "esModuleInterop": true
 ```
 
@@ -256,7 +256,7 @@ Habilita compatibilidade com módulos ES6 e CommonJS.
 
 Remove comentários dos arquivos compilados.
 
-```json
+```json showLineNumbers
 "removeComments": true
 ```
 
@@ -264,7 +264,7 @@ Remove comentários dos arquivos compilados.
 
 Permite importar arquivos JSON diretamente no TypeScript.
 
-```json
+```json showLineNumbers
 "resolveJsonModule": true
 ```
 
@@ -272,7 +272,7 @@ Permite importar arquivos JSON diretamente no TypeScript.
 
 Define os diretórios onde o TypeScript deve procurar por definições de tipo.
 
-```json
+```json showLineNumbers
 "typeRoots": ["node_modules/@types"]
 ```
 
@@ -280,7 +280,7 @@ Define os diretórios onde o TypeScript deve procurar por definições de tipo.
 
 Lista os pacotes de definições de tipo que serão incluídos.
 
-```json
+```json showLineNumbers
 "types": ["node", "jasmine"]
 ```
 
@@ -296,7 +296,7 @@ Especifica as bibliotecas padrão disponíveis durante a compilação.
 
 - `DOM.Iterable`: Iteração sobre NodeList, etc.
 
-```json
+```json showLineNumbers
 "lib": ["DOM", "ES2020"]
 ```
 
@@ -304,7 +304,7 @@ Especifica as bibliotecas padrão disponíveis durante a compilação.
 
 Especifica os arquivos ou diretórios a serem incluídos na compilação.
 
-```json
+```json showLineNumbers
 "include": ["src/**/*"]
 ```
 
@@ -312,7 +312,7 @@ Especifica os arquivos ou diretórios a serem incluídos na compilação.
 
 Especifica os arquivos ou diretórios a serem excluídos da compilação.
 
-```json
+```json showLineNumbers
 "exclude": ["node_modules", "**/*.spec.ts"]
 ```
 
@@ -320,7 +320,7 @@ Especifica os arquivos ou diretórios a serem excluídos da compilação.
 
 Permite herdar configurações de outro arquivo `tsconfig.json`.
 
-```json
+```json showLineNumbers
 "extends": "./tsconfig.base.json"
 ```
 
@@ -328,13 +328,13 @@ Permite herdar configurações de outro arquivo `tsconfig.json`.
 
 Lista arquivos específicos a serem incluídos na compilação.
 
-```json
+```json showLineNumbers
 "files": ["src/main.ts", "src/polyfills.ts"]
 ```
 
 ### Exemplo
 
-```json
+```json showLineNumbers
 {
   "compilerOptions": {
     "target": "ES2020",

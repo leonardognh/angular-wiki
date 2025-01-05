@@ -17,7 +17,7 @@ JavaScript é a base para o desenvolvimento web e é essencial para entender o f
 - `let`
 - `const`
 
-```jsx
+```jsx showLineNumbers
 var nome = "Angular";
 let ativo = true;
 const ano = 2023;
@@ -39,7 +39,7 @@ const ano = 2023;
 
   Uma função declarativa é definida com a palavra-chave function e tem um nome.
 
-  ```jsx
+  ```jsx showLineNumbers
   function somar(a, b) {
     return a + b;
   }
@@ -51,7 +51,7 @@ const ano = 2023;
 
   Uma função anônima não tem nome e é geralmente atribuída a uma variável ou passada como argumento.
 
-  ```jsx
+  ```jsx showLineNumbers
   const subtrair = function (a, b) {
     return a - b;
   };
@@ -61,7 +61,7 @@ const ano = 2023;
 
   Ou usada como callback:
 
-  ```jsx
+  ```jsx showLineNumbers
   setTimeout(function () {
     console.log("Esta é uma função anônima!");
   }, 1000);
@@ -71,7 +71,7 @@ const ano = 2023;
 
   As arrow functions foram introduzidas no ES6 e têm uma sintaxe mais curta. Elas não possuem seu próprio this e arguments.
 
-  ```jsx
+  ```jsx showLineNumbers
   const multiplicar = (a, b) => a \* b;
 
   console.log(multiplicar(4, 3)); // 12
@@ -80,7 +80,7 @@ const ano = 2023;
   Quando há apenas um parâmetro:
   Você pode omitir os parênteses ao redor do parâmetro.
 
-  ```jsx
+  ```jsx showLineNumbers
   const quadrado = x => x \* x;
 
   console.log(quadrado(5)); // 25
@@ -89,7 +89,7 @@ const ano = 2023;
   Com várias linhas de código:
   Se o corpo da função for maior, use {} e return explicitamente.
 
-  ```jsx
+  ```jsx showLineNumbers
   const dividir = (a, b) => {
     if (b === 0) {
       return "Não é possível dividir por zero!";
@@ -103,7 +103,7 @@ const ano = 2023;
 
   Usada como callback:
 
-  ```jsx
+  ```jsx showLineNumbers
   setTimeout(() => {
     console.log("Esta é uma arrow function!");
   }, 1000);
@@ -111,7 +111,7 @@ const ano = 2023;
 
 ### Manipulação do DOM
 
-```jsx
+```jsx showLineNumbers
 document.getElementById("btn").addEventListener("click", () => {
   console.log("Botão clicado!");
 });

@@ -18,7 +18,7 @@ Signals são um novo modelo reativo introduzido no Angular para gerenciar estado
 
 ## Exemplo
 
-```tsx
+```tsx showLineNumbers title="contador.component.ts"
 import { Component, signal } from "@angular/core";
 
 @Component({
@@ -52,7 +52,7 @@ export class ContadorComponent {
 
 Signals permitem criar valores derivados de outros signals.
 
-```tsx
+```tsx showLineNumbers
 total = computed(() => this.quantidade() * this.preco());
 
 atualizarPreco(novoPreco: number) {
@@ -74,7 +74,7 @@ Diferenças Fundamentais
 
 - **Signals**
 
-  ```tsx
+  ```tsx showLineNumbers title="contador.component.ts"
   import { Component, signal } from "@angular/core";
 
   @Component({
@@ -95,7 +95,7 @@ Diferenças Fundamentais
 
 - **Observables**
 
-  ```tsx
+  ```tsx showLineNumbers title="contador.component.ts"
   import { Component } from "@angular/core";
   import { BehaviorSubject } from "rxjs";
 
@@ -119,7 +119,7 @@ Diferenças Fundamentais
 
 - **Signals**
 
-  ```tsx
+  ```tsx showLineNumbers title="dados.component.ts"
   import { Component, signal } from "@angular/core";
   import { HttpClient } from "@angular/common/http";
 
@@ -143,7 +143,7 @@ Diferenças Fundamentais
 
 - **Observables**
 
-  ```tsx
+  ```tsx showLineNumbers title="dados.component.ts"
   import { Component } from "@angular/core";
   import { HttpClient } from "@angular/common/http";
   import { map } from "rxjs/operators";
@@ -172,7 +172,7 @@ Diferenças Fundamentais
 
   - **Pipe**
 
-    ```tsx
+    ```tsx showLineNumbers title="capitalize.pipe.ts"
     import { Pipe, PipeTransform } from "@angular/core";
 
     @Pipe({ name: "capitalize" })
@@ -185,7 +185,7 @@ Diferenças Fundamentais
 
   - **Componente**
 
-    ```tsx
+    ```html showLineNumbers
     <p>{{ dado() | capitalize }}</p>
     ```
 
@@ -193,7 +193,7 @@ Diferenças Fundamentais
 
   O pipe funciona da mesma forma
 
-  ```tsx
+  ```html showLineNumbers
   <p *ngIf="dado$ | async as dado">{{ dado | capitalize }}</p>
   ```
 

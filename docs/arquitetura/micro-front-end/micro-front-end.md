@@ -30,9 +30,7 @@ Uma plataforma de ensino com áreas independentes para "Cursos", "Certificados" 
 
 Carrega os micro front-ends sob demanda.
 
-**`webpack.config.js`:**
-
-```jsx
+```jsx showLineNumbers title="webpack.config.js"
 module.exports = {
   plugins: [
     new ModuleFederationPlugin({

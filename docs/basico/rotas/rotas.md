@@ -12,7 +12,7 @@ Permite criar aplicações de página única (SPA), onde a navegação não reca
 
 Definir rotas no `AppRoutingModule`
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { HomeComponent } from "./home/home.component";
@@ -32,7 +32,7 @@ export class AppRoutingModule {}
 
   Configurar sub-rotas para funcionalidades específicas
 
-  ```tsx
+  ```tsx showLineNumbers title="app-routing.module.ts"
   const routes: Routes = [
     {
       path: "dashboard",
@@ -46,13 +46,13 @@ export class AppRoutingModule {}
 
   Usar parâmetros na URL.
 
-  ```tsx
+  ```tsx showLineNumbers title="app-routing.module.ts"
   const routes: Routes = [{ path: "usuario/:id", component: UsuarioComponent }];
   ```
 
   Acessar o parâmetro no componente
 
-  ```tsx
+  ```tsx showLineNumbers
   constructor(private route: ActivatedRoute) {
     const id = this.route.snapshot.paramMap.get('id');
   }
@@ -62,7 +62,7 @@ export class AppRoutingModule {}
 
 Carregar módulos sob demanda para melhorar o desempenho.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "admin",
@@ -78,7 +78,7 @@ const routes: Routes = [
 
   Controlam o acesso a rotas.
 
-  ```tsx
+  ```tsx showLineNumbers title="auth.guard.ts"
   @Injectable({ providedIn: "root" })
   export class AuthGuard implements CanActivate {
     canActivate(): boolean {
@@ -87,7 +87,7 @@ const routes: Routes = [
   }
   ```
 
-  ```tsx
+  ```tsx showLineNumbers title="app-routing.module.ts"
   const routes: Routes = [
     { path: "admin", component: AdminComponent, canActivate: [AuthGuard] },
   ];
@@ -97,7 +97,7 @@ const routes: Routes = [
 
   Pré-carregam dados antes de ativar a rota.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Injectable({ providedIn: "root" })
   export class DataResolver implements Resolve<any> {
     resolve(): Observable<any> {
@@ -132,7 +132,7 @@ Quando deseja compartilhar um layout comum entre várias rotas.
 
 Exemplo: Dashboard com seções como "Usuários", "Relatórios".
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "dashboard",
@@ -147,7 +147,7 @@ const routes: Routes = [
 
 Template do `DashboardComponent`
 
-```html
+```html showLineNumbers
 <nav>
   <a routerLink="usuarios">Usuários</a>
   <a routerLink="relatorios">Relatórios</a>
@@ -167,7 +167,7 @@ Para fornecer metadados para rotas, como título, permissões ou configurações
 
 Exemplo: Adicionar título dinâmico na aba do navegador.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "sobre",
@@ -179,7 +179,7 @@ const routes: Routes = [
 
 Acessar os dados no componente
 
-```tsx
+```tsx showLineNumbers
 constructor(private route: ActivatedRoute) {
   this.route.data.subscribe((data) => {
     console.log(data['titulo']); // Saída: "Página Sobre Nós"
@@ -199,7 +199,7 @@ Para evitar carregar telas vazias enquanto os dados são buscados.
 
 Exemplo: Carregar informações do usuário antes de renderizar o perfil.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "perfil",
@@ -211,7 +211,7 @@ const routes: Routes = [
 
 Resolver
 
-```tsx
+```tsx showLineNumbers
 @Injectable({ providedIn: "root" })
 export class UsuarioResolver implements Resolve<any> {
   constructor(private usuarioService: UsuarioService) {}
@@ -224,7 +224,7 @@ export class UsuarioResolver implements Resolve<any> {
 
 Acessar os dados no componente
 
-```tsx
+```tsx showLineNumbers
 constructor(private route: ActivatedRoute) {
   this.route.data.subscribe((data) => {
     console.log(data['usuario']);
@@ -242,7 +242,7 @@ Exemplo: Permitir acesso apenas para usuários autenticados.
 
 Para proteger rotas com lógica de autenticação ou autorização.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "admin",
@@ -254,7 +254,7 @@ const routes: Routes = [
 
 Guard
 
-```tsx
+```tsx showLineNumbers title="auth.guard.ts"
 @Injectable({ providedIn: "root" })
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService) {}
@@ -275,7 +275,7 @@ Exemplo: Avisar o usuário sobre alterações não salvas.
 
 Para evitar perda de dados ou mudanças inesperadas ao navegar.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "editar",
@@ -287,7 +287,7 @@ const routes: Routes = [
 
 Guard
 
-```tsx
+```tsx showLineNumbers title="can-deactivate.guard.ts"
 @Injectable({ providedIn: "root" })
 export class CanDeactivateGuard implements CanDeactivate<EditarComponent> {
   canDeactivate(component: EditarComponent): boolean {
@@ -312,7 +312,7 @@ Valores possíveis
 
 Exemplo: Redirecionar a rota raiz para `/home`.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [{ path: "", redirectTo: "/home", pathMatch: "full" }];
 ```
 
@@ -326,7 +326,7 @@ Usado frequentemente com `pathMatch: 'full'`.
 
 Para redirecionar rotas não encontradas ou configurar uma página inicial.
 
-```tsx
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   { path: "", redirectTo: "/inicio", pathMatch: "full" },
   { path: "**", redirectTo: "/erro" },

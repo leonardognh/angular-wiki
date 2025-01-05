@@ -20,7 +20,7 @@ As diretivas de atributo são usadas para modificar a aparência ou o comportame
 
   Define classes CSS dinamicamente.
 
-  ```html
+  ```html showLineNumbers
   <div [ngClass]="{ 'ativo': isAtivo, 'inativo': !isAtivo }"></div>
   ```
 
@@ -28,14 +28,13 @@ As diretivas de atributo são usadas para modificar a aparência ou o comportame
 
   Define estilos CSS dinamicamente.
 
-  ```html
+  ```html showLineNumbers
   <div [ngStyle]="{ color: isAtivo ? 'green' : 'red' }"></div>
   ```
 
 ### Diretiva Personalizada
 
-```tsx
-// text-color.directive.ts
+```tsx showLineNumbers title="text-color.directive.ts"
 import { Directive, ElementRef, Input, Renderer2, OnInit } from "@angular/core";
 
 @Directive({
@@ -52,7 +51,7 @@ export class TextColorDirective implements OnInit {
 }
 ```
 
-```html
+```html showLineNumbers
 <p appTextColor="blue">Este texto ficará azul.</p>
 <p appTextColor="red">Este texto ficará vermelho.</p>
 ```
@@ -65,7 +64,7 @@ As diretivas estruturais alteram a estrutura do DOM, adicionando, removendo ou r
 
   Condicionalmente renderiza um elemento.
 
-  ```html
+  ```html showLineNumbers
   <p *ngIf="isAtivo">Este texto é exibido se isAtivo for verdadeiro.</p>
   ```
 
@@ -73,7 +72,7 @@ As diretivas estruturais alteram a estrutura do DOM, adicionando, removendo ou r
 
   Itera sobre uma lista e renderiza elementos.
 
-  ```html
+  ```html showLineNumbers
   <ul>
     <li *ngFor="let item of itens">{{ item }}</li>
   </ul>
@@ -81,8 +80,7 @@ As diretivas estruturais alteram a estrutura do DOM, adicionando, removendo ou r
 
 ### Diretiva Personalizada
 
-```tsx
-// show-if.directive.ts
+```tsx showLineNumbers title="show-if.directive.ts"
 import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
 
 @Directive({
@@ -104,7 +102,7 @@ export class ShowIfDirective {
 }
 ```
 
-```html
+```html showLineNumbers
 <div *appShowIf="true">Este conteúdo será exibido.</div>
 <div *appShowIf="false">Este conteúdo será ocultado.</div>
 ```
@@ -113,8 +111,7 @@ export class ShowIfDirective {
 
 As diretivas de componente são componentes Angular que possuem um selector e podem ser usados como elementos ou atributos no DOM. Elas contêm tanto lógica quanto uma interface de usuário associada.
 
-```tsx
-// alert-box.component.ts
+```tsx showLineNumbers title="alert-box.component.ts"
 import { Component, Input } from "@angular/core";
 
 @Component({
@@ -149,7 +146,7 @@ export class AlertBoxComponent {
 }
 ```
 
-```hmtl
+```html showLineNumbers
 <app-alert-box title="Sucesso" type="success">
   A operação foi concluída com êxito!
 </app-alert-box>
@@ -167,7 +164,7 @@ O Angular fornece várias diretivas prontas para uso
 
   `ngIf`, `ngFor`, `ngSwitch`.
 
-  ```html
+  ```html showLineNumbers
   <div [ngSwitch]="status">
     <p *ngSwitchCase="'ativo'">Ativo</p>
     <p *ngSwitchCase="'inativo'">Inativo</p>
@@ -197,7 +194,7 @@ No Angular, **não é permitido usar duas diretivas estruturais no mesmo element
 
 - Exemplo Inválido
 
-  ```html
+  ```html showLineNumbers
   <div *ngIf="isLoggedIn" *ngFor="let user of users">{{ user.name }}</div>
   ```
 
@@ -211,7 +208,7 @@ No Angular, **não é permitido usar duas diretivas estruturais no mesmo element
 
   Use um elemento auxiliar, como `<ng-container>`, para separar as diretivas.
 
-  ```html
+  ```html showLineNumbers
   <ng-container *ngIf="isLoggedIn">
     <div *ngFor="let user of users">{{ user.name }}</div>
   </ng-container>
@@ -229,7 +226,7 @@ O Angular oferece várias diretivas prontas como `*ngIf`, `*ngFor`, `[ngClass]`,
 
 - Em vez de criar uma diretiva personalizada para aplicar classes dinamicamente, use [ngClass].
 
-  ```html
+  ```html showLineNumbers
   <div [ngClass]="{ 'ativo': isActive, 'inativo': !isActive }">
     Este texto usa ngClass.
   </div>
@@ -243,7 +240,7 @@ Diretivas devem ser pequenas e focadas em uma única responsabilidade. Para lóg
 
   Crie um serviço para encapsular lógica reutilizável e injete-o na diretiva.
 
-  ```tsx
+  ```tsx showLineNumbers title="dynamic-theme.directive.ts"
   import { Directive, ElementRef, Renderer2, OnInit } from "@angular/core";
   import { ThemeService } from "./theme.service";
 

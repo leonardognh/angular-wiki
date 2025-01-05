@@ -22,10 +22,10 @@ cd my-workspace
 ### Criar a Biblioteca
 
 ```bash
-ng generate library my-library
+ng generate library custom-lib
 ```
 
-Isso cria uma pasta `projects/my-library` contendo os arquivos da biblioteca.
+Isso cria uma pasta `projects/custom-lib` contendo os arquivos da biblioteca.
 
 ## Estrutura Básica da Biblioteca
 
@@ -37,8 +37,7 @@ A biblioteca gerada contém:
 
 ### Adicionar um Componente
 
-```tsx
-// projects/my-library/src/lib/custom-button/custom-button.component.ts
+```tsx showLineNumbers title="lib/custom-button/custom-button.component.ts"
 import { Component, Input } from "@angular/core";
 
 @Component({
@@ -61,8 +60,8 @@ export class CustomButtonComponent {
 
 Registrar no `public-api.ts`.
 
-```tsx
-export \* from './lib/custom-button/custom-button.component';
+```tsx showLineNumbers
+export * from "./lib/custom-button/custom-button.component";
 ```
 
 ## Testando a Biblioteca no Projeto
@@ -70,20 +69,20 @@ export \* from './lib/custom-button/custom-button.component';
 Para usar a biblioteca localmente antes de publicá-la.
 
 ```bash
-ng build my-library
+ng build custom-lib
 ```
 
 Instale a biblioteca compilada em outro projeto.
 
 ```bash
-npm install dist/my-library
+npm install dist/custom-lib
 ```
 
 ## Tornando a Biblioteca Customizável
 
 Você pode usar Tokens de Injeção ou Inputs para permitir configurações.
 
-```tsx
+```tsx showLineNumbers title="lib.ts"
 import { InjectionToken } from "@angular/core";
 
 export const LIB_CONFIG = new InjectionToken<LibConfig>("LIB_CONFIG");
@@ -93,7 +92,7 @@ export interface LibConfig {
 }
 ```
 
-```tsx
+```tsx showLineNumbers title="custom-button.service.ts"
 import { Inject, Injectable } from "@angular/core";
 import { LIB_CONFIG, LibConfig } from "./lib.config";
 
@@ -109,7 +108,7 @@ export class CustomButtonService {
 }
 ```
 
-```tsx
+```tsx showLineNumbers
 providers: [{ provide: LIB_CONFIG, useValue: { defaultColor: "green" } }];
 ```
 
@@ -117,18 +116,18 @@ providers: [{ provide: LIB_CONFIG, useValue: { defaultColor: "green" } }];
 
 ### Configurar o `package.json`
 
-Atualize o `projects/my-library/package.json`.
+Atualize o `projects/custom-lib/package.json`.
 
-```json
+```json showLineNumbers
 {
-  "name": "my-library",
+  "name": "custom-lib",
   "version": "1.0.0",
   "author": "Seu Nome",
   "license": "MIT",
-  "main": "bundles/my-library.umd.js",
-  "module": "fesm2015/my-library.js",
-  "es2015": "fesm2015/my-library.js",
-  "typings": "my-library.d.ts",
+  "main": "bundles/custom-lib.umd.js",
+  "module": "fesm2015/custom-lib.js",
+  "es2015": "fesm2015/custom-lib.js",
+  "typings": "custom-lib.d.ts",
   "peerDependencies": {
     "@angular/common": "^12.0.0",
     "@angular/core": "^12.0.0"
@@ -139,7 +138,7 @@ Atualize o `projects/my-library/package.json`.
 ### Compilar a Biblioteca
 
 ```bash
-ng build my-library
+ng build custom-lib
 ```
 
 ### Publicar no NPM
@@ -149,7 +148,7 @@ npm login
 ```
 
 ```bash
-cd dist/my-library
+cd dist/custom-lib
 npm publish
 ```
 
@@ -158,19 +157,19 @@ npm publish
 Após publicada, você pode instalá-la em qualquer projeto Angular.
 
 ```bash
-npm install my-library
+npm install custom-lib
 ```
 
-```tsx
-import { MyLibraryModule } from "my-library";
+```tsx showLineNumbers title="app.module.ts"
+import { CustomLibraryModule } from "custom-lib";
 
 @NgModule({
-  imports: [MyLibraryModule],
+  imports: [CustomLibraryModule],
 })
 export class AppModule {}
 ```
 
-```html
+```html showLineNumbers
 <lib-custom-button label="Enviar" color="red"></lib-custom-button>
 ```
 

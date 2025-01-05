@@ -22,8 +22,8 @@ No Angular, Observables são uma forma de lidar com dados assíncronos. Eles for
 
 ### Simulação de um Observable Simples
 
-```tsx
-class MyObservable {
+```tsx showLineNumbers title="custom-observable.ts"
+class CustomObservable {
   constructor(private producer: (observer: any) => void) {}
 
   subscribe(observer: { next: (value: any) => void; complete?: () => void }) {
@@ -32,7 +32,7 @@ class MyObservable {
 }
 
 // Criando um Observable que emite números de 1 a 5
-const observable = new MyObservable((observer) => {
+const observable = new CustomObservable((observer) => {
   let count = 1;
 
   const interval = setInterval(() => {

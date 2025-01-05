@@ -74,28 +74,24 @@ Para saber mais, acesse [WebPack](https://v5.angular.io/guide/webpack).
 
 ## Configuração Básica do Webpack
 
-- **Arquivo `webpack.config.js`**
+```jsx showLineNumbers title="webpack.config.js"
+const path = require("path");
 
-  ```jsx
-  const path = require("path");
+module.exports = {
+  entry: "./src/index.js", // Arquivo de entrada
+  output: {
+    path: path.resolve(__dirname, "dist"), // Diretório de saída
+    filename: "bundle.js", // Nome do bundle gerado
+  },
+  mode: "development", // Modo de desenvolvimento
+};
+```
 
-  module.exports = {
-    entry: "./src/index.js", // Arquivo de entrada
-    output: {
-      path: path.resolve(__dirname, "dist"), // Diretório de saída
-      filename: "bundle.js", // Nome do bundle gerado
-    },
-    mode: "development", // Modo de desenvolvimento
-  };
-  ```
-
-- **Script no `package.json`**
-
-  ```json
-  "scripts": {
-    "build": "webpack"
-  }
-  ```
+```json showLineNumbers title="package.json"
+"scripts": {
+  "build": "webpack"
+}
+```
 
 - **Comando para Build**
 
@@ -117,7 +113,7 @@ Loaders permitem que o Webpack processe arquivos que não sejam JavaScript, como
 
 - **Atualize `webpack.config.js`**
 
-  ```jsx
+  ```jsx showLineNumbers title="webpack.config.js"
   module.exports = {
     module: {
       rules: [
@@ -132,7 +128,7 @@ Loaders permitem que o Webpack processe arquivos que não sejam JavaScript, como
 
 - **Use o CSS no seu projeto**
 
-  ```jsx
+  ```jsx showLineNumbers
   import "./styles.css";
   ```
 
@@ -150,7 +146,7 @@ Plugins adicionam funcionalidades extras ao Webpack, como geração de HTML ou m
 
 - **Atualize `webpack.config.js`**
 
-  ```jsx
+  ```jsx showLineNumbers title="webpack.config.js"
   const HtmlWebpackPlugin = require("html-webpack-plugin");
 
   module.exports = {
@@ -182,7 +178,7 @@ Permite atualizar partes do código em tempo real, sem recarregar a página inte
 
 - **Atualize `webpack.config.js`**
 
-  ```jsx
+  ```jsx showLineNumbers title="webpack.config.js"
   module.exports = {
     devServer: {
       contentBase: "./dist",
@@ -193,7 +189,7 @@ Permite atualizar partes do código em tempo real, sem recarregar a página inte
 
 - **Adicione o script no `package.json`**
 
-  ```json
+  ```json showLineNumbers title="package.json"
   "scripts": {
     "start": "webpack serve"
   }
@@ -211,7 +207,7 @@ Permite atualizar partes do código em tempo real, sem recarregar a página inte
 
   Inclui mapas de origem (source maps) para facilitar o debug.
 
-  ```jsx
+  ```jsx showLineNumbers
   mode: 'development',
   devtool: 'source-map',
   ```
@@ -220,6 +216,6 @@ Permite atualizar partes do código em tempo real, sem recarregar a página inte
 
   Gera arquivos otimizados e minificados.
 
-  ```jsx
+  ```jsx showLineNumbers
   mode: 'production',
   ```

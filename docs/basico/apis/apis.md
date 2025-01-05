@@ -8,7 +8,7 @@ sidebar_position: 12
 
 O Angular utiliza o módulo `HttpClient` para realizar requisições HTTP. Permite consumir APIs RESTful para enviar e receber dados de um servidor. O `HttpClient` retorna **Observables**, facilitando manipulação assíncrona e reativa.
 
-```tsx
+```tsx showLineNumbers
 this.http.get("https://api.exemplo.com/dados");
 ```
 
@@ -16,7 +16,7 @@ this.http.get("https://api.exemplo.com/dados");
 
 É necessário importar o módulo `HttpClientModule` no `AppModule`.
 
-```tsx
+```tsx showLineNumbers title="app.module.ts"
 import { HttpClientModule } from "@angular/common/http";
 @NgModule({
   imports: [HttpClientModule],
@@ -32,7 +32,7 @@ export class AppModule {}
 - **PATCH:** Atualizar parcialmente os dados.
 - **DELETE:** Excluir dados.
 
-```tsx
+```tsx showLineNumbers title="api.service.ts"
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
@@ -76,16 +76,16 @@ export class ApiService {
 
 Utlização
 
-```tsx
+```tsx showLineNumbers title="example.component.ts"
 import { Component } from "@angular/core";
 import { ApiService } from "./api.service";
 
 @Component({
-  selector: "app-exemplo",
-  templateUrl: "./exemplo.component.html",
-  styleUrls: ["./exemplo.component.css"],
+  selector: "app-example",
+  templateUrl: "./example.component.html",
+  styleUrls: ["./example.component.css"],
 })
-export class ExemploComponent {
+export class ExampleComponent {
   constructor(private apiService: ApiService) {}
 
   // GET sem parâmetros
@@ -187,7 +187,7 @@ export class ExemploComponent {
 
   **Body**
 
-  ```json
+  ```json showLineNumbers
   {
     "nome": "Novo Item",
     "ativo": true
@@ -204,7 +204,7 @@ export class ExemploComponent {
 
   **Body**
 
-  ```json
+  ```json showLineNumbers
   {
     "nome": "Item Atualizado",
     "ativo": false
@@ -221,7 +221,7 @@ export class ExemploComponent {
 
   **Body**
 
-  ```json
+  ```json showLineNumbers
   {
     "ativo": true
   }
@@ -243,7 +243,7 @@ export class ExemploComponent {
 
 Usar o operador `catchError` do RxJS para capturar erros. O `HttpErrorResponse` contém informações do erro.
 
-```tsx
+```tsx showLineNumbers
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 

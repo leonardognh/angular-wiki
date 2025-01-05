@@ -18,7 +18,7 @@ Para saber mais, acesse [Angular CDK](https://material.angular.io/cdk/categories
 
 Fornece ferramentas para melhorar a acessibilidade (a11y) da aplicação.
 
-```tsx
+```tsx showLineNumbers title="example.component.ts"
 import { FocusMonitor } from "@angular/cdk/a11y";
 import { Component, ElementRef, OnDestroy } from "@angular/core";
 
@@ -43,13 +43,13 @@ export class ExampleComponent implements OnDestroy {
 
 Permite implementar funcionalidades de arrastar e soltar sem dependências externas.
 
-```html
+```html showLineNumbers
 <div cdkDropList (cdkDropListDropped)="soltar($event)">
   <div *ngFor="let item of itens" cdkDrag>{{ item }}</div>
 </div>
 ```
 
-```tsx
+```tsx showLineNumbers title="drag-drop.component.ts"
 import { Component } from "@angular/core";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
@@ -70,7 +70,7 @@ export class DragDropComponent {
 
 Fornece uma base para criar elementos como menus, modais e tooltips.
 
-```tsx
+```tsx showLineNumbers title="overlay.component.ts"
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Component } from "@angular/core";
 
@@ -96,7 +96,7 @@ export class OverlayComponent {
 
 Permite renderizar conteúdo dinamicamente em diferentes lugares no DOM.
 
-```html
+```html showLineNumbers
 <ng-template #templatePortal>
   <p>Conteúdo do Portal</p>
 </ng-template>
@@ -108,7 +108,7 @@ Permite renderizar conteúdo dinamicamente em diferentes lugares no DOM.
 
 Oferece serviços e ferramentas para criar layouts responsivos.
 
-```tsx
+```tsx showLineNumbers title="layout.component.ts"
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 
 @Component({
@@ -132,13 +132,13 @@ export class LayoutComponent {
 
 Gerencia rolagem e listas virtuais para desempenho otimizado.
 
-```html
+```html showLineNumbers
 <cdk-virtual-scroll-viewport itemSize="50" style="height: 200px;">
   <div *cdkVirtualFor="let item of itens">{{ item }}</div>
 </cdk-virtual-scroll-viewport>
 ```
 
-```tsx
+```tsx showLineNumbers
 itens = Array.from({ length: 1000 }).map((_, i) => `Item #${i}`);
 ```
 
