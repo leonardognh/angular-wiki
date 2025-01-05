@@ -8,7 +8,7 @@ sidebar_position: 8
 
 Serviços são classes usadas para encapsular lógica compartilhada entre componentes, como manipulação de dados, chamadas HTTP ou armazenamento de estado. São projetados para serem reutilizáveis e desacoplados dos componentes.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -25,7 +25,7 @@ export class UserService {
 
 É um padrão de design que permite a criação de dependências fora de uma classe e sua injeção na classe conforme necessário. No Angular, o **Injetor** gerencia as instâncias e o ciclo de vida das dependências.
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { UserService } from "./user.service";
 
@@ -50,7 +50,7 @@ export class UserListComponent {
 
   O serviço é singleton e acessível em toda a aplicação.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Injectable({
     providedIn: "root",
   })
@@ -61,7 +61,7 @@ export class UserListComponent {
 
   O serviço é singleton dentro do módulo onde foi declarado.
 
-  ```tsx
+  ```tsx showLineNumbers
   @NgModule({
     providers: [AuthService],
   })
@@ -72,7 +72,7 @@ export class UserListComponent {
 
   Cada instância do componente tem seu próprio serviço.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Component({
     providers: [AuthService],
   })
@@ -91,7 +91,7 @@ export class UserListComponent {
 
 Serviços declarados com `providedIn: 'root'` são instanciados uma única vez e permanecem vivos enquanto a aplicação está ativa. Evita duplicação de lógica e melhora o desempenho.
 
-```tsx
+```tsx showLineNumbers
 @Injectable({
   providedIn: "root",
 })
@@ -116,7 +116,7 @@ export class AuthService {
 
 Escopos modulares ajudam a limitar a instância do serviço a um módulo específico. Funcionalidades como autenticação ou configurações específicas de uma área.
 
-```tsx
+```tsx showLineNumbers
 @NgModule({
   providers: [AdminService],
 })
@@ -127,7 +127,7 @@ export class AdminModule {}
 
 Cada componente recebe sua própria instância do serviço. Útil para armazenar estados locais ou dados temporários.
 
-```tsx
+```tsx showLineNumbers
 @Component({
   providers: [SessionService],
 })

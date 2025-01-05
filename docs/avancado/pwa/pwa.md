@@ -52,7 +52,7 @@ src/
 
 Define como o aplicativo será exibido ao ser instalado.
 
-```json
+```json showLineNumbers
 {
   "name": "Meu PWA",
   "short_name": "PWA",
@@ -81,7 +81,7 @@ Define como o aplicativo será exibido ao ser instalado.
 
 Configura como os recursos são armazenados no cache.
 
-```json
+```json showLineNumbers
 {
   "index": "/index.html",
   "assetGroups": [
@@ -132,7 +132,7 @@ O service worker verifica automaticamente por atualizações.
 
 Use o `SwUpdate` para detectar e aplicar atualizações
 
-```tsx
+```tsx showLineNumbers
 import { SwUpdate } from "@angular/service-worker";
 import { Component } from "@angular/core";
 
@@ -185,7 +185,7 @@ O navegador exibe a notificação usando o **Service Worker**.
 
 O navegador solicita permissão ao usuário para exibir notificações.
 
-```tsx
+```tsx showLineNumbers
 Notification.requestPermission().then((status) => {
   if (status === "granted") {
     console.log("Permissão concedida!");
@@ -205,7 +205,7 @@ Notification.requestPermission().then((status) => {
 
 - Configure o Firebase no módulo principal
 
-  ```tsx
+  ```tsx showLineNumbers
   import { NgModule } from "@angular/core";
   import { provideFirebaseApp, initializeApp } from "@angular/fire/app";
   import { provideMessaging, getMessaging } from "@angular/fire/messaging";
@@ -231,7 +231,7 @@ Notification.requestPermission().then((status) => {
 
 **Service Worker `firebase-messaging-sw.js`**
 
-```jsx
+```jsx showLineNumbers
 const firebaseConfig = {
   apiKey: "sua-api-key",
   authDomain: "seu-dominio.firebaseapp.com",
@@ -257,7 +257,7 @@ Certifique-se de que o arquivo esteja no diretório `src/` ou seja servido pela 
 
 ### Registrar o Service Worker no Aplicativo
 
-```tsx
+```tsx showLineNumbers
 navigator.serviceWorker
   .register("/firebase-messaging-sw.js")
   .then((registration) => {
@@ -291,7 +291,7 @@ navigator.serviceWorker
 
 Use o `showNotification` no **Service Worker** para personalizar notificações.
 
-```jsx
+```jsx showLineNumbers
 self.registration.showNotification("Título Personalizado", {
   body: "Esta é uma mensagem personalizada.",
   icon: "/assets/icon.png",
@@ -317,7 +317,7 @@ self.addEventListener("notificationclick", (event) => {
 
 Mostre mensagens para o usuário caso a internet esteja indisponível.
 
-```tsx
+```tsx showLineNumbers
 window.addEventListener("offline", () => {
   alert("Você está offline.");
 });

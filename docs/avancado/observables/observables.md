@@ -22,7 +22,7 @@ No Angular, Observables são uma forma de lidar com dados assíncronos. Eles for
 
 ### Simulação de um Observable Simples
 
-```tsx
+```tsx showLineNumbers
 class MyObservable {
   constructor(private producer: (observer: any) => void) {}
 

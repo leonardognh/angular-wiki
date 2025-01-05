@@ -30,7 +30,7 @@ const config: Config = {
     defaultLocale: "en",
     locales: ["en"],
   },
-
+  themes: ["@docusaurus/theme-live-codeblock"],
   presets: [
     [
       "classic",
@@ -48,7 +48,13 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
+    liveCodeBlock: {
+      /**
+       * The position of the live playground, above or under the editor
+       * Possible values: "top" | "bottom"
+       */
+      playgroundPosition: "bottom",
+    },
     image: "img/docusaurus-social-card.jpg",
     navbar: {
       title: "Angular Wiki",

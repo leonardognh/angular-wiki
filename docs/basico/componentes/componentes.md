@@ -14,7 +14,7 @@ Componentes são a base da construção de interfaces no Angular. Cada component
 
 - **Estilo:** Gerencia o design (CSS/SCSS).
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 
 @Component({

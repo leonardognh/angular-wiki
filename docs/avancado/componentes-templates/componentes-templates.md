@@ -12,7 +12,7 @@ Permite passar dados do componente pai para o componente filho.
 
 Usa **Property Binding** no template.
 
-```tsx
+```tsx showLineNumbers
 // componente-filho
 import { Component, Input } from "@angular/core";
 
@@ -25,7 +25,7 @@ export class FilhoComponent {
 }
 ```
 
-```html
+```html showLineNumbers
 <!-- componente-pai -->
 <app-filho [mensagem]="'Olá, filho!'"></app-filho>
 ```
@@ -36,7 +36,7 @@ Permite que o componente filho envie eventos ou dados para o componente pai.
 
 Usa **Event Binding**.
 
-```tsx
+```tsx showLineNumbers
 // componente-filho
 import { Component, Output, EventEmitter } from "@angular/core";
 
@@ -53,12 +53,12 @@ export class FilhoComponent {
 }
 ```
 
-```html
+```html showLineNumbers
 <!-- componente-pai -->
 <app-filho (mensagemEnviada)="receberMensagem($event)"></app-filho>
 ```
 
-```tsx
+```tsx showLineNumbers
 // componente-pai.ts
 receberMensagem(mensagem: string) {
   console.log(mensagem);
@@ -73,7 +73,7 @@ Acessa elementos DOM ou filhos do mesmo componente.
 
 Útil para manipular elementos ou instâncias de componentes.
 
-```tsx
+```tsx showLineNumbers
 import { Component, ViewChild, ElementRef } from "@angular/core";
 
 @Component({
@@ -95,7 +95,7 @@ export class ExemploComponent {
 
 Obtém um **QueryList** de vários elementos ou componentes filhos.
 
-```tsx
+```tsx showLineNumbers
 import { Component, QueryList, ViewChildren, ElementRef } from "@angular/core";
 
 @Component({
@@ -118,7 +118,7 @@ export class ExemploComponent {
 
 Acessa um único elemento ou componente filho **projetado no slot de conteúdo**.
 
-```tsx
+```tsx showLineNumbers
 // componente-filho
 import { Component, ContentChild, ElementRef } from "@angular/core";
 
@@ -135,7 +135,7 @@ export class FilhoComponent {
 }
 ```
 
-```html
+```html showLineNumbers
 <!-- componente-pai -->
 <app-filho>
   <p #projetado>Conteúdo Projetado</p>
@@ -146,7 +146,7 @@ export class FilhoComponent {
 
 Obtém um **QueryList** de vários elementos projetados no conteúdo.
 
-```tsx
+```tsx showLineNumbers
 import {
   Component,
   ContentChildren,
@@ -169,7 +169,7 @@ export class FilhoComponent {
 }
 ```
 
-```html
+```html showLineNumbers
 <!-- componente-pai -->
 <app-filho>
   <p #projetado>Item 1</p>
@@ -189,7 +189,7 @@ export class FilhoComponent {
 
   Verifica mudanças apenas quando os inputs ou eventos do componente são alterados.
 
-```tsx
+```tsx showLineNumbers
 import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
@@ -218,7 +218,7 @@ export class FilhoComponent {
 
   Aplica estilos globalmente.
 
-```tsx
+```tsx showLineNumbers
 import { Component, ViewEncapsulation } from "@angular/core";
 
 @Component({
@@ -255,7 +255,7 @@ export class ExemploComponent {}
 
 O `<ng-container>` é um elemento auxiliar que não gera um nó DOM no resultado final. Ele é usado para agrupar elementos ou aplicar diretivas estruturais sem adicionar novos nós ao DOM, mantendo a estrutura limpa.
 
-```html
+```html showLineNumbers
 <!-- Uso com *ngIf -->
 <ng-container *ngIf="isLoggedIn">
   <p>Bem-vindo, usuário!</p>
@@ -265,7 +265,7 @@ O `<ng-container>` é um elemento auxiliar que não gera um nó DOM no resultado
 
 No exemplo acima, o conteúdo dentro do `<ng-container>` será exibido somente se `isLoggedIn` for verdadeiro, mas o `<ng-container>` em si não aparecerá no DOM final.
 
-```html
+```html showLineNumbers
 <ng-container *ngIf="isLoggedIn">
   <div *ngFor="let user of users">{{ user.name }}</div>
 </ng-container>
@@ -277,7 +277,7 @@ Aqui, o `<ng-container>` agrupa o `*ngIf` e o `*ngFor`, evitando conflitos, já 
 
 O `<ng-content>` é usado em componentes para projetar conteúdo dinâmico. Ele permite que desenvolvedores insiram elementos personalizados nos templates.
 
-```html
+```html showLineNumbers
 <!-- no componente pai -->
 <app-card>
   <h3>Título Personalizado</h3>
@@ -285,7 +285,7 @@ O `<ng-content>` é usado em componentes para projetar conteúdo dinâmico. Ele 
 </app-card>
 ```
 
-```html
+```html showLineNumbers
 <!-- template do app-card -->
 <div class="card">
   <ng-content></ng-content>
@@ -296,7 +296,7 @@ O `<ng-content>` é usado em componentes para projetar conteúdo dinâmico. Ele 
 
 O `<ng-template>` é usado para definir blocos de templates que podem ser renderizados dinamicamente ou reutilizados.
 
-```html
+```html showLineNumbers
 <ng-template #templateRef>
   <p>Este é um conteúdo dinâmico!</p>
 </ng-template>

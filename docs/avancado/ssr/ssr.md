@@ -55,7 +55,7 @@ meu-projeto/
 
 **server.ts (configuração básica)**
 
-```tsx
+```tsx showLineNumbers
 import "zone.js/node";
 import { ngExpressEngine } from "@nguniversal/express-engine";
 import * as express from "express";
@@ -99,7 +99,7 @@ app.listen(4000, () => {
 
   Adiciona um `builder` específico para SSR no `angular.json`.
 
-  ```json
+  ```json showLineNumbers
   "server": {
     "builder": "@angular-devkit/build-angular:server",
     "options": {
@@ -116,7 +116,7 @@ app.listen(4000, () => {
 
 No `AppComponent`
 
-```tsx
+```tsx showLineNumbers
 import { Component, Inject, PLATFORM_ID } from "@angular/core";
 import { isPlatformServer } from "@angular/common";
 
@@ -140,7 +140,7 @@ export class AppComponent {
 
 Usar o `Meta` e o `Title` para manipular metadados.
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { Meta, Title } from "@angular/platform-browser";
 
@@ -169,7 +169,7 @@ export class AppComponent {
 
   Transfira dados do servidor para o cliente para evitar reprocessamentos.
 
-  ```tsx
+  ```tsx showLineNumbers
   import { TransferState, makeStateKey } from '@angular/platform-browser';
 
   const DADOS_KEY = makeStateKey<string>('dados');

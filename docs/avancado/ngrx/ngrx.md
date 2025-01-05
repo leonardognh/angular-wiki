@@ -58,7 +58,7 @@ npm install @ngrx/store @ngrx/effects @ngrx/store-devtools
 
 ### Configuração do `StoreModule`
 
-```tsx
+```tsx showLineNumbers
 import { NgModule } from "@angular/core";
 import { StoreModule } from "@ngrx/store";
 import { reducers } from "./store/reducers";
@@ -75,7 +75,7 @@ export class AppModule {}
 
 Representam eventos que descrevem mudanças de estado.
 
-```tsx
+```tsx showLineNumbers
 import { createAction, props } from "@ngrx/store";
 
 export const carregarUsuario = createAction(
@@ -92,7 +92,7 @@ export const usuarioCarregado = createAction(
 
 Funções puras que especificam como o estado muda com base nas ações.
 
-```tsx
+```tsx showLineNumbers
 import { createReducer, on } from "@ngrx/store";
 import { carregarUsuario, usuarioCarregado } from "./usuario.actions";
 
@@ -113,7 +113,7 @@ export const usuarioReducer = createReducer(
 
 Funções que recuperam partes específicas do estado.
 
-```tsx
+```tsx showLineNumbers
 import { createSelector } from "@ngrx/store";
 
 export const selectUsuario = (state: any) => state.usuario;
@@ -127,7 +127,7 @@ export const selectCarregando = createSelector(
 
 Gerencia efeitos colaterais, como chamadas HTTP, com base em ações disparadas.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { map, mergeMap } from "rxjs/operators";
@@ -160,7 +160,7 @@ Gerenciar o estado do usuário autenticado.
 
 ### Actions
 
-```tsx
+```tsx showLineNumbers
 import { createAction, props } from "@ngrx/store";
 
 export const login = createAction("[Auth] Login", props<{ usuario: any }>());
@@ -169,7 +169,7 @@ export const logout = createAction("[Auth] Logout");
 
 ### Reducer
 
-```tsx
+```tsx showLineNumbers
 import { createReducer, on } from "@ngrx/store";
 import { login, logout } from "./auth.actions";
 
@@ -184,13 +184,13 @@ export const authReducer = createReducer(
 
 ### Selector
 
-```tsx
+```tsx showLineNumbers
 export const selectUsuario = (state: any) => state.auth.usuario;
 ```
 
 ### Componente
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { login, logout } from "./store/auth.actions";
@@ -224,7 +224,7 @@ O estado é gerenciado localmente, usando um serviço que mantém os dados compa
 
 ### Serviço de Estado
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
@@ -250,7 +250,7 @@ export class CarrinhoService {
 
 ### Componente: Adicionar ao Carrinho
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { CarrinhoService } from "./carrinho.service";
 
@@ -269,7 +269,7 @@ export class AdicionarItemComponent {
 
 ### Componente: Exibir Carrinho
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { CarrinhoService } from "./carrinho.service";
 
@@ -309,7 +309,7 @@ npm install @ngrx/store
 
 ### Actions
 
-```tsx
+```tsx showLineNumbers
 import { createAction, props } from "@ngrx/store";
 
 export const adicionarItem = createAction(
@@ -325,7 +325,7 @@ export const removerItem = createAction(
 
 ### Reducer
 
-```tsx
+```tsx showLineNumbers
 import { createReducer, on } from "@ngrx/store";
 import { adicionarItem, removerItem } from "./carrinho.actions";
 
@@ -340,7 +340,7 @@ export const carrinhoReducer = createReducer(
 
 ### Selector
 
-```tsx
+```tsx showLineNumbers
 import { createSelector } from "@ngrx/store";
 
 export const selectCarrinho = (state: any) => state.carrinho;
@@ -353,7 +353,7 @@ export const selectItens = createSelector(
 
 ### Configuração do StoreModule
 
-```tsx
+```tsx showLineNumbers
 import { NgModule } from "@angular/core";
 import { StoreModule } from "@ngrx/store";
 import { carrinhoReducer } from "./carrinho.reducer";
@@ -366,7 +366,7 @@ export class AppModule {}
 
 ### Componente: Adicionar ao Carrinho
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { adicionarItem } from "./carrinho.actions";
@@ -388,7 +388,7 @@ export class AdicionarItemComponent {
 
 ### Componente: Exibir Carrinho
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { selectItens } from "./carrinho.selectors";

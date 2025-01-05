@@ -16,7 +16,7 @@ Dados que não mudam com frequência, como listas de produtos ou configurações
 
 Armazene os dados em um serviço Angular para reutilizá-los.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, of } from "rxjs";
@@ -48,7 +48,7 @@ export class CacheService {
 
 Consumindo o Serviço
 
-```tsx
+```tsx showLineNumbers
 @Component({
   selector: "app-example",
   template: `<p>Veja os dados no console</p>`,
@@ -68,7 +68,7 @@ export class ExampleComponent {
 
 Use um HTTP Interceptor para implementar cache global para requisições HTTP.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import {
   HttpEvent,
@@ -108,7 +108,7 @@ export class CacheInterceptor implements HttpInterceptor {
 
 Registrar no AppModule
 
-```tsx
+```tsx showLineNumbers
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { CacheInterceptor } from "./cache.interceptor";
 
@@ -124,7 +124,7 @@ export class AppModule {}
 
 Use bibliotecas como RxJS operators ou Apollo Cache (para GraphQL).
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { shareReplay } from "rxjs/operators";
@@ -149,7 +149,7 @@ export class RxjsCacheService {
 
 Para evitar dados desatualizados, implemente a expiração do cache.
 
-```tsx
+```tsx showLineNumbers
 export class CacheService {
   private cache = new Map<string, { data: any; expiry: number }>();
 

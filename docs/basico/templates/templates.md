@@ -10,7 +10,7 @@ Templates definem a interface do componente usando HTML e diretivas do Angular. 
 
 Template inline
 
-```tsx
+```tsx showLineNumbers
 // arquivo: header.component.ts
 @Component({
   selector: "app-header",
@@ -28,7 +28,7 @@ export class HeaderComponent {
 
 Template externo
 
-```html
+```html showLineNumbers
 <!-- arquivo: header.component.html -->
 <header>
   <h1>{{ titulo }}</h1>
@@ -41,7 +41,7 @@ Diretivas são instruções para manipular o DOM.
 
 - **Estruturais:** Alteram o layout (ex.: `ngIf`, `ngFor`).
 
-  ```html
+  ```html showLineNumbers
   <p *ngIf="mostrarTexto">Texto visível</p>
   <ul>
     <li *ngFor="let item of itens">{{ item }}</li>
@@ -50,7 +50,7 @@ Diretivas são instruções para manipular o DOM.
 
 - **Atributos:** Alteram a aparência ou comportamento (ex.: `[ngClass]`, `[ngStyle]`).
 
-  ```html
+  ```html showLineNumbers
   <button [ngClass]="{ 'ativo': estaAtivo }">Clique aqui</button>
   ```
 
@@ -64,7 +64,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **`ngOnDestroy`:** Limpeza antes de destruir o componente.
 
-  ```tsx
+  ```tsx showLineNumbers
   @Component({ ... })
   export class MeuComponente implements OnInit, OnDestroy {
     ngOnInit() {
@@ -81,7 +81,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **Standalone Components:** Introduzidos no Angular 14+, eliminam a necessidade de declarar componentes em módulos.
 
-  ```tsx
+  ```tsx showLineNumbers
   // arquivo: standalone.component.ts
   @Component({
     selector: "app-standalone",
@@ -95,7 +95,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **Módulo Declared Components:** Tradicional, usado em versões anteriores.
 
-  ```tsx
+  ```tsx showLineNumbers
   // arquivo: header.component.ts
   @Component({
     selector: "app-header",
@@ -111,7 +111,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
   }
   ```
 
-  ```tsx
+  ```tsx showLineNumbers
   // arquivo: header.module.ts
   @NgModule({
     declarations: [

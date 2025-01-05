@@ -27,7 +27,7 @@ No Angular, um **Interceptor** é um serviço que intercepta todas as solicitaç
 
   No arquivo http.interceptor.ts:
 
-  ```jsx
+  ```jsx showLineNumbers
   import { Injectable } from "@angular/core";
   import {
     HttpEvent,
@@ -58,7 +58,7 @@ No Angular, um **Interceptor** é um serviço que intercepta todas as solicitaç
 
   No arquivo app.module.ts, adicione o Interceptor como um provider:
 
-  ```tsx
+  ```tsx showLineNumbers
   import { HTTP_INTERCEPTORS } from "@angular/common/http";
   import { HttpInterceptorService } from "./core/http.interceptor";
 
@@ -78,7 +78,7 @@ No Angular, um **Interceptor** é um serviço que intercepta todas as solicitaç
 
   Interceptores podem capturar erros de forma centralizada. Isso é útil para exibir mensagens de erro ou redirecionar usuários.
 
-  ```tsx
+  ```tsx showLineNumbers
   import { Injectable } from "@angular/core";
   import {
     HttpEvent,
@@ -116,7 +116,7 @@ No Angular, um **Interceptor** é um serviço que intercepta todas as solicitaç
 
   Muitas aplicações precisam incluir tokens JWT nas requisições HTTP. Isso pode ser feito facilmente com um Interceptor.
 
-  ```tsx
+  ```tsx showLineNumbers
   import { Injectable } from "@angular/core";
   import {
     HttpEvent,
@@ -154,7 +154,7 @@ No Angular, um **Interceptor** é um serviço que intercepta todas as solicitaç
   - AuthInterceptor: Adiciona o token de autenticação.
   - ErrorInterceptor: Gerencia erros globalmente.
 
-```tsx
+```tsx showLineNumbers
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AuthInterceptorService } from "./auth.interceptor";
 import { ErrorInterceptorService } from "./error.interceptor";

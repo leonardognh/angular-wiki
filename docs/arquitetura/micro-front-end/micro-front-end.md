@@ -32,7 +32,7 @@ Carrega os micro front-ends sob demanda.
 
 **`webpack.config.js`:**
 
-```jsx
+```jsx showLineNumbers
 module.exports = {
   plugins: [
     new ModuleFederationPlugin({

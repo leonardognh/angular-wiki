@@ -37,7 +37,7 @@ A biblioteca gerada contém:
 
 ### Adicionar um Componente
 
-```tsx
+```tsx showLineNumbers
 // projects/my-library/src/lib/custom-button/custom-button.component.ts
 import { Component, Input } from "@angular/core";
 
@@ -61,7 +61,7 @@ export class CustomButtonComponent {
 
 Registrar no `public-api.ts`.
 
-```tsx
+```tsx showLineNumbers
 export \* from './lib/custom-button/custom-button.component';
 ```
 
@@ -83,7 +83,7 @@ npm install dist/my-library
 
 Você pode usar Tokens de Injeção ou Inputs para permitir configurações.
 
-```tsx
+```tsx showLineNumbers
 import { InjectionToken } from "@angular/core";
 
 export const LIB_CONFIG = new InjectionToken<LibConfig>("LIB_CONFIG");
@@ -93,7 +93,7 @@ export interface LibConfig {
 }
 ```
 
-```tsx
+```tsx showLineNumbers
 import { Inject, Injectable } from "@angular/core";
 import { LIB_CONFIG, LibConfig } from "./lib.config";
 
@@ -109,7 +109,7 @@ export class CustomButtonService {
 }
 ```
 
-```tsx
+```tsx showLineNumbers
 providers: [{ provide: LIB_CONFIG, useValue: { defaultColor: "green" } }];
 ```
 
@@ -119,7 +119,7 @@ providers: [{ provide: LIB_CONFIG, useValue: { defaultColor: "green" } }];
 
 Atualize o `projects/my-library/package.json`.
 
-```json
+```json showLineNumbers
 {
   "name": "my-library",
   "version": "1.0.0",
@@ -161,7 +161,7 @@ Após publicada, você pode instalá-la em qualquer projeto Angular.
 npm install my-library
 ```
 
-```tsx
+```tsx showLineNumbers
 import { MyLibraryModule } from "my-library";
 
 @NgModule({
@@ -170,7 +170,7 @@ import { MyLibraryModule } from "my-library";
 export class AppModule {}
 ```
 
-```html
+```html showLineNumbers
 <lib-custom-button label="Enviar" color="red"></lib-custom-button>
 ```
 

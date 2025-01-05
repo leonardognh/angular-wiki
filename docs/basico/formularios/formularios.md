@@ -28,7 +28,7 @@ Os controles precisam ser declarados manualmente, tornando o código mais explí
 
   Cada controle no `FormGroup` é representado por um `FormControl`.
 
-  ```tsx
+  ```tsx showLineNumbers
   import { Component } from "@angular/core";
   import { FormGroup, FormControl } from "@angular/forms";
 
@@ -72,7 +72,7 @@ Reduz a verbosidade do código e melhora a legibilidade, especialmente em formul
 
   Facilita a criação de formulários dinâmicos.
 
-  ```tsx
+  ```tsx showLineNumbers
   import { Component } from "@angular/core";
   import { FormBuilder, FormGroup } from "@angular/forms";
 
@@ -114,7 +114,7 @@ Um conjunto de `FormControl` ou `FormGroup` em forma de array.
 
 Útil para coleções dinâmicas, como adicionar/remover campos.
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { FormBuilder, FormArray } from "@angular/forms";
 
@@ -162,7 +162,7 @@ export class UsuariosComponent {
 
 Validadores como `Validators.required`, `Validators.minLength`, etc.
 
-```tsx
+```tsx showLineNumbers
 import { Validators } from "@angular/forms";
 
 this.registroForm = this.fb.group({
@@ -175,7 +175,7 @@ this.registroForm = this.fb.group({
 
 Criar funções validadoras personalizadas.
 
-```tsx
+```tsx showLineNumbers
 import { AbstractControl, ValidationErrors } from "@angular/forms";
 
 function senhaForte(control: AbstractControl): ValidationErrors | null {

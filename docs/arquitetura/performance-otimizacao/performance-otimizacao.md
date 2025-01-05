@@ -10,7 +10,7 @@ O `angular.json` é o arquivo de configuração principal de um projeto Angular.
 
 ## Estrutura Básica do `angular.json`
 
-```json
+```json showLineNumbers
 {
   "version": 1,
   "projects": {
@@ -60,7 +60,7 @@ O `angular.json` é o arquivo de configuração principal de um projeto Angular.
 
 Habilita otimizações no bundle final, como minificação e remoção de código morto.
 
-```json
+```json showLineNumbers
 "optimization": true
 ```
 
@@ -74,7 +74,7 @@ Adiciona hashes aos nomes dos arquivos para garantir o cache busting.
 
 `all`: Adiciona hashes a todos os arquivos.
 
-```json
+```json showLineNumbers
 "outputHashing": "all"
 ```
 
@@ -84,7 +84,7 @@ Gera mapas de origem para debug.
 
 Deve ser desabilitado em produção para reduzir o tamanho do bundle.
 
-```json
+```json showLineNumbers
 "sourceMap": false
 ```
 
@@ -92,7 +92,7 @@ Deve ser desabilitado em produção para reduzir o tamanho do bundle.
 
 Extrai CSS para arquivos separados, melhorando o carregamento inicial.
 
-```json
+```json showLineNumbers
 "extractCss": true
 ```
 
@@ -100,7 +100,7 @@ Extrai CSS para arquivos separados, melhorando o carregamento inicial.
 
 Compila os templates Angular no momento do build, melhorando o desempenho em tempo de execução.
 
-```json
+```json showLineNumbers
 "aot": true
 ```
 
@@ -108,7 +108,7 @@ Compila os templates Angular no momento do build, melhorando o desempenho em tem
 
 Remove código desnecessário das bibliotecas Angular.
 
-```json
+```json showLineNumbers
 "buildOptimizer": true
 ```
 
@@ -116,7 +116,7 @@ Remove código desnecessário das bibliotecas Angular.
 
 Desativa nomes descritivos para os chunks, reduzindo o tamanho final.
 
-```json
+```json showLineNumbers
 "namedChunks": false
 ```
 
@@ -124,7 +124,7 @@ Desativa nomes descritivos para os chunks, reduzindo o tamanho final.
 
 **Configuração Padrão**
 
-```json
+```json showLineNumbers
 "production": {
   "optimization": true,
   "outputHashing": "all",
@@ -142,7 +142,7 @@ Desativa nomes descritivos para os chunks, reduzindo o tamanho final.
 
 Código não otimizado. Geração de source maps para debug. Build mais rápido.
 
-```json
+```json showLineNumbers
 "development": {
   "optimization": false,
   "sourceMap": true,
@@ -154,7 +154,7 @@ Código não otimizado. Geração de source maps para debug. Build mais rápido.
 
 Código otimizado. Arquivos menores. Melhor desempenho em tempo de execução.
 
-```json
+```json showLineNumbers
 "production": {
   "optimization": true,
   "outputHashing": "all",
@@ -172,7 +172,7 @@ Código otimizado. Arquivos menores. Melhor desempenho em tempo de execução.
 
 Pré-carrega módulos em segundo plano após a inicialização.
 
-```tsx
+```tsx showLineNumbers
 RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });
 ```
 
@@ -186,7 +186,7 @@ Remove código não utilizado do bundle final.
 
 Melhora a performance, verificando mudanças apenas quando as entradas do componente são alteradas.
 
-```tsx
+```tsx showLineNumbers
 @Component({
   selector: "app-exemplo",
   template: `<p>{{ data }}</p>`,
@@ -203,7 +203,7 @@ Remova polyfills desnecessários, especialmente para navegadores modernos.
 
 **Configuração no `polyfills.ts`:**
 
-```tsx
+```tsx showLineNumbers
 // Remova ou comente os polyfills não utilizados.
 ```
 
@@ -241,7 +241,7 @@ Reduz o tamanho dos pacotes JavaScript gerados. Remove código morto (dead code)
 
 Certifique-se de que o `optimization` esteja habilitado no `angular.json`:
 
-```json
+```json showLineNumbers
 "optimization": true,
 "buildOptimizer": true
 ```
@@ -250,7 +250,7 @@ Certifique-se de que o `optimization` esteja habilitado no `angular.json`:
 
 Uma CDN armazena recursos estáticos (ex.: imagens, fontes, scripts) em servidores distribuídos. Melhora o tempo de carregamento para usuários geograficamente distantes. Configure fontes e bibliotecas externas em uma CDN
 
-```html
+```html showLineNumbers
 <link
   href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
   rel="stylesheet"
@@ -263,7 +263,7 @@ Uma CDN armazena recursos estáticos (ex.: imagens, fontes, scripts) em servidor
 
 Carrega módulos apenas quando necessários.
 
-```tsx
+```tsx showLineNumbers
 const routes: Routes = [
   {
     path: "dashboard",
@@ -277,13 +277,13 @@ const routes: Routes = [
 
 Pré-carrega módulos em segundo plano após a inicialização.
 
-```tsx
+```tsx showLineNumbers
 RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });
 ```
 
 Crie uma estratégia de preloading customizada
 
-```tsx
+```tsx showLineNumbers
 export class CustomPreloadingStrategy implements PreloadingStrategy {
   preload(route: Route, load: Function): Observable<any> {
     return route.data?.preload ? load() : of(null);
@@ -297,7 +297,7 @@ export class CustomPreloadingStrategy implements PreloadingStrategy {
 
 Evita verificações de mudanças desnecessárias. Atualiza a view apenas quando as entradas (`@Input`) mudam.
 
-```tsx
+```tsx showLineNumbers
 @Component({
   selector: "app-exemplo",
   template: `<p>{{ valor }}</p>`,
@@ -312,7 +312,7 @@ export class ExemploComponent {
 
 O `trackBy` ajuda o Angular a identificar quais itens mudaram em uma lista. Evita recriação de elementos DOM desnecessários.
 
-```html
+```html showLineNumbers
 <ul>
   <li *ngFor="let item of itens; trackBy: item.id">{{ item.nome }}</li>
 </ul>
@@ -324,7 +324,7 @@ O `trackBy` ajuda o Angular a identificar quais itens mudaram em uma lista. Evit
 
 Use formatos modernos como **WebP** para reduzir o tamanho das imagens.
 
-```html
+```html showLineNumbers
 <img src="imagem.webp" alt="Descrição" />
 ```
 
@@ -332,7 +332,7 @@ Use formatos modernos como **WebP** para reduzir o tamanho das imagens.
 
 Adie o carregamento de imagens fora da área visível.
 
-```html
+```html showLineNumbers
 <img src="imagem.jpg" loading="lazy" alt="Descrição" />
 ```
 
@@ -350,7 +350,7 @@ Remove classes CSS não utilizadas no projeto.
 
 - Configure no Webpack
 
-  ```jsx
+  ```jsx showLineNumbers
   const PurgeCSSPlugin = require("purgecss-webpack-plugin");
   module.exports = {
     plugins: [
@@ -367,7 +367,7 @@ Remove classes CSS não utilizadas no projeto.
 
 Source maps ajudam no debug, mas aumentam o tamanho do bundle.
 
-```json
+```json showLineNumbers
 "sourceMap": {
   "scripts": true,
   "styles": false,
@@ -389,7 +389,7 @@ ng serve --hmr
 
 Divide o código em partes menores para carregar sob demanda.
 
-```json
+```json showLineNumbers
 "optimization": {
   "splitChunks": {
     "chunks": "all"

@@ -28,7 +28,7 @@ npm install @auth0/angular-jwt
 
 Use um interceptor para adicionar o token às requisições automaticamente.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import {
   HttpRequest,
@@ -65,7 +65,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
 Registrar no AppModule.
 
-```tsx
+```tsx showLineNumbers
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AuthInterceptor } from "./auth.interceptor";
 
@@ -81,7 +81,7 @@ export class AppModule {}
 
 Crie um serviço para gerenciar login, logout e validação do token.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
@@ -126,7 +126,7 @@ export class AuthService {
 
 Use Route Guards para proteger rotas acessíveis apenas para usuários autenticados.
 
-```tsx
+```tsx showLineNumbers
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
 import { AuthService } from "./auth.service";
@@ -149,7 +149,7 @@ export class AuthGuard implements CanActivate {
 
 Registrar no AppRoutingModule.
 
-```tsx
+```tsx showLineNumbers
 const routes: Routes = [
   {
     path: "dashboard",
@@ -163,7 +163,7 @@ const routes: Routes = [
 
 Verifique a validade do token antes de enviá-lo. Caso o token esteja expirado, redirecione o usuário para o login.
 
-```tsx
+```tsx showLineNumbers
 isLoggedIn(): boolean {
   const token = this.getToken();
   return token ? !this.jwtHelper.isTokenExpired(token) : false;
@@ -172,7 +172,7 @@ isLoggedIn(): boolean {
 
 Redirecionar em Caso de Expiração no Interceptor.
 
-```tsx
+```tsx showLineNumbers
 if (this.jwtHelper.isTokenExpired(token)) {
   this.authService.logout();
 }
@@ -189,7 +189,7 @@ Evite armazenar tokens em cookies sem proteção CSRF.
 
 Use a biblioteca `angular-jwt` para decodificar o token e acessar os dados.
 
-```tsx
+```tsx showLineNumbers
 getUserInfo(): any {
   const token = this.getToken();
   if (token) {
@@ -201,7 +201,7 @@ getUserInfo(): any {
 
 ## Exemplo Html
 
-```tsx
+```tsx showLineNumbers
 import { Component } from "@angular/core";
 import { AuthService } from "./auth.service";
 
