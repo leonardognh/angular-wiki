@@ -16,7 +16,7 @@ this.http.get("https://api.exemplo.com/dados");
 
 É necessário importar o módulo `HttpClientModule` no `AppModule`.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 import { HttpClientModule } from "@angular/common/http";
 @NgModule({
   imports: [HttpClientModule],
@@ -32,7 +32,7 @@ export class AppModule {}
 - **PATCH:** Atualizar parcialmente os dados.
 - **DELETE:** Excluir dados.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="api.service.ts"
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 
@@ -76,16 +76,16 @@ export class ApiService {
 
 Utlização
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 import { Component } from "@angular/core";
 import { ApiService } from "./api.service";
 
 @Component({
-  selector: "app-exemplo",
-  templateUrl: "./exemplo.component.html",
-  styleUrls: ["./exemplo.component.css"],
+  selector: "app-example",
+  templateUrl: "./example.component.html",
+  styleUrls: ["./example.component.css"],
 })
-export class ExemploComponent {
+export class ExampleComponent {
   constructor(private apiService: ApiService) {}
 
   // GET sem parâmetros

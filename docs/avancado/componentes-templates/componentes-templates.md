@@ -12,8 +12,7 @@ Permite passar dados do componente pai para o componente filho.
 
 Usa **Property Binding** no template.
 
-```tsx showLineNumbers
-// componente-filho
+```tsx showLineNumbers title="filho.component.ts"
 import { Component, Input } from "@angular/core";
 
 @Component({
@@ -25,8 +24,7 @@ export class FilhoComponent {
 }
 ```
 
-```html showLineNumbers
-<!-- componente-pai -->
+```html showLineNumbers title="pai.component.html"
 <app-filho [mensagem]="'Olá, filho!'"></app-filho>
 ```
 
@@ -36,8 +34,7 @@ Permite que o componente filho envie eventos ou dados para o componente pai.
 
 Usa **Event Binding**.
 
-```tsx showLineNumbers
-// componente-filho
+```tsx showLineNumbers title="filho.component.ts"
 import { Component, Output, EventEmitter } from "@angular/core";
 
 @Component({
@@ -53,13 +50,11 @@ export class FilhoComponent {
 }
 ```
 
-```html showLineNumbers
-<!-- componente-pai -->
+```html showLineNumbers title="pai.component.html"
 <app-filho (mensagemEnviada)="receberMensagem($event)"></app-filho>
 ```
 
-```tsx showLineNumbers
-// componente-pai.ts
+```tsx showLineNumbers title="pai.component.ts"
 receberMensagem(mensagem: string) {
   console.log(mensagem);
 }
@@ -73,16 +68,16 @@ Acessa elementos DOM ou filhos do mesmo componente.
 
 Útil para manipular elementos ou instâncias de componentes.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 import { Component, ViewChild, ElementRef } from "@angular/core";
 
 @Component({
-  selector: "app-exemplo",
+  selector: "app-example",
   template: `<input #campoTexto type="text" /><button (click)="focar()">
       Focar
     </button>`,
 })
-export class ExemploComponent {
+export class ExampleComponent {
   @ViewChild("campoTexto") campoTexto!: ElementRef;
 
   focar() {
@@ -95,17 +90,17 @@ export class ExemploComponent {
 
 Obtém um **QueryList** de vários elementos ou componentes filhos.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 import { Component, QueryList, ViewChildren, ElementRef } from "@angular/core";
 
 @Component({
-  selector: "app-exemplo",
+  selector: "app-example",
   template: `
     <input #campo type="text" *ngFor="let item of [1, 2, 3]" />
     <button (click)="focarTodos()">Focar Todos</button>
   `,
 })
-export class ExemploComponent {
+export class ExampleComponent {
   @ViewChildren("campo") campos!: QueryList<ElementRef>;
 
   focarTodos() {
@@ -118,8 +113,7 @@ export class ExemploComponent {
 
 Acessa um único elemento ou componente filho **projetado no slot de conteúdo**.
 
-```tsx showLineNumbers
-// componente-filho
+```tsx showLineNumbers title="filho.component.ts"
 import { Component, ContentChild, ElementRef } from "@angular/core";
 
 @Component({
@@ -135,8 +129,7 @@ export class FilhoComponent {
 }
 ```
 
-```html showLineNumbers
-<!-- componente-pai -->
+```html showLineNumbers title="pai.component.html"
 <app-filho>
   <p #projetado>Conteúdo Projetado</p>
 </app-filho>
@@ -146,7 +139,7 @@ export class FilhoComponent {
 
 Obtém um **QueryList** de vários elementos projetados no conteúdo.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="filho.component.ts"
 import {
   Component,
   ContentChildren,
@@ -169,8 +162,7 @@ export class FilhoComponent {
 }
 ```
 
-```html showLineNumbers
-<!-- componente-pai -->
+```html showLineNumbers title="pai.component.html"
 <app-filho>
   <p #projetado>Item 1</p>
   <p #projetado>Item 2</p>
@@ -189,7 +181,7 @@ export class FilhoComponent {
 
   Verifica mudanças apenas quando os inputs ou eventos do componente são alterados.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="filho.component.ts"
 import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
@@ -218,11 +210,11 @@ export class FilhoComponent {
 
   Aplica estilos globalmente.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 import { Component, ViewEncapsulation } from "@angular/core";
 
 @Component({
-  selector: "app-exemplo",
+  selector: "app-example",
   template: `<p>Estilo Aplicado</p>`,
   styles: [
     `
@@ -233,7 +225,7 @@ import { Component, ViewEncapsulation } from "@angular/core";
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class ExemploComponent {}
+export class ExampleComponent {}
 ```
 
 ## Resumo
@@ -277,16 +269,14 @@ Aqui, o `<ng-container>` agrupa o `*ngIf` e o `*ngFor`, evitando conflitos, já 
 
 O `<ng-content>` é usado em componentes para projetar conteúdo dinâmico. Ele permite que desenvolvedores insiram elementos personalizados nos templates.
 
-```html showLineNumbers
-<!-- no componente pai -->
+```html showLineNumbers title="pai.component.html"
 <app-card>
   <h3>Título Personalizado</h3>
   <p>Este conteúdo é projetado.</p>
 </app-card>
 ```
 
-```html showLineNumbers
-<!-- template do app-card -->
+```html showLineNumbers title="app-card.component.html"
 <div class="card">
   <ng-content></ng-content>
 </div>

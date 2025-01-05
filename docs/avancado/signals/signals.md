@@ -18,7 +18,7 @@ Signals são um novo modelo reativo introduzido no Angular para gerenciar estado
 
 ## Exemplo
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="contador.component.ts"
 import { Component, signal } from "@angular/core";
 
 @Component({
@@ -74,7 +74,7 @@ Diferenças Fundamentais
 
 - **Signals**
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="contador.component.ts"
   import { Component, signal } from "@angular/core";
 
   @Component({
@@ -95,7 +95,7 @@ Diferenças Fundamentais
 
 - **Observables**
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="contador.component.ts"
   import { Component } from "@angular/core";
   import { BehaviorSubject } from "rxjs";
 
@@ -119,7 +119,7 @@ Diferenças Fundamentais
 
 - **Signals**
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="dados.component.ts"
   import { Component, signal } from "@angular/core";
   import { HttpClient } from "@angular/common/http";
 
@@ -143,7 +143,7 @@ Diferenças Fundamentais
 
 - **Observables**
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="dados.component.ts"
   import { Component } from "@angular/core";
   import { HttpClient } from "@angular/common/http";
   import { map } from "rxjs/operators";
@@ -172,7 +172,7 @@ Diferenças Fundamentais
 
   - **Pipe**
 
-    ```tsx showLineNumbers
+    ```tsx showLineNumbers title="capitalize.pipe.ts"
     import { Pipe, PipeTransform } from "@angular/core";
 
     @Pipe({ name: "capitalize" })
@@ -185,7 +185,7 @@ Diferenças Fundamentais
 
   - **Componente**
 
-    ```tsx showLineNumbers
+    ```html showLineNumbers
     <p>{{ dado() | capitalize }}</p>
     ```
 
@@ -193,7 +193,7 @@ Diferenças Fundamentais
 
   O pipe funciona da mesma forma
 
-  ```tsx showLineNumbers
+  ```html showLineNumbers
   <p *ngIf="dado$ | async as dado">{{ dado | capitalize }}</p>
   ```
 

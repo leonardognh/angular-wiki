@@ -28,7 +28,7 @@ Os controles precisam ser declarados manualmente, tornando o código mais explí
 
   Cada controle no `FormGroup` é representado por um `FormControl`.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="login.component.ts"
   import { Component } from "@angular/core";
   import { FormGroup, FormControl } from "@angular/forms";
 
@@ -72,7 +72,7 @@ Reduz a verbosidade do código e melhora a legibilidade, especialmente em formul
 
   Facilita a criação de formulários dinâmicos.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="registro.component.ts"
   import { Component } from "@angular/core";
   import { FormBuilder, FormGroup } from "@angular/forms";
 
@@ -114,7 +114,7 @@ Um conjunto de `FormControl` ou `FormGroup` em forma de array.
 
 Útil para coleções dinâmicas, como adicionar/remover campos.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="usuarios.component.ts"
 import { Component } from "@angular/core";
 import { FormBuilder, FormArray } from "@angular/forms";
 

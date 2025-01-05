@@ -70,7 +70,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Crie o arquivo `jest.config.js`
 
-  ```jsx showLineNumbers
+  ```jsx showLineNumbers title="jest.config.js"
   module.exports = {
     preset: "jest-preset-angular",
     testEnvironment: "jsdom",
@@ -87,7 +87,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Crie o arquivo `setup-jest.ts`
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="setup-jest.ts"
   import "jest-preset-angular/setup-jest";
   ```
 
@@ -95,7 +95,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
   Ajuste para suportar o Jest
 
-  ```json showLineNumbers
+  ```json showLineNumbers title="tsconfig.spec.json"
   {
     "compilerOptions": {
       "types": ["jest"]
@@ -105,7 +105,7 @@ npm install jest jest-preset-angular @types/jest ts-jest --save-dev
 
 - Adicionar Script no `package.json`
 
-  ```json showLineNumbers
+  ```json showLineNumbers title="package.json"
   "scripts": {
     "test": "jest"
   }
@@ -135,7 +135,7 @@ npm install --save-dev ng-mocks
 
 Utilização
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="home.component.spec.ts"
 import { MockModule } from 'ng-mocks';
 
 describe('HomeComponent', () => {

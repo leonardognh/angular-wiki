@@ -20,7 +20,7 @@ Para integrar WebSocket no Angular, você pode usar a API nativa de WebSocket ou
 
 #### Serviço
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="websocket.service.ts"
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -67,7 +67,7 @@ export class WebSocketService {
 
 Consumindo no Componente
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="websocket.component.ts"
 import { Component, OnInit } from "@angular/core";
 import { WebSocketService } from "./web-socket.service";
 
@@ -100,7 +100,7 @@ export class WebSocketComponent {
 
 Com RxJS, podemos criar Observables para gerenciar mensagens recebidas e enviadas.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="websocket-rx.service.ts"
 import { Injectable } from "@angular/core";
 import { Observable, Subject, webSocket } from "rxjs";
 
@@ -126,7 +126,7 @@ export class WebSocketRxService {
 
 Consumindo no Componente
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="websocket-rx.component.ts"
 import { Component, OnInit } from "@angular/core";
 import { WebSocketRxService } from "./web-socket-rx.service";
 

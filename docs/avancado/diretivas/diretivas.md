@@ -12,7 +12,7 @@ Podem ser de **atributo** ou **estrutural**.
 
 Alteram comportamento ou estilo de elementos sem modificar a estrutura do DOM.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="hover-highlight.directive.ts"
 import { Directive, ElementRef, Renderer2, HostListener } from "@angular/core";
 
 @Directive({
@@ -39,7 +39,7 @@ export class HoverHighlightDirective {
 
 Alteram a estrutura do DOM ao adicionar ou remover elementos.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="if-else.directive.ts"
 import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
 
 @Directive({
@@ -82,7 +82,7 @@ export class IfElseDirective {
 
 Vincula propriedades ou classes do host.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="bold.directive.ts"
 @Directive({
   selector: "[appBold]",
 })

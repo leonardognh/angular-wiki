@@ -28,7 +28,7 @@ npm install @auth0/angular-jwt
 
 Use um interceptor para adicionar o token às requisições automaticamente.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="auth.interceptor.ts"
 import { Injectable } from "@angular/core";
 import {
   HttpRequest,
@@ -65,7 +65,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
 Registrar no AppModule.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AuthInterceptor } from "./auth.interceptor";
 
@@ -81,7 +81,7 @@ export class AppModule {}
 
 Crie um serviço para gerenciar login, logout e validação do token.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="auth.service.ts"
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Router } from "@angular/router";
@@ -126,7 +126,7 @@ export class AuthService {
 
 Use Route Guards para proteger rotas acessíveis apenas para usuários autenticados.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="auth.guard.ts"
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
 import { AuthService } from "./auth.service";
@@ -149,7 +149,7 @@ export class AuthGuard implements CanActivate {
 
 Registrar no AppRoutingModule.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "dashboard",
@@ -201,7 +201,7 @@ getUserInfo(): any {
 
 ## Exemplo Html
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="login.component.ts"
 import { Component } from "@angular/core";
 import { AuthService } from "./auth.service";
 

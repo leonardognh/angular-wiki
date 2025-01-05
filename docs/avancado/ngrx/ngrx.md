@@ -58,7 +58,7 @@ npm install @ngrx/store @ngrx/effects @ngrx/store-devtools
 
 ### Configuração do `StoreModule`
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 import { NgModule } from "@angular/core";
 import { StoreModule } from "@ngrx/store";
 import { reducers } from "./store/reducers";
@@ -224,7 +224,7 @@ O estado é gerenciado localmente, usando um serviço que mantém os dados compa
 
 ### Serviço de Estado
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="carrinho.service.ts"
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
@@ -250,7 +250,7 @@ export class CarrinhoService {
 
 ### Componente: Adicionar ao Carrinho
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="adicionar-item.component.ts"
 import { Component } from "@angular/core";
 import { CarrinhoService } from "./carrinho.service";
 
@@ -269,7 +269,7 @@ export class AdicionarItemComponent {
 
 ### Componente: Exibir Carrinho
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="carrinho.component.ts"
 import { Component } from "@angular/core";
 import { CarrinhoService } from "./carrinho.service";
 
@@ -353,7 +353,7 @@ export const selectItens = createSelector(
 
 ### Configuração do StoreModule
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 import { NgModule } from "@angular/core";
 import { StoreModule } from "@ngrx/store";
 import { carrinhoReducer } from "./carrinho.reducer";
@@ -366,7 +366,7 @@ export class AppModule {}
 
 ### Componente: Adicionar ao Carrinho
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="adicionar-item.component.ts"
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { adicionarItem } from "./carrinho.actions";
@@ -388,7 +388,7 @@ export class AdicionarItemComponent {
 
 ### Componente: Exibir Carrinho
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="carrinho.component.ts"
 import { Component } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { selectItens } from "./carrinho.selectors";

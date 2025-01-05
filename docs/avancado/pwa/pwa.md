@@ -132,7 +132,7 @@ O service worker verifica automaticamente por atualizações.
 
 Use o `SwUpdate` para detectar e aplicar atualizações
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.component.ts"
 import { SwUpdate } from "@angular/service-worker";
 import { Component } from "@angular/core";
 
@@ -205,7 +205,7 @@ Notification.requestPermission().then((status) => {
 
 - Configure o Firebase no módulo principal
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="app.module.ts"
   import { NgModule } from "@angular/core";
   import { provideFirebaseApp, initializeApp } from "@angular/fire/app";
   import { provideMessaging, getMessaging } from "@angular/fire/messaging";

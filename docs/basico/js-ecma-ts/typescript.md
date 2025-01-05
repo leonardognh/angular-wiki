@@ -27,7 +27,7 @@ Angular utiliza TypeScript nativamente.
 
 - Definir contratos para objetos.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="usuario.ts"
   interface Usuario {
     nome: string;
     idade: number;
@@ -45,7 +45,7 @@ Angular utiliza TypeScript nativamente.
 
 - Criar estruturas reutilizáveis com atributos e métodos.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="pessoa.ts"
   class Pessoa {
     constructor(public nome: string, public idade: number) {}
 
@@ -95,7 +95,7 @@ Angular utiliza TypeScript nativamente.
 
 - Criar uma calculadora simples com validação de tipos.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="calculadora.ts"
   class Calculadora {
     somar(a: number, b: number): number {
       return a + b;

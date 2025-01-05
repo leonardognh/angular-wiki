@@ -18,7 +18,7 @@ Para saber mais, acesse [Angular CDK](https://material.angular.io/cdk/categories
 
 Fornece ferramentas para melhorar a acessibilidade (a11y) da aplicação.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 import { FocusMonitor } from "@angular/cdk/a11y";
 import { Component, ElementRef, OnDestroy } from "@angular/core";
 
@@ -49,7 +49,7 @@ Permite implementar funcionalidades de arrastar e soltar sem dependências exter
 </div>
 ```
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="drag-drop.component.ts"
 import { Component } from "@angular/core";
 import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
@@ -70,7 +70,7 @@ export class DragDropComponent {
 
 Fornece uma base para criar elementos como menus, modais e tooltips.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="overlay.component.ts"
 import { Overlay, OverlayRef } from "@angular/cdk/overlay";
 import { Component } from "@angular/core";
 
@@ -108,7 +108,7 @@ Permite renderizar conteúdo dinamicamente em diferentes lugares no DOM.
 
 Oferece serviços e ferramentas para criar layouts responsivos.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="layout.component.ts"
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 
 @Component({

@@ -24,7 +24,7 @@ Para saber mais, acesse [RxJS](https://rxjs.dev/guide/overview).
 
 O Subject é um Observable que permite emitir valores manualmente e compartilhar o fluxo de dados com múltiplos Observers.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="communication.service.ts"
 import { Subject } from "rxjs";
 
 // Serviço compartilhado
@@ -40,8 +40,7 @@ export class CommunicationService {
 }
 ```
 
-```tsx showLineNumbers
-// Componente Emissor
+```tsx showLineNumbers title="emissor.component.ts"
 @Component({
   selector: "app-emissor",
   template: `<button (click)="emitir()">Emitir Evento</button>`,
@@ -55,8 +54,7 @@ export class EmissorComponent {
 }
 ```
 
-```tsx showLineNumbers
-// Componente Receptor
+```tsx showLineNumbers title="receptor.component.ts"
 @Component({
   selector: "app-receptor",
   template: `<p>{{ mensagem }}</p>`,
@@ -78,7 +76,7 @@ export class ReceptorComponent implements OnInit {
 
 O BehaviorSubject armazena o último valor emitido e o entrega imediatamente para novos Observers.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="estado.service.ts"
 import { BehaviorSubject } from "rxjs";
 
 @Injectable({ providedIn: "root" })
@@ -92,8 +90,7 @@ export class EstadoService {
 }
 ```
 
-```tsx showLineNumbers
-// Consumindo no Componente
+```tsx showLineNumbers title="estado.component.ts"
 @Component({
   selector: "app-estado",
   template: `<div>Estado Atual: {{ estado }}</div>`,

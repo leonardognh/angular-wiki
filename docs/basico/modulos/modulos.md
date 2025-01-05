@@ -10,7 +10,7 @@ Módulos organizam a aplicação em partes menores, facilitando a manutenção e
 
 **`AppModule`** é o módulo raiz, mas aplicações grandes devem ser divididas em módulos funcionais ou de recursos (features).
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="meu.modulo.ts"
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MeuComponente } from "./meu-componente.component";
@@ -33,7 +33,7 @@ Contém o bootstrap do aplicativo.
 
 No Angular, Bootstrap se refere ao processo de inicialização do aplicativo. É o ponto de entrada principal onde o Angular começa a carregar e executar o código. Ele especifica qual componente será renderizado primeiro na aplicação.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule],
@@ -46,7 +46,7 @@ export class AppModule {}
 
 Isolam funcionalidades específicas.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="dashboard.module.ts"
 @NgModule({
   declarations: [DashboardComponent],
   imports: [CommonModule],
@@ -58,7 +58,7 @@ export class DashboardModule {}
 
 Contém componentes, diretivas e pipes reutilizáveis.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="shared.module.ts"
 @NgModule({
   declarations: [BotaoComponent],
   imports: [CommonModule],
@@ -71,7 +71,7 @@ export class SharedModule {}
 
 Contém serviços e lógica global, como interceptadores e autenticação.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="core.module.ts"
 @NgModule({
   providers: [AuthService],
 })

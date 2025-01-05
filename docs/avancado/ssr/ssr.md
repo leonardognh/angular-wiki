@@ -116,7 +116,7 @@ app.listen(4000, () => {
 
 No `AppComponent`
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.component.ts"
 import { Component, Inject, PLATFORM_ID } from "@angular/core";
 import { isPlatformServer } from "@angular/common";
 
@@ -140,7 +140,7 @@ export class AppComponent {
 
 Usar o `Meta` e o `Title` para manipular metadados.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.component.ts"
 import { Component } from "@angular/core";
 import { Meta, Title } from "@angular/platform-browser";
 

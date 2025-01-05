@@ -10,8 +10,7 @@ Templates definem a interface do componente usando HTML e diretivas do Angular. 
 
 Template inline
 
-```tsx showLineNumbers
-// arquivo: header.component.ts
+```tsx showLineNumbers title="header.component.ts"
 @Component({
   selector: "app-header",
   template: `
@@ -28,8 +27,7 @@ export class HeaderComponent {
 
 Template externo
 
-```html showLineNumbers
-<!-- arquivo: header.component.html -->
+```html showLineNumbers title="header.component.html"
 <header>
   <h1>{{ titulo }}</h1>
 </header>
@@ -64,7 +62,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **`ngOnDestroy`:** Limpeza antes de destruir o componente.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="meu.component.ts"
   @Component({ ... })
   export class MeuComponente implements OnInit, OnDestroy {
     ngOnInit() {
@@ -81,8 +79,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **Standalone Components:** Introduzidos no Angular 14+, eliminam a necessidade de declarar componentes em módulos.
 
-  ```tsx showLineNumbers
-  // arquivo: standalone.component.ts
+  ```tsx showLineNumbers title="standalone.component.ts"
   @Component({
     selector: "app-standalone",
     standalone: true,
@@ -95,8 +92,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
 
 - **Módulo Declared Components:** Tradicional, usado em versões anteriores.
 
-  ```tsx showLineNumbers
-  // arquivo: header.component.ts
+  ```tsx showLineNumbers title="header.component.ts"
   @Component({
     selector: "app-header",
     template: `
@@ -111,8 +107,7 @@ Angular oferece hooks que permitem executar código em momentos específicos do 
   }
   ```
 
-  ```tsx showLineNumbers
-  // arquivo: header.module.ts
+  ```tsx showLineNumbers title="header.module.ts"
   @NgModule({
     declarations: [
       HeaderComponent, // Declaração do HeaderComponent

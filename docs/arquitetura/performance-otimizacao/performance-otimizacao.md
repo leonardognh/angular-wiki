@@ -10,7 +10,7 @@ O `angular.json` é o arquivo de configuração principal de um projeto Angular.
 
 ## Estrutura Básica do `angular.json`
 
-```json showLineNumbers
+```json showLineNumbers title="angular.json"
 {
   "version": 1,
   "projects": {
@@ -124,7 +124,7 @@ Desativa nomes descritivos para os chunks, reduzindo o tamanho final.
 
 **Configuração Padrão**
 
-```json showLineNumbers
+```json showLineNumbers title="angular.json"
 "production": {
   "optimization": true,
   "outputHashing": "all",
@@ -172,7 +172,7 @@ Código otimizado. Arquivos menores. Melhor desempenho em tempo de execução.
 
 Pré-carrega módulos em segundo plano após a inicialização.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });
 ```
 
@@ -186,13 +186,13 @@ Remove código não utilizado do bundle final.
 
 Melhora a performance, verificando mudanças apenas quando as entradas do componente são alteradas.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 @Component({
-  selector: "app-exemplo",
+  selector: "app-example",
   template: `<p>{{ data }}</p>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExemploComponent {
+export class ExampleComponent {
   @Input() data: string = "";
 }
 ```
@@ -201,9 +201,7 @@ export class ExemploComponent {
 
 Remova polyfills desnecessários, especialmente para navegadores modernos.
 
-**Configuração no `polyfills.ts`:**
-
-```tsx showLineNumbers
+```tsx title="polyfills.ts"
 // Remova ou comente os polyfills não utilizados.
 ```
 
@@ -241,7 +239,7 @@ Reduz o tamanho dos pacotes JavaScript gerados. Remove código morto (dead code)
 
 Certifique-se de que o `optimization` esteja habilitado no `angular.json`:
 
-```json showLineNumbers
+```json showLineNumbers title="angular.json"
 "optimization": true,
 "buildOptimizer": true
 ```
@@ -263,7 +261,7 @@ Uma CDN armazena recursos estáticos (ex.: imagens, fontes, scripts) em servidor
 
 Carrega módulos apenas quando necessários.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app-routing.module.ts"
 const routes: Routes = [
   {
     path: "dashboard",
@@ -277,7 +275,7 @@ const routes: Routes = [
 
 Pré-carrega módulos em segundo plano após a inicialização.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="app.module.ts"
 RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules });
 ```
 
@@ -297,13 +295,13 @@ export class CustomPreloadingStrategy implements PreloadingStrategy {
 
 Evita verificações de mudanças desnecessárias. Atualiza a view apenas quando as entradas (`@Input`) mudam.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="example.component.ts"
 @Component({
-  selector: "app-exemplo",
+  selector: "app-example",
   template: `<p>{{ valor }}</p>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExemploComponent {
+export class ExampleComponent {
   @Input() valor!: string;
 }
 ```

@@ -34,8 +34,7 @@ As diretivas de atributo são usadas para modificar a aparência ou o comportame
 
 ### Diretiva Personalizada
 
-```tsx showLineNumbers
-// text-color.directive.ts
+```tsx showLineNumbers title="text-color.directive.ts"
 import { Directive, ElementRef, Input, Renderer2, OnInit } from "@angular/core";
 
 @Directive({
@@ -81,8 +80,7 @@ As diretivas estruturais alteram a estrutura do DOM, adicionando, removendo ou r
 
 ### Diretiva Personalizada
 
-```tsx showLineNumbers
-// show-if.directive.ts
+```tsx showLineNumbers title="show-if.directive.ts"
 import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
 
 @Directive({
@@ -113,8 +111,7 @@ export class ShowIfDirective {
 
 As diretivas de componente são componentes Angular que possuem um selector e podem ser usados como elementos ou atributos no DOM. Elas contêm tanto lógica quanto uma interface de usuário associada.
 
-```tsx showLineNumbers
-// alert-box.component.ts
+```tsx showLineNumbers title="alert-box.component.ts"
 import { Component, Input } from "@angular/core";
 
 @Component({
@@ -243,7 +240,7 @@ Diretivas devem ser pequenas e focadas em uma única responsabilidade. Para lóg
 
   Crie um serviço para encapsular lógica reutilizável e injete-o na diretiva.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="dynamic-theme.directive.ts"
   import { Directive, ElementRef, Renderer2, OnInit } from "@angular/core";
   import { ThemeService } from "./theme.service";
 

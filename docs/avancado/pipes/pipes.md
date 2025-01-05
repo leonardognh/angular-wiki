@@ -10,7 +10,7 @@ Pipes são usados para transformar dados em templates.
 
 Pipes personalizados permitem criar transformações específicas.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="capitalize.pipe.ts"
 import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
@@ -63,7 +63,7 @@ Simplifica o consumo de Observables ou Promises no template.
 
 Dispensa a necessidade de `subscribe`.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="async-example.component.ts"
 import { Component } from "@angular/core";
 import { Observable, of } from "rxjs";
 

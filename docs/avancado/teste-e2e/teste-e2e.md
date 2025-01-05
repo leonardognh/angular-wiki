@@ -32,7 +32,7 @@ Para saber mais, acesse [Cypress](https://docs.cypress.io/app/get-started/why-cy
 
 ### Estrutura Básica de Teste com Cypress
 
-```jsx showLineNumbers
+```tsx showLineNumbers
 describe("Página Inicial", () => {
   it("Deve exibir o título", () => {
     cy.visit("/");
@@ -52,7 +52,7 @@ describe("Página Inicial", () => {
 </form>
 ```
 
-```jsx showLineNumbers
+```tsx showLineNumbers
 describe("Formulário", () => {
   it("Deve preencher e enviar o formulário", () => {
     cy.visit("/");
@@ -64,7 +64,7 @@ describe("Formulário", () => {
 
 ### Teste de Navegação
 
-```jsx showLineNumbers
+```tsx showLineNumbers
 describe("Navegação", () => {
   it("Deve navegar para a página Sobre", () => {
     cy.visit("/");
@@ -76,7 +76,7 @@ describe("Navegação", () => {
 
 ### Mock de APIs
 
-```jsx showLineNumbers
+```tsx showLineNumbers
 describe("Mock de API", () => {
   it("Deve exibir dados mockados", () => {
     cy.intercept("GET", "/api/dados", { dados: ["item1", "item2"] });

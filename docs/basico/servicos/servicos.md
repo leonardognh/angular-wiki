@@ -8,7 +8,7 @@ sidebar_position: 8
 
 Serviços são classes usadas para encapsular lógica compartilhada entre componentes, como manipulação de dados, chamadas HTTP ou armazenamento de estado. São projetados para serem reutilizáveis e desacoplados dos componentes.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="user.service.ts"
 import { Injectable } from "@angular/core";
 
 @Injectable({
@@ -25,7 +25,7 @@ export class UserService {
 
 É um padrão de design que permite a criação de dependências fora de uma classe e sua injeção na classe conforme necessário. No Angular, o **Injetor** gerencia as instâncias e o ciclo de vida das dependências.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="user-list.component.ts"
 import { Component } from "@angular/core";
 import { UserService } from "./user.service";
 
@@ -50,7 +50,7 @@ export class UserListComponent {
 
   O serviço é singleton e acessível em toda a aplicação.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="auth.service.ts"
   @Injectable({
     providedIn: "root",
   })
@@ -61,7 +61,7 @@ export class UserListComponent {
 
   O serviço é singleton dentro do módulo onde foi declarado.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="core.module.ts"
   @NgModule({
     providers: [AuthService],
   })
@@ -72,7 +72,7 @@ export class UserListComponent {
 
   Cada instância do componente tem seu próprio serviço.
 
-  ```tsx showLineNumbers
+  ```tsx showLineNumbers title="login.component.ts"
   @Component({
     providers: [AuthService],
   })
@@ -91,7 +91,7 @@ export class UserListComponent {
 
 Serviços declarados com `providedIn: 'root'` são instanciados uma única vez e permanecem vivos enquanto a aplicação está ativa. Evita duplicação de lógica e melhora o desempenho.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="auth.service.ts"
 @Injectable({
   providedIn: "root",
 })
@@ -116,7 +116,7 @@ export class AuthService {
 
 Escopos modulares ajudam a limitar a instância do serviço a um módulo específico. Funcionalidades como autenticação ou configurações específicas de uma área.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="admin.module.ts"
 @NgModule({
   providers: [AdminService],
 })
@@ -127,7 +127,7 @@ export class AdminModule {}
 
 Cada componente recebe sua própria instância do serviço. Útil para armazenar estados locais ou dados temporários.
 
-```tsx showLineNumbers
+```tsx showLineNumbers title="session.component.ts"
 @Component({
   providers: [SessionService],
 })
