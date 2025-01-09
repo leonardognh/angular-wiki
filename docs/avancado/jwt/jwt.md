@@ -1,5 +1,5 @@
 ---
-sidebar_position: 21
+sidebar_position: 17
 ---
 
 # JWT (JSON Web Tokens)
