@@ -57,7 +57,7 @@ O Angular fornece várias diretivas prontas para uso
 
 Os decoradores @HostListener e @HostBinding no Angular são usados para interagir com o elemento host de uma diretiva ou componente.
 
-- **Host Binding:**
+### Host Binding
 
 Vincula propriedades ou classes do host.
 
@@ -78,7 +78,7 @@ export class BoldDirective {
 }
 ```
 
-- **Host Listener:**
+### Host Listener
 
 Escuta eventos no elemento host.
 
