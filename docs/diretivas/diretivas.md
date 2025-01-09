@@ -40,6 +40,54 @@ O Angular fornece várias diretivas prontas para uso
 | **Diretivas Estruturais**   | Alteram a estrutura do DOM, adicionando ou removendo elementos.           | `*ngIf`, `*ngFor`        |
 | **Diretivas de Componente** | Combinam lógica e interface de usuário e podem ser usadas como elementos. | Componentes customizados |
 
+## `Renderer2` vs `ElementRef`
+
+- **`Renderer2`**: Manipula o DOM de forma segura, respeitando as plataformas.
+
+- **`ElementRef`**: Acessa diretamente elementos DOM, mas deve ser usado com cuidado devido a vulnerabilidades de segurança.
+
+| Recurso        | Quando Usar                                |
+| -------------- | ------------------------------------------ |
+| **Renderer2**  | Alterações de estilo ou atributos seguros. |
+| **ElementRef** | Somente para leitura ou casos específicos. |
+
+## Host Binding e Host Listener
+
+### O que é?
+
+Os decoradores @HostListener e @HostBinding no Angular são usados para interagir com o elemento host de uma diretiva ou componente.
+
+- **Host Binding:**
+
+Vincula propriedades ou classes do host.
+
+```tsx showLineNumbers title="bold.directive.ts"
+@Directive({
+  selector: "[appBold]",
+})
+export class BoldDirective {
+  @HostBinding("style.fontWeight") fontWeight = "normal";
+
+  @HostListener("mouseenter") onMouseEnter() {
+    this.fontWeight = "bold";
+  }
+
+  @HostListener("mouseleave") onMouseLeave() {
+    this.fontWeight = "normal";
+  }
+}
+```
+
+- **Host Listener:**
+
+Escuta eventos no elemento host.
+
+```tsx showLineNumbers
+@HostListener('click') onClick() {
+  console.log('Elemento clicado!');
+}
+```
+
 ## Boas práticas ao usar Diretivas
 
 Ao trabalhar com diretivas no Angular, algumas boas práticas podem melhorar a legibilidade, desempenho e manutenção do código.
