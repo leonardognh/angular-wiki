@@ -1,20 +1,28 @@
-import { ReactNode } from 'react';
-import Layout from '@theme/Layout'; 
+import { ReactNode } from "react";
+import Layout from "@theme/Layout";
 import clsx from "clsx";
 import styles from "./agradecimentos.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub, faLinkedin, faTwitter, faBehance, faInstagram } from "@fortawesome/free-brands-svg-icons";
-
+import { faGithub, faInstagram } from "@fortawesome/free-brands-svg-icons";
 
 const contributors = [
   {
     name: "Leonardo Henrique",
     role: "Criador e Desenvolvedor",
     socials: [
-      { platform: "GitHub", url: "https://github.com/leonardognh", icon: faGithub },
+      {
+        platform: "GitHub",
+        url: "https://github.com/leonardognh",
+        icon: faGithub,
+      },
+      {
+        platform: "Instagram",
+        url: "https://www.instagram.com/leohenriq95/",
+        icon: faInstagram,
+      },
     ],
     image: "./img/leonardo.jpg",
-  }
+  },
 ];
 
 export default function Agradecimentos(): ReactNode {
@@ -23,7 +31,7 @@ export default function Agradecimentos(): ReactNode {
       title="Agradecimentos"
       description="Página de agradecimentos do Angular Wiki"
     >
-       <header className={clsx("hero", styles.heroBanner)}>
+      <header className={clsx("hero", styles.heroBanner)}>
         <div className="container">
           <h1 className="hero__title">Agradecimentos</h1>
           <p className="hero__subtitle">
@@ -52,7 +60,10 @@ export default function Agradecimentos(): ReactNode {
                         href={social.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={clsx("button button--outline button--primary button--icon ", styles.socialButtonSpacing)}
+                        className={clsx(
+                          "button button--outline button--primary button--icon ",
+                          styles.socialButtonSpacing
+                        )}
                       >
                         <FontAwesomeIcon icon={social.icon} size="lg" />
                       </a>
