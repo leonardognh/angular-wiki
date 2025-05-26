@@ -4,12 +4,18 @@ import clsx from "clsx";
 import styles from "./agradecimentos.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faInstagram } from "@fortawesome/free-brands-svg-icons";
+import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 
 const contributors = [
   {
     name: "Leonardo Henrique",
     role: "Criador e Desenvolvedor",
     socials: [
+      {
+        platform: "BuyMeACoffee",
+        url: "https://buymeacoffee.com/leognh",
+        icon: faCoffee,
+      },
       {
         platform: "GitHub",
         url: "https://github.com/leonardognh",
