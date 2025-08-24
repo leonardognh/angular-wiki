@@ -2,84 +2,114 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const config: Config = {
   title: "Angular Wiki",
-  tagline: "Angular Wiki",
+  tagline: "Documentação Angular",
   favicon: "img/angular.png",
-  trailingSlash: false,
-  // Set the production url of your site here
+  trailingSlash: true,
+
   url: "https://leonardognh.github.io",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/angular-wiki/",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "leonardognh", // Usually your GitHub org/user name.
-  projectName: "angular-wiki", // Usually your repo name.
+  organizationName: "leonardognh",
+  projectName: "angular-wiki",
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: "en",
-    locales: ["en"],
+    defaultLocale: "pt-BR",
+    locales: ["pt-BR"],
   },
   themes: ["@docusaurus/theme-live-codeblock"],
+
   presets: [
     [
       "classic",
       {
         docs: {
-          routeBasePath: "/",
-          sidebarPath: "./sidebars.ts",
+          routeBasePath: "docs",
+          sidebarPath: require.resolve("./sidebars.ts"),
+          lastVersion: "current",
+          versions: {
+            current: { label: "v14" },
+          },
         },
-        blog: false,
+
+        blog: {
+          path: "blog",
+          routeBasePath: "blog",
+          blogTitle: "Angular Wiki — Blog",
+          blogDescription: "Notas, guias e novidades",
+          postsPerPage: 10,
+          sortPosts: "descending",
+          include: ["**/*.{md,mdx}"],
+          exclude: [
+            "**/_*.{js,jsx,ts,tsx,md,mdx}",
+            "**/_*/**",
+            "**/*.test.{js,jsx,ts,tsx}",
+            "**/__tests__/**",
+          ],
+          showReadingTime: true,
+          readingTime: ({ content, defaultReadingTime }) =>
+            defaultReadingTime({ content, options: { wordsPerMinute: 220 } }),
+
+          authorsMapPath: "authors.yml",
+          tags: "tags.yml",
+          onInlineTags: "throw",
+
+          feedOptions: {
+            type: ["rss", "atom", "json"],
+            title: "Angular Wiki — Feed",
+            description: "Updates do Angular Wiki",
+            limit: 20,
+            xslt: true,
+          },
+          truncateMarker: /{\/\*\s*truncate\s*\*\/}/,
+
+          processBlogPosts: async ({ blogPosts }) =>
+            blogPosts.filter((p) => !p.metadata.frontMatter.draft),
+
+          tagsBasePath: "tags",
+          pageBasePath: "page",
+          archiveBasePath: "archive",
+        },
+
         theme: {
-          customCss: "./src/css/custom.css",
+          customCss: require.resolve("./src/css/custom.css"),
         },
       } satisfies Preset.Options,
     ],
   ],
 
   themeConfig: {
-    liveCodeBlock: {
-      /**
-       * The position of the live playground, above or under the editor
-       * Possible values: "top" | "bottom"
-       */
-      playgroundPosition: "bottom",
-    },
-    image: "img/docusaurus-social-card.jpg",
+    liveCodeBlock: { playgroundPosition: "bottom" },
+    image: "img/angular.png",
     navbar: {
       title: "Angular Wiki",
-      logo: {
-        alt: "Angular Wiki Logo",
-        src: "img/logo.svg",
-      },
+      logo: { alt: "Angular Logo", src: "img/logo.svg" },
       items: [
         {
           type: "docSidebar",
           sidebarId: "tutorialSidebar",
           position: "left",
-          label: "Docs",
+          label: "Documentação",
+        },
+
+        { to: "/blog", label: "Blog", position: "left" },
+        {
+          type: "docsVersionDropdown",
+          position: "right",
+          dropdownActiveClassDisabled: true,
         },
         { to: "agradecimentos", label: "Agradecimentos", position: "left" },
       ],
     },
     footer: {
       style: "dark",
-      copyright: `Copyright © ${new Date().getFullYear()} Angular Wiki, Feito por leonardognh.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Angular Wiki.`,
     },
-    prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-    },
+    prism: { theme: prismThemes.github, darkTheme: prismThemes.dracula },
   } satisfies Preset.ThemeConfig,
 };
 

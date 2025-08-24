@@ -1,0 +1,12 @@
+angular:
+  label: Angular
+  permalink: /angular
+apresentacao:
+  label: Apresentação
+  permalink: /apresentacao
+performance:
+  label: Performance
+  permalink: /performance
+tutorial:
+  label: Tutorial
+  permalink: /tutorial

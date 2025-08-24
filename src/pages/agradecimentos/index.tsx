@@ -21,7 +21,7 @@ const contributors = [
         icon: faInstagram,
       },
     ],
-    image: "./img/leonardo.jpg",
+    image: "https://github.com/leonardognh.png",
   },
 ];
 
