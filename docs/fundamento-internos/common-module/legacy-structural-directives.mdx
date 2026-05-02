@@ -1,0 +1,54 @@
+---
+sidebar_position: 6
+title: Diretivas Estruturais Legadas
+---
+
+# Diretivas Estruturais Legadas
+
+## Contexto técnico
+
+`*ngIf`, `*ngFor` e `*ngSwitch` ainda existem por compatibilidade.
+No v20+, o padrão para **código novo** costuma ser control flow (`@if`, `@for`, `@switch`).
+
+## O que observar internamente
+
+- Misturar sintaxes no mesmo domínio sem guideline confunde onboarding.
+- Migração incremental precisa de critério (por feature, por pasta, por time).
+- `trackBy` no legado vs `track` no moderno: mesma intenção, sintaxe diferente.
+
+## Quando ajuda
+
+- Manter legado estável enquanto migra.
+- Bibliotecas internas ainda não migradas.
+
+## Quando evitar
+
+- Novos arquivos sem necessidade real de legado.
+
+## Exemplo real (lado a lado)
+
+```html
+<!-- legado -->
+<ul>
+  <li *ngFor="let item of items; trackBy: trackById">{{ item.name }}</li>
+</ul>
+
+<!-- moderno -->
+<ul>
+  @for (item of items(); track item.id) {
+    <li>{{ item.name }}</li>
+  }
+</ul>
+```
+
+```ts
+trackById(_: number, item: { id: number }) {
+  return item.id;
+}
+```
+
+## Checklist rápido
+
+- [ ] Existe política do time para código novo vs legado.
+- [ ] A migração tem testes de regressão visual/funcional.
+- [ ] Você não “misturou estilos” sem motivo.

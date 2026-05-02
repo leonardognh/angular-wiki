@@ -1,0 +1,336 @@
+---
+alwaysApply: true
+---
+
+# Angular Docs BR — Cursor Rules
+
+## Sobre o projeto
+
+Este é um site de documentação Angular em pt-BR, construído com Docusaurus 3.10+, hospedado no GitHub Pages. O público-alvo são desenvolvedores iniciantes e intermediários de Angular.
+
+A documentação é dividida em **3 eras conceituais** (não por versão do Angular):
+
+- **Era Clássica (v2–14):** NgModules, class-based, RxJS como coluna vertebral
+- **Era Transição (v14–16):** Standalone components, inject(), functional guards/resolvers
+- **Era Moderna (v17+):** Signals, novo control flow (@if, @for, @defer), zoneless
+
+Além das eras, existem **Complementos** (CLI, arquitetura, performance, testes, RxJS vs Signals, padrões de estado, glossário) e **Trilhas de Aprendizado** (iniciante, intermediário, migração standalone, migração signals).
+
+---
+
+## Stack
+
+- **Docusaurus 3.10+** com TypeScript
+- **React** (para páginas customizadas e components MDX)
+- **GitHub Pages** (deploy via GitHub Actions)
+- **Locale:** pt-BR
+- Sem blog — apenas docs
+
+---
+
+## Tom e linguagem
+
+### Estilo de escrita
+
+- **Profissional mas informal** — como um dev sênior explicando pro colega mais novo no café
+- Brincalhão quando dá, sério quando o assunto exige
+- Dev-to-dev: sem corporativês, sem enrolação
+- Direto ao ponto, sem parágrafos genéricos de introdução que não dizem nada
+
+### Idioma
+
+- **Explicações em pt-BR**
+- **Código e termos técnicos em inglês** (component, service, pipe, signal, standalone, guard, resolver, input, output, template, etc.)
+- Não traduzir termos que são universais no ecossistema Angular
+- Nomes de APIs, classes, decorators e funções do Angular ficam sempre em inglês
+
+### O que evitar
+
+- Linguagem genérica tipo "Angular é um framework poderoso que..."
+- Repetições desnecessárias
+- Explicações que o leitor pode inferir do código
+- Excesso de emojis (use com parcimônia e propósito)
+
+---
+
+## Estrutura de pastas
+
+```
+docs/
+├── intro.mdx                         # Página principal
+├── era-classica/
+│   ├── index.mdx                     # Introdução da era
+│   ├── modules.mdx                   # ← Referência de estilo completa
+│   ├── components.mdx
+│   ├── templates.mdx
+│   ├── data-binding.mdx
+│   ├── directives.mdx
+│   ├── pipes.mdx
+│   ├── services-di.mdx
+│   ├── lifecycle.mdx
+│   ├── component-communication.mdx
+│   ├── routing.mdx
+│   ├── forms.mdx
+│   ├── http.mdx
+│   ├── rxjs.mdx
+│   └── testing.mdx
+├── era-transicao/
+│   ├── index.mdx
+│   ├── standalone-components.mdx
+│   ├── inject-function.mdx
+│   ├── functional-guards-resolvers.mdx
+│   ├── required-inputs.mdx
+│   ├── router-standalone.mdx
+│   ├── httpclient-standalone.mdx
+│   └── destroy-ref.mdx
+├── era-moderna/
+│   ├── index.mdx
+│   ├── signals.mdx
+│   ├── signal-inputs-outputs.mdx
+│   ├── control-flow.mdx
+│   ├── defer.mdx
+│   ├── signal-queries.mdx
+│   ├── zoneless.mdx
+│   ├── ssr-hydration.mdx
+│   ├── resource-api.mdx
+│   └── linked-signal.mdx
+└── trilhas/
+    ├── index.mdx
+    ├── iniciante.mdx
+    ├── intermediario.mdx
+    ├── migracao-standalone.mdx
+    └── migracao-signals.mdx
+```
+
+---
+
+## Template de tópico — Obrigatório
+
+Todo arquivo de tópico (exceto index.mdx e trilhas) DEVE seguir este template. Use `docs/era-classica/modules.mdx` como referência de implementação.
+
+### Frontmatter
+
+```yaml
+---
+sidebar_position: N
+title: Nome do Tópico
+tags: [era-classica|era-transicao|era-moderna, categoria]
+---
+```
+
+### Imports (quando usar tabs de evolução)
+
+```tsx
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+```
+
+### Estrutura do conteúdo (nesta ordem)
+
+```markdown
+# Título
+
+> **Era:** Clássica|Transição|Moderna (versões) · **Status:** descrição curta
+
+## O que é
+
+Explicação direta em 2-3 frases. Uma analogia informal se ajudar.
+
+## Pra que serve
+
+Lista curta de problemas que resolve.
+
+## Quando usar
+
+Cenários práticos com bullets.
+
+## Quando NÃO usar
+
+Cenários onde não faz sentido. Inclua warnings com :::warning se relevante.
+
+## Anatomia / Sintaxe (se aplicável)
+
+Código anotado com comentários em pt-BR explicando cada parte.
+Tabela de propriedades/opções se houver (colunas: Nome | O que faz | Quando usar).
+
+## Antes vs Depois
+
+Usar <Tabs> do Docusaurus com até 3 tabs quando o conceito evoluiu entre eras:
+
+- Era Clássica (value="classico")
+- Era Transição (value="standalone") — se aplicável
+- Era Moderna (value="moderno") — se aplicável
+
+Após as tabs, um parágrafo curto "O que mudou?" explicando a diferença fundamental.
+
+## Alternativas / Semelhantes
+
+Tabela: Conceito | Relação com [tópico atual]
+
+## Exemplo funcional
+
+Código real, mínimo e rodável. Não pseudo-código.
+Use :::tip para dicas contextuais dentro do exemplo.
+
+## Armadilhas comuns
+
+Numeradas (### 1. Título da armadilha).
+Cada uma com: código ❌ mostrando o erro → **Solução:** com explicação.
+
+## Por baixo dos panos (collapsible)
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+Explicação de como o Angular implementa internamente.
+Opcional mas desejável. Público: quem quer ir mais fundo.
+</details>
+
+## No mundo real (collapsible)
+
+<details>
+<summary>🏢 No mundo real</summary>
+Mini-case mostrando uso em app de produção (e-commerce, dashboard, etc.).
+</details>
+
+## Migração (se o conceito mudou entre eras)
+
+Comando CLI se existir + link para o tópico de destino.
+Use :::info para direcionar.
+
+## Desafios
+
+3 níveis, cada um em <details> collapsible:
+
+<details>
+<summary>🟢 Iniciante — Título do desafio</summary>
+**Enunciado:** descrição clara do que fazer.
+<details>
+<summary>💡 Dica</summary>
+ dicas sem dar a resposta
+  </details>
+<details>
+<summary>✅ Solução</summary>
+código completo da solução 
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — Título do desafio</summary>
+Combina conceitos. Mais complexo.
+</details>
+
+<details>
+<summary>🔴 Avançado — Título do desafio</summary>
+Cenário real. Pode envolver migração entre eras.
+</details>
+
+## Links úteis
+
+- 📖 Links para docs oficiais (angular.dev)
+- 🎥 Links para blog posts ou RFCs relevantes
+```
+
+---
+
+## Regras de código nos exemplos
+
+- Todo código em **TypeScript** (não JavaScript)
+- Imports completos no primeiro exemplo de cada tópico; nos seguintes pode omitir se óbvio
+- Comentários em pt-BR dentro do código, mas nomes de variáveis/funções em inglês
+- Usar `// ❌` para código errado e `// ✅` para correto em comparações
+- Usar `// 💥` para indicar onde o erro explode
+- Código deve ser **funcional e rodável** — não pseudo-código
+- Preferir exemplos com domínio realista (users, products, orders) ao invés de foo/bar
+
+---
+
+## Docusaurus — Convenções
+
+### Admonitions
+
+- `:::tip Dica` — para dicas úteis
+- `:::warning Atenção` — para pegadinhas e cuidados
+- `:::info` — para informações complementares e links
+- `:::danger` — para erros graves ou breaking changes
+
+### Tabs de evolução entre eras
+
+Usar SEMPRE que o conceito existe em mais de uma era. Labels:
+
+- `Com NgModule` / `Era Clássica` / `Class-based`
+- `Standalone (v15+)` / `Era Transição` / `Funcional`
+- `Era Moderna` / `Com Signals`
+
+### Collapsible sections
+
+Usar `<details>/<summary>` para:
+
+- 🔎 Por baixo dos panos
+- 🏢 No mundo real
+- Desafios (🟢 🟡 🔴)
+- 💡 Dicas de desafios
+- ✅ Soluções de desafios
+
+### Cross-references
+
+Sempre linkar para tópicos relacionados usando paths relativos:
+
+```markdown
+[Standalone Components](/docs/era-transicao/standalone-components)
+```
+
+---
+
+## Regras de qualidade
+
+### Antes de criar um tópico novo
+
+1. Verificar se o tópico já existe na estrutura
+2. Verificar se o `sidebars.ts` já inclui o tópico
+3. Seguir o template EXATAMENTE como definido acima
+4. Usar `docs/era-classica/modules.mdx` como referência de estilo
+
+### Checklist de completude
+
+- [ ] Frontmatter com sidebar_position, title e tags
+- [ ] Bloco de Era/Status no topo
+- [ ] Seção "O que é" com explicação concisa
+- [ ] Seção "Pra que serve" com bullets práticos
+- [ ] Seção "Quando usar" com cenários reais
+- [ ] Seção "Quando NÃO usar" com anti-patterns
+- [ ] Seção "Antes vs Depois" com Tabs (se aplicável)
+- [ ] Seção "Alternativas / Semelhantes" com tabela
+- [ ] Seção "Exemplo funcional" com código real
+- [ ] Seção "Armadilhas comuns" com pelo menos 2 armadilhas
+- [ ] Seção "Por baixo dos panos" collapsible
+- [ ] Seção "No mundo real" collapsible
+- [ ] Seção "Migração" (se o conceito mudou entre eras)
+- [ ] 3 Desafios (🟢 🟡 🔴) com enunciado + dica + solução
+- [ ] Seção "Links úteis" com docs oficiais
+
+### Consistência
+
+- Manter o tom uniforme entre todos os tópicos
+- Não duplicar explicações que já existem em outro tópico — linkar
+- Glossário deve ser atualizado quando um termo novo aparecer
+- Trilhas devem ser atualizadas quando um tópico novo for adicionado
+
+---
+
+## Fluxo de trabalho
+
+Quando receber um pedido para preencher um tópico:
+
+1. Leia o placeholder existente do arquivo
+2. Siga o template acima rigorosamente
+3. Garanta que o conteúdo técnico está correto e atualizado
+4. Verifique links internos para outros tópicos
+5. Rode `npm run build` para garantir que não quebrou nada
+
+Quando receber um pedido para criar algo novo:
+
+1. Verifique se encaixa na estrutura existente
+2. Proponha onde inserir antes de criar
+3. Atualize `sidebars.ts` se necessário
+4. Atualize trilhas relevantes se necessário
+5. Atualize o glossário se introduzir termos novos

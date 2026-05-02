@@ -1,0 +1,236 @@
+---
+sidebar_position: 2
+title: inject()
+tags: [era-transicao, di]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# inject()
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+`inject()` permite obter dependências fora do construtor, incluindo guards funcionais, resolvers e campos privados em componentes standalone.
+
+## Pra que serve
+
+- Simplificar classes com menos boilerplate de construtor
+- Reutilizar DI em funções (`CanActivateFn`, `ResolveFn`)
+- Melhorar legibilidade quando há muitas dependências
+
+## Quando usar
+
+- Em APIs funcionais da era de transição
+- Em componentes com estado e serviços injetados em campos privados
+- Em factories de providers
+
+## Quando NÃO usar
+
+- Fora de contexto de injeção do Angular
+- Quando uma dependência deve ser opcional e não foi tratada
+- Quando o construtor explícito é mais claro para o time
+
+:::warning[Atenção]
+
+`inject()` só funciona dentro de contexto de injeção; chamar em função utilitária comum gera erro de runtime.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class SessionFacade {
+  private readonly http = inject(HttpClient);
+
+  me() {
+    return this.http.get<User>('/api/me');
+  }
+}
+```
+
+:::tip[Dica]
+
+Use `private readonly service = inject(Service)` em campos para manter dependências visíveis no topo da classe.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+constructor(private readonly usersApi: UsersApi) {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+private readonly usersApi = inject(UsersApi);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+const usersApi = inject(UsersApi);
+const users = toSignal(usersApi.list(), { initialValue: [] });
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A injeção deixa de ficar presa ao construtor e passa a funcionar em estilos funcionais.
+
+## Armadilhas comuns
+
+### 1. Usar `inject()` em arquivo utilitário comum
+
+```typescript
+// ❌ fora de contexto DI
+export const mapUser = () => inject(UsersApi).list();
+```
+
+**Solução:** execute `inject()` apenas em classe, provider factory, guard/resolver funcional ou `runInInjectionContext`.
+
+### 2. Esconder dependências em funções internas longas
+
+```typescript
+// ❌ dependência aparece longe da definição da classe
+load() {
+  const api = inject(UsersApi);
+}
+```
+
+**Solução:** prefira campos privados para dependências principais da classe.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+`inject()` consulta o injector ativo na pilha de execução. Por isso ele funciona em funções de rota e factories sem exigir classe com construtor.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Equipes que adotaram guards/resolvers funcionais reduziram classes boilerplate e facilitaram testes pontuais de regras de navegação.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Injetar serviço em componente standalone</summary>
+
+**Enunciado:** Mostre o nome do usuário atual consumindo serviço com `inject()`.
+
+<details>
+<summary>💡 Dica</summary>
+
+Injete o serviço em campo privado e exponha o stream/sinal na classe.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({
+  standalone: true,
+  template: `Bem-vindo, {{ userName }}`,
+})
+export class ProfileHeaderComponent {
+  private readonly session = inject(SessionFacade);
+  userName = '...';
+
+  ngOnInit(): void {
+    this.session.me().subscribe((user) => (this.userName = user.name));
+  }
+}
+```
+
+O exemplo usa DI sem construtor e mantém a dependência explícita no topo da classe.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Usar inject em guard funcional</summary>
+
+**Enunciado:** Bloqueie rota quando não houver sessão válida.
+
+<details>
+<summary>💡 Dica</summary>
+
+Retorne `UrlTree` para redirecionar ao login.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const authGuard: CanActivateFn = () => {
+  const session = inject(SessionFacade);
+  const router = inject(Router);
+
+  return session.isLoggedIn() ? true : router.createUrlTree(['/login']);
+};
+```
+
+A regra de acesso fica em função pequena e testável, alinhada ao router standalone.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Compor providers com inject</summary>
+
+**Enunciado:** Crie interceptor funcional que adiciona token em requests.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `HttpInterceptorFn` e registre com `provideHttpClient`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const session = inject(SessionFacade);
+  const token = session.token();
+
+  const withAuth = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(withAuth);
+};
+
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+});
+```
+
+O interceptor usa DI funcional sem classe dedicada e mantém o setup de HTTP no bootstrap.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — API: inject](https://angular.dev/api/core/inject)
+- 📖 [Angular.dev — Dependency Injection](https://angular.dev/guide/dependency-injection)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

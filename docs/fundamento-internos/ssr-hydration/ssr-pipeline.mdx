@@ -1,0 +1,41 @@
+---
+sidebar_position: 1
+title: Pipeline de SSR
+---
+
+# Pipeline de SSR
+
+## Contexto técnico
+
+SSR gera HTML no servidor e entrega ao browser.
+O ponto interno é: o que pode ser renderizado no server e o que depende de browser APIs.
+
+## O que observar internamente
+
+- `PLATFORM_ID` e guards de browser.
+- Erros que só aparecem no server log.
+
+## Quando ajuda
+
+- SEO e LCP.
+
+## Quando evitar
+
+- Quando custo operacional não compensa.
+
+## Exemplo real
+
+```ts
+import { isPlatformBrowser } from '@angular/common';
+import { inject, PLATFORM_ID } from '@angular/core';
+
+const platformId = inject(PLATFORM_ID);
+if (isPlatformBrowser(platformId)) {
+  // browser-only
+}
+```
+
+## Checklist rápido
+
+- [ ] Não há `window` solto no server path.
+- [ ] Logs server ajudam a diagnosticar mismatch.

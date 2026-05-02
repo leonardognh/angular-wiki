@@ -1,0 +1,213 @@
+---
+sidebar_position: 12
+title: HttpClient
+tags: [era-classica, fundamentos, comunicação]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# HttpClient
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+`HttpClient` é a API padrão de comunicação HTTP no Angular clássico, baseada em Observables. Ele suporta interceptors, tipagem e composição RxJS.
+
+## Pra que serve
+
+- Encapsular chamadas REST de forma tipada
+- Tratar headers, autenticação e erros em cadeia
+- Reusar política de rede via interceptors
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Evite chamadas HTTP espalhadas em componentes de apresentação.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+list(): Observable<OrderDto[]> {
+  return this.http.get<OrderDto[]>('/api/orders');
+}
+```
+
+:::tip[Dica]
+
+Use services para data access e deixe componente focado em estado de tela.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de httpclient ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Assinar requisição sem cancelamento em tela de busca
+
+```typescript
+// ❌ Pode exibir resposta fora de ordem
+this.http.get('/api/search?q=' + term).subscribe();
+```
+
+**Solução:** Use `switchMap` para cancelar requisições anteriores.
+
+### 2. Tratar erro em cada componente manualmente
+
+```typescript
+// ❌ Duplicação de tratamento
+error => this.toast.error('Falha')
+```
+
+**Solução:** Centralize política com `HttpInterceptor` + handler global.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de httpclient está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de httpclient evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Service de leitura tipada</summary>
+
+**Enunciado:** Liste produtos com HttpClient get e tratamento de erro básico no componente.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+list(): Observable<Product[]> {
+  return this.http.get<Product[]>('/api/products');
+}
+```
+
+O endpoint fica encapsulado em service e com retorno tipado.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Retry com fallback de erro</summary>
+
+**Enunciado:** Inclua criação de produto com POST e feedback de loading, success e error.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+return this.http.get<Order[]>('/api/orders').pipe(
+  retry(2),
+  catchError(() => of([]))
+);
+```
+
+Em caso de instabilidade temporária, a tela mantém comportamento previsível.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Interceptor para token e correlação</summary>
+
+**Enunciado:** Centralize autenticação e retry em interceptor class-based sem duplicar código por chamada.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  const authReq = req.clone({
+    setHeaders: { Authorization: `Bearer ${this.auth.token}` }
+  });
+  return next.handle(authReq);
+}
+```
+
+O interceptor remove duplicação e garante padrão de autenticação em toda a aplicação.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

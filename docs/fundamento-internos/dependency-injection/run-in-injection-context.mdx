@@ -1,0 +1,38 @@
+---
+sidebar_position: 5
+title: runInInjectionContext
+---
+
+# runInInjectionContext
+
+## Contexto técnico
+
+`runInInjectionContext` permite executar trechos que precisam de `inject()` fora do fluxo natural.
+É ferramenta de integração, não “atalho arquitetural”.
+
+## O que observar internamente
+
+- Escopo do injector escolhido.
+- Evitar espalhar isso por todo canto.
+
+## Quando ajuda
+
+- Pontos de integração (tasks, scripts, bridges).
+
+## Quando evitar
+
+- Quando dá para reestruturar com API mais direta.
+
+## Exemplo real
+
+```ts
+runInInjectionContext(injector, () => {
+  const api = inject(OrdersApi);
+  return api.bootstrapCache();
+});
+```
+
+## Checklist rápido
+
+- [ ] O injector correto foi escolhido.
+- [ ] Não virou padrão para fugir de design ruim.

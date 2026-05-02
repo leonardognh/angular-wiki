@@ -1,0 +1,210 @@
+---
+sidebar_position: 4
+title: Data Binding
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Data Binding
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Data binding conecta propriedades da classe ao template por interpolação, property binding, event binding e two-way binding (`[(ngModel)]`) no modelo clássico.
+
+## Pra que serve
+
+- Sincronizar estado de UI com o estado da classe
+- Reduzir manipulação manual de DOM
+- Tornar fluxo de leitura e escrita explícito no template
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Misturar two-way binding em excesso com regras complexas gera telas difíceis de depurar.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+<input [value]="name" (input)="onNameChange($any($event.target).value)" />
+<p>{{ name }}</p>
+```
+
+:::tip[Dica]
+
+Prefira fluxo unidirecional por padrão; use two-way binding quando fizer sentido de UX.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de data binding ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Encadear expressões complexas no template
+
+```typescript
+// ❌ Difícil de ler e recalculado várias vezes
+{{ items.filter(i => i.active).map(i => i.name).join(', ') }}
+```
+
+**Solução:** Pré-calcule no componente e exponha propriedade pronta.
+
+### 2. Atualizar estado de formulário sem controle de origem
+
+```typescript
+// ❌ Escrita concorrente no mesmo campo
+this.form.patchValue({ name: valueFromApi });
+```
+
+**Solução:** Defina prioridade de fonte e use `emitEvent: false` quando necessário.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de data binding está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de data binding evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Interpolação e eventos</summary>
+
+**Enunciado:** Crie um filtro de produtos cobrindo interpolation, property binding e event binding na mesma tela.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+name = 'Ana';
+updateName(next: string): void {
+  this.name = next.trim();
+}
+```
+
+A view lê `name` por interpolação e atualiza via `(input)` chamando `updateName`.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Two-way binding controlado</summary>
+
+**Enunciado:** Evolua para two-way binding em formulário de edição com validação visual de erro.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+model = { query: '' };
+onQueryChange(value: string): void {
+  this.model = { ...this.model, query: value };
+}
+```
+
+Mesmo usando `[(ngModel)]`, a atualização de estado continua explícita e previsível.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Refatorar formulário legado com bindings claros</summary>
+
+**Enunciado:** Reduza side effects no template movendo lógica de binding complexo para a classe.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly vm$ = combineLatest([this.user$, this.permissions$]).pipe(
+  map(([user, permissions]) => ({ user, canEdit: permissions.includes('edit_user') }))
+);
+```
+
+O template passa a ler uma `view model` única, reduzindo acoplamento entre bindings dispersos.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

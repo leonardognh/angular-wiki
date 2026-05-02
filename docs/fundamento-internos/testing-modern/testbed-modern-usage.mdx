@@ -1,0 +1,40 @@
+---
+sidebar_position: 1
+title: Uso Moderno do TestBed
+---
+
+# Uso Moderno do TestBed
+
+## Contexto técnico
+
+`TestBed` ainda é o centro de testes de integração no Angular, mas no v20+ o padrão é configurar o mínimo necessário e preferir APIs modernas (`standalone`, `provideRouter`, `provideHttpClientTesting`).
+
+## O que observar internamente
+
+- Imports explícitos do componente standalone sob teste.
+- Providers reais vs mocks (custo vs fidelidade).
+- `fakeAsync`/`tick` para timers.
+
+## Quando ajuda
+
+- Testes de componente com template + DI.
+
+## Quando evitar
+
+- `TestBed` gigante para teste unitário puro de função (use teste direto).
+
+## Exemplo real
+
+```ts
+beforeEach(() => {
+  TestBed.configureTestingModule({
+    imports: [ProfileComponent],
+    providers: [{ provide: ProfileApi, useValue: { load: async () => ({ name: 'Ana' }) } }],
+  });
+});
+```
+
+## Checklist rápido
+
+- [ ] Configuração mínima e legível.
+- [ ] Sem providers duplicados entre testes.

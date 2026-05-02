@@ -1,0 +1,55 @@
+---
+sidebar_position: 3
+title: ControlValueAccessor Customizado
+---
+
+# ControlValueAccessor Customizado
+
+## Contexto técnico
+
+CVA é o contrato entre `FormControl` e componente custom de input.
+Erros aqui viram bugs estranhos de “valor não atualiza”.
+
+## O que observar internamente
+
+- `writeValue`, `registerOnChange`, `setDisabledState`.
+- Touch/blur para touched.
+
+## Quando ajuda
+
+- Inputs reutilizáveis (datepicker, rich select).
+
+## Quando evitar
+
+- Quando `@Input` + `@Output` já resolve.
+
+## Exemplo real
+
+```ts
+@Component({ /* ... */ })
+export class RatingInputComponent implements ControlValueAccessor {
+  private onChange: (value: number) => void = () => {};
+  value = 0;
+
+  writeValue(v: number): void {
+    this.value = v;
+  }
+
+  registerOnChange(fn: (value: number) => void): void {
+    this.onChange = fn;
+  }
+
+  setRating(n: number) {
+    this.value = n;
+    this.onChange(n);
+  }
+
+  registerOnTouched() {}
+  setDisabledState() {}
+}
+```
+
+## Checklist rápido
+
+- [ ] Valor sincroniza com form.
+- [ ] touched/disabled corretos.

@@ -1,0 +1,40 @@
+---
+sidebar_position: 4
+title: Projeção de Conteúdo Moderna
+---
+
+# Projeção de Conteúdo Moderna
+
+## Contexto técnico
+
+`ng-content` ainda é a base de composição, mas no v20+ o time combina com APIs modernas para reduzir acoplamento.
+O foco é contrato claro entre container e conteúdo projetado.
+
+## O que observar internamente
+
+- Múltiplos slots e nomes (`select`) precisam de padrão.
+- Estilização (`::ng-deep` legado) vs encapsulamento.
+- Testabilidade do container sem depender do markup filho.
+
+## Quando ajuda
+
+- Layouts reutilizáveis (card, shell, wizard).
+- Bibliotecas internas de UI.
+
+## Quando evitar
+
+- Quando um `@Input` simples resolve com menos indireção.
+
+## Exemplo real
+
+```html
+<!-- shell.component.html -->
+<header><ng-content select="[shell-header]"></ng-content></header>
+<main><ng-content></ng-content></main>
+```
+
+## Checklist rápido
+
+- [ ] Slots estão documentados.
+- [ ] Não existe `::ng-deep` novo sem decisão explícita.
+- [ ] O container não assume DOM filho frágil em testes.

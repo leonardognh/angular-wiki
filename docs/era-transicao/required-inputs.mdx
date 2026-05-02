@@ -1,0 +1,232 @@
+---
+sidebar_position: 4
+title: Required Inputs
+tags: [era-transicao, components]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Required Inputs
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+`input.required<T>()` (v16) declara de forma explícita que um componente standalone só funciona quando determinado dado é fornecido pelo pai.
+
+## Pra que serve
+
+- Evitar componentes renderizando com estado inválido
+- Melhorar legibilidade de contratos entre componentes
+- Reduzir checagens manuais de `undefined` espalhadas
+
+## Quando usar
+
+- Em componentes de apresentação dependentes de payload obrigatório
+- Em componentes de detalhe (`detail-card`, `summary-panel`)
+- Quando o dado vem de resolver/rota e deve existir
+
+## Quando NÃO usar
+
+- Em dados realmente opcionais de UI
+- Quando o valor pode ser calculado internamente
+- Em componentes de base genéricos sem contexto de domínio
+
+:::warning[Atenção]
+
+`required` não substitui validação de domínio no backend; ele protege contrato de UI.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-user-badge',
+  template: `<strong>{{ user().name }}</strong>`,
+})
+export class UserBadgeComponent {
+  readonly user = input.required<{ id: string; name: string }>();
+}
+```
+
+:::tip[Dica]
+
+Use required inputs em componentes pequenos e específicos, evitando sobrecarga de propriedades opcionais.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@Input() user?: User;
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+readonly user = input.required<User>();
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+const fullName = computed(() => this.user().name.toUpperCase());
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O contrato obrigatório é declarado na API do componente e não em convenção implícita.
+
+## Armadilhas comuns
+
+### 1. Marcar tudo como obrigatório
+
+```typescript
+// ❌ inputs visuais viram obrigatórios sem necessidade
+readonly tooltip = input.required<string>();
+```
+
+**Solução:** deixe obrigatório apenas o que é crítico para renderização correta.
+
+### 2. Misturar `@Input` e `input.required` no mesmo padrão
+
+```typescript
+// ❌ padrão inconsistente na mesma feature
+@Input() title?: string;
+readonly user = input.required<User>();
+```
+
+**Solução:** padronize por feature e documente o contrato no próprio componente.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+`input.required` integra-se ao sistema reativo novo e fornece erro claro quando o contrato não é atendido, antecipando falhas que antes apareciam no template.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em páginas de detalhe, required inputs diminui bug de "tela vazia" causado por navegação parcial sem dados essenciais.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Definir contrato obrigatório</summary>
+
+**Enunciado:** Crie um card de produto que só renderiza com `product` obrigatório.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com um componente standalone simples.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-product-card',
+  template: `<h3>{{ product().name }}</h3>`,
+})
+export class ProductCardComponent {
+  readonly product = input.required<{ id: number; name: string }>();
+}
+```
+
+O componente expõe contrato explícito e falha cedo quando o pai não fornece o dado necessário.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Combinar required input com rota</summary>
+
+**Enunciado:** Passe o item resolvido da rota para um componente de detalhe com required input.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `ActivatedRoute` no shell da página para entregar o dado ao componente filho.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({
+  standalone: true,
+  imports: [ProductCardComponent],
+  template: `<app-product-card [product]="product" />`,
+})
+export class ProductDetailPage {
+  private readonly route = inject(ActivatedRoute);
+  readonly product = this.route.snapshot.data['product'] as Product;
+}
+```
+
+A página garante que o resolver entregue o payload antes de montar o componente obrigatório.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Estruturar inputs obrigatórios por domínio</summary>
+
+**Enunciado:** Padronize required inputs em uma suíte de componentes de checkout.
+
+<details>
+<summary>💡 Dica</summary>
+
+Crie tipos compartilhados para contratos de entrada.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export interface CheckoutSummaryInput {
+  items: CheckoutItem[];
+  total: number;
+}
+
+@Component({
+  standalone: true,
+  selector: 'app-checkout-summary',
+  template: `Total: {{ data().total | currency:'BRL' }}`,
+})
+export class CheckoutSummaryComponent {
+  readonly data = input.required<CheckoutSummaryInput>();
+}
+```
+
+Com um tipo de contrato único, os componentes da feature evoluem sem quebrar integração silenciosamente.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — API: input](https://angular.dev/api/core/input)
+- 📖 [Angular.dev — Inputs as signals](https://angular.dev/guide/signals/inputs)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

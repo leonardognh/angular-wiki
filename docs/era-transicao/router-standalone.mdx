@@ -1,0 +1,242 @@
+---
+sidebar_position: 5
+title: Router Standalone
+tags: [era-transicao, routing, standalone]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Router Standalone
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+Na era de transição, o roteamento passa a ser configurado com `provideRouter` no `bootstrapApplication`, sem depender de `RouterModule.forRoot()` em módulo raiz.
+
+## Pra que serve
+
+- Centralizar configuração de rotas no bootstrap
+- Permitir guards/resolvers funcionais junto às rotas
+- Facilitar lazy loading com `loadComponent`
+
+## Quando usar
+
+- Em apps que estão removendo `AppModule`
+- Ao migrar telas antigas para carregamento sob demanda
+- Quando precisa aplicar providers de rota por feature
+
+## Quando NÃO usar
+
+- Quando a base ainda depende de configuração rígida em módulo compartilhado
+- Quando não há plano de migração incremental definido
+- Quando o time não valida fluxo de navegação em testes automatizados
+
+:::warning[Atenção]
+
+Migrar para `provideRouter` sem revisar fallback de rotas e guards pode causar loops ou telas inacessíveis.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+const routes: Routes = [
+  {
+    path: 'orders',
+    loadComponent: () => import('./orders/orders.page').then((m) => m.OrdersPage),
+  },
+  { path: '', pathMatch: 'full', redirectTo: 'orders' },
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)],
+});
+```
+
+:::tip[Dica]
+
+Prefira declarar o array `routes` por domínio (`catalogRoutes`, `accountRoutes`) e compor no bootstrap.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+})
+export class AppRoutingModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)],
+});
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes, withComponentInputBinding())],
+});
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O router vira provider de aplicação, alinhado ao restante do modelo standalone.
+
+## Armadilhas comuns
+
+### 1. Manter `RouterModule` e `provideRouter` ao mesmo tempo
+
+```typescript
+// ❌ configurações duplicadas geram comportamento inesperado
+imports: [RouterModule.forRoot(routes)];
+bootstrapApplication(AppComponent, { providers: [provideRouter(routes)] });
+```
+
+**Solução:** escolha um único ponto de configuração; em transição, priorize `provideRouter`.
+
+### 2. Lazy loading sem fallback
+
+```typescript
+// ❌ rota curinga ausente
+const routes: Routes = [{ path: 'orders', loadComponent: ... }];
+```
+
+**Solução:** adicione rota `**` para tela de erro/not found.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+Com `provideRouter`, os recursos do router (`withPreloading`, `withInMemoryScrolling`) são plugados como features composáveis, sem módulos auxiliares.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em monorepos, dividir rotas por domínio reduziu conflitos de merge em um arquivo único de rotas.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Configurar rotas standalone</summary>
+
+**Enunciado:** Configure rotas para `home` e `orders` usando `provideRouter`.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `loadComponent` para ambos os caminhos.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+const routes: Routes = [
+  { path: 'home', loadComponent: () => import('./home.page').then((m) => m.HomePage) },
+  { path: 'orders', loadComponent: () => import('./orders.page').then((m) => m.OrdersPage) },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+];
+
+bootstrapApplication(AppComponent, {
+  providers: [provideRouter(routes)],
+});
+```
+
+Essa configuração já aplica o roteamento da era de transição sem módulo de rotas.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Aplicar feature do router</summary>
+
+**Enunciado:** Ative preloading para rotas lazy e scroll restoration.
+
+<details>
+<summary>💡 Dica</summary>
+
+Combine `withPreloading` e `withInMemoryScrolling`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+    ),
+  ],
+});
+```
+
+As features do router ficam explícitas no bootstrap e fáceis de revisar.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Proteger e pré-carregar rota</summary>
+
+**Enunciado:** Restrinja `/admin` com guard funcional e carregue dados com resolver funcional.
+
+<details>
+<summary>💡 Dica</summary>
+
+Aplique `canActivate` e `resolve` no mesmo objeto de rota.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const adminGuard: CanActivateFn = () => inject(SessionService).isAdmin();
+export const usersResolver: ResolveFn<User[]> = () => inject(UsersApi).list();
+
+const routes: Routes = [
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    resolve: { users: usersResolver },
+    loadComponent: () => import('./admin.page').then((m) => m.AdminPage),
+  },
+];
+```
+
+A rota fica autocontida com regras de acesso e dados necessários antes da renderização.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Routing with standalone](https://angular.dev/guide/routing)
+- 📖 [Angular.dev — API: provideRouter](https://angular.dev/api/router/provideRouter)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

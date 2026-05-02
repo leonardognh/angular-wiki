@@ -1,0 +1,40 @@
+---
+sidebar_position: 2
+title: EnvironmentInjector
+---
+
+# EnvironmentInjector
+
+## Contexto técnico
+
+`EnvironmentInjector` é o injector “amplo” usado para composição de providers por bootstrap/feature.
+Ele importa quando você quer escopo sem `NgModule`.
+
+## O que observar internamente
+
+- Providers duplicados vs sobrescritos.
+- Hierarquia: root vs feature.
+
+## Quando ajuda
+
+- Apps standalone com composição modular.
+
+## Quando evitar
+
+- Quando tudo vira provider global “por preguiça”.
+
+## Exemplo real
+
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [
+    importProvidersFrom(LegacyModuleThatStillExportsTokens),
+    provideRouter(routes),
+  ],
+});
+```
+
+## Checklist rápido
+
+- [ ] Você sabe o escopo de cada provider.
+- [ ] Não há duplicação acidental.

@@ -1,0 +1,213 @@
+---
+sidebar_position: 13
+title: RxJS Essencial
+tags: [era-classica, fundamentos, reatividade]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# RxJS Essencial
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+RxJS é a base reativa do Angular clássico para eventos assíncronos, HTTP e composição de streams com operadores.
+
+## Pra que serve
+
+- Compor fluxos assíncronos de forma declarativa
+- Controlar concorrência e cancelamento
+- Tratar erro e retry sem callback hell
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Escolha incorreta de operador causa condição de corrida e telas inconsistentes.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+results$ = control.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(term => this.api.search(term ?? '')),
+);
+```
+
+:::tip[Dica]
+
+`switchMap`, `mergeMap`, `concatMap` e `exhaustMap` têm semânticas diferentes; escolha pelo caso.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de rxjs essencial ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. `subscribe` aninhado
+
+```typescript
+// ❌ Difícil de cancelar e tratar erro
+this.user$.subscribe(u => this.http.get('/orders/' + u.id).subscribe());
+```
+
+**Solução:** Encadeie com operadores (`switchMap`, `catchError`).
+
+### 2. `Subject` como estado global sem contrato
+
+```typescript
+// ❌ Escritas espalhadas e difíceis de rastrear
+state$.next(payload);
+```
+
+**Solução:** Encapsule escrita em service/facade com métodos explícitos.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de rxjs essencial está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de rxjs essencial evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Pipeline simples com map</summary>
+
+**Enunciado:** Implemente busca com debounceTime e switchMap para cancelar requisições antigas.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly names$ = this.users$.pipe(
+  map(users => users.map(u => u.name))
+);
+```
+
+O stream já entrega dado no formato que o template precisa.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Busca com debounce e cancelamento</summary>
+
+**Enunciado:** Adicione tratamento de erro com catchError e fallback visual no template.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly results$ = this.searchTerm$.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(term => this.api.search(term))
+);
+```
+
+`switchMap` cancela requisição antiga quando o usuário digita novamente.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Compartilhar stream sem requisição duplicada</summary>
+
+**Enunciado:** Refatore cadeia de operators para melhorar legibilidade e evitar subscribe aninhado.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly catalog$ = this.http.get<Catalog>('/api/catalog').pipe(
+  shareReplay({ bufferSize: 1, refCount: true })
+);
+```
+
+`shareReplay` permite múltiplos consumidores sem disparar novo HTTP a cada inscrição.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

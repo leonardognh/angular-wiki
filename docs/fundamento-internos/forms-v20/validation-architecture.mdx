@@ -1,0 +1,39 @@
+---
+sidebar_position: 2
+title: Arquitetura de Validação
+---
+
+# Arquitetura de Validação
+
+## Contexto técnico
+
+Validação precisa de camadas: UI, regras de formulário e regras de domínio.
+Misturar tudo no componente vira débito técnico rápido.
+
+## O que observar internamente
+
+- Validators síncronos vs async.
+- Cross-field validation.
+
+## Quando ajuda
+
+- Fluxos com regras de negócio fortes.
+
+## Quando evitar
+
+- Arquitetura pesada para 2 campos.
+
+## Exemplo real
+
+```ts
+export function passwordsMatchValidator(group: AbstractControl) {
+  const p1 = group.get('password')?.value;
+  const p2 = group.get('confirm')?.value;
+  return p1 === p2 ? null : { mismatch: true };
+}
+```
+
+## Checklist rápido
+
+- [ ] Regras de domínio não estão só no HTML.
+- [ ] Erros são testáveis.

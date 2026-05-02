@@ -1,0 +1,38 @@
+---
+sidebar_position: 4
+title: Testes Modernos de Router e HTTP
+---
+
+# Testes Modernos de Router e HTTP
+
+## Contexto técnico
+
+A combinação `provideRouter` + `RouterTestingHarness` + `HttpTestingController` permite testar jornadas sem subir servidor.
+
+## O que observar internamente
+
+- Ordem de navegação e expectativas de URL.
+- Flush de requests pendentes (`expectOne`).
+
+## Quando ajuda
+
+- Fluxos críticos (login, checkout, onboarding).
+
+## Quando evitar
+
+- Teste e2e duplicado sem valor.
+
+## Exemplo real
+
+```ts
+const http = TestBed.inject(HttpTestingController);
+const harness = await RouterTestingHarness.create();
+await harness.navigateByUrl('/orders');
+const req = http.expectOne('/api/orders');
+req.flush([]);
+```
+
+## Checklist rápido
+
+- [ ] Sem requests pendentes após o teste.
+- [ ] Navegação cobre guards principais.

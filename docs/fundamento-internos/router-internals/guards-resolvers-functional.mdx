@@ -1,0 +1,36 @@
+---
+sidebar_position: 2
+title: Guards e Resolvers Funcionais
+---
+
+# Guards e Resolvers Funcionais
+
+## Contexto técnico
+
+Guards/resolvers funcionais reduzem classes e aproximam regra de navegação de funções pequenas.
+O ponto interno é previsibilidade: retorno booleano vs `UrlTree`.
+
+## O que observar internamente
+
+- Redirecionamentos e loops.
+- Dependências via `inject()`.
+- Testabilidade isolada.
+
+## Quando ajuda
+
+- Regras de acesso claras e repetidas.
+
+## Quando evitar
+
+- Quando a regra vira novela (melhor service dedicado).
+
+## Exemplo real
+
+```ts
+export const authGuard: CanActivateFn = () => inject(SessionService).isLoggedIn() || inject(Router).createUrlTree(['/login']);
+```
+
+## Checklist rápido
+
+- [ ] Guards pequenos e testáveis.
+- [ ] Sem loop de redirect.

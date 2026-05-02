@@ -1,0 +1,42 @@
+---
+sidebar_position: 5
+title: Padrões de Renderização Dinâmica
+---
+
+# Padrões de Renderização Dinâmica
+
+## Contexto técnico
+
+Renderização dinâmica envolve escolher entre `@switch` de componentes, `NgComponentOutlet`, rotas e `@defer`.
+Cada opção tem custo diferente de bundle, teste e manutenção.
+
+## O que observar internamente
+
+- Matriz de variações suportadas.
+- Como testar cada combinação.
+- Impacto no bundle e no carregamento.
+
+## Quando ajuda
+
+- UI configurável por domínio.
+- Feature flags com implementações diferentes.
+
+## Quando evitar
+
+- Poucas variações fixas.
+
+## Exemplo real
+
+```html
+@switch (widget().type) {
+  @case ('chart') { <app-widget-chart [config]="widget().config" /> }
+  @case ('table') { <app-widget-table [config]="widget().config" /> }
+  @default { <app-widget-unknown /> }
+}
+```
+
+## Checklist rápido
+
+- [ ] A matriz de tipos é enumerável e testada.
+- [ ] O bundle não explodiu silenciosamente.
+- [ ] Existe fallback seguro.

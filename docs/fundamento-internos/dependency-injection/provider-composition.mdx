@@ -1,0 +1,38 @@
+---
+sidebar_position: 4
+title: Composição de Providers
+---
+
+# Composição de Providers
+
+## Contexto técnico
+
+Apps grandes viram “listas enormes de providers”.
+A composição correta reduz surpresas de ordem e duplicação.
+
+## O que observar internamente
+
+- `importProvidersFrom` vs funções `provideX`.
+- Ordem e sobreposição.
+
+## Quando ajuda
+
+- Modularizar bootstrap por domínio.
+
+## Quando evitar
+
+- Micro-módulos de providers sem ganho.
+
+## Exemplo real
+
+```ts
+export const coreProviders = [
+  provideHttpClient(withInterceptors([authInterceptor])),
+  provideRouter(appRoutes),
+];
+```
+
+## Checklist rápido
+
+- [ ] Providers estão agrupados por domínio.
+- [ ] Ordem documentada onde importa.

@@ -1,0 +1,40 @@
+---
+sidebar_position: 1
+title: Features do provideRouter
+---
+
+# Features do provideRouter
+
+## Contexto técnico
+
+`provideRouter` compõe comportamento do router via helpers (`withX`).
+A decisão interna é: quais features são globais e quais são por ambiente.
+
+## O que observar internamente
+
+- `withComponentInputBinding` e impacto em inputs.
+- Preload strategies e custo de rede.
+- Scroll restoration.
+
+## Quando ajuda
+
+- Padronizar router em app standalone.
+
+## Quando evitar
+
+- Ligar features sem entender efeito colateral.
+
+## Exemplo real
+
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes, withComponentInputBinding(), withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+  ],
+});
+```
+
+## Checklist rápido
+
+- [ ] Cada `withX` tem motivo documentado.
+- [ ] Você validou impacto em testes e2e.

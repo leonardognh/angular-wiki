@@ -1,0 +1,53 @@
+---
+sidebar_position: 2
+title: Hooks de Renderização
+---
+
+# Hooks de Renderização
+
+## Contexto técnico
+
+Hooks como `afterNextRender` conectam seu código ao ciclo de render do browser.
+Use para integrações DOM/medidas — não para regra de negócio.
+
+## O que observar internamente
+
+- SSR: nem toda interação DOM existe no server.
+- Evitar loops (medir -> mudar estado -> render -> medir).
+
+## Quando ajuda
+
+- Medir elemento, focar input, integrar lib DOM.
+
+## Quando evitar
+
+- Quando dá para resolver com template/bindings.
+
+## Exemplo real
+
+```ts
+import { afterNextRender, Component, ElementRef, inject, signal } from '@angular/core';
+
+@Component({
+  standalone: true,
+  template: `<div #box class="box"></div>`,
+})
+export class BoxComponent {
+  private readonly host = inject(ElementRef<HTMLElement>);
+  readonly size = signal<{ w: number; h: number } | null>(null);
+
+  constructor() {
+    afterNextRender(() => {
+      const el = this.host.nativeElement.querySelector('.box') as HTMLElement | null;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      this.size.set({ w: rect.width, h: rect.height });
+    });
+  }
+}
+```
+
+## Checklist rápido
+
+- [ ] Não roda lógica de negócio aqui.
+- [ ] SSR/hydration foram considerados.

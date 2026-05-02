@@ -1,0 +1,205 @@
+---
+sidebar_position: 6
+title: Zoneless Angular
+tags: [era-moderna, performance, change-detection]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Zoneless Angular
+
+> **Era:** Moderna (v18+) · **Status:** caminho suportado pelo time do Angular; APIs evoluem — confira a doc da **sua** versão ao configurar o bootstrap
+
+## O que é
+
+**Zoneless** é rodar o Angular **sem depender do Zone.js** para instrumentar `async` do browser. A detecção de mudança fica mais **explícita**: signals, `ChangeDetectorRef.markForCheck`, eventos do host, `async` pipe, etc., dependendo de como você compõe o app.
+
+## Pra que serve
+
+- **Reduzir overhead** de monkey-patching de APIs globais
+- **Previsibilidade**: menos “magic tick” global
+- Combinar com **signals** e templates modernos
+
+## Quando usar
+
+- Apps novos que já adotam **signals** + control flow
+- Equipes dispostas a **auditar** onde a UI precisa ser marcada para atualizar
+
+## Quando NÃO usar
+
+- Migração **sem plano** de libs de terceiros que assumem Zone
+- Time pequeno sem tempo para **testes de regressão** de CD
+
+:::warning[Atenção]
+
+Bibliotecas que dependem de `NgZone.run` implícito podem **quebrar** ou exigir adaptação.
+
+:::
+
+## Anatomia / Sintaxe
+
+O bootstrap exato muda entre versões; o padrão conceitual é **não incluir** `zone.js` no `polyfills` / `provideZoneChangeDetection` conforme guia oficial, e habilitar o modo zoneless experimental ou estável da sua versão.
+
+```typescript
+// Exemplo ilustrativo — valide em angular.dev para a versão do seu projeto
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideExperimentalZonelessChangeDetection(),
+    // ... demais providers (router, http, etc.)
+  ],
+});
+```
+
+:::info[Informação]
+
+Em versões mais novas o provider pode ter nome **`provideZonelessChangeDetection`** ou ficar **estável** sem prefixo `Experimental`. Sempre copie do guia oficial alinhado ao `package.json`.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="zone" label="Com Zone.js" default>
+
+```typescript
+// polyfills.ts (clássico)
+import 'zone.js';
+```
+
+Zone patcheia timers, XHR, promises — qualquer async pode marcar o app “dirty”.
+
+  </TabItem>
+  <TabItem value="zoneless" label="Zoneless">
+
+Sem patch global: o app **marca** atualização por APIs Angular (signals, eventos, etc.).
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Você troca **conveniência global** por **controle local** — ganha performance e previsibilidade, paga com disciplina.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `OnPush` | Complementar — reduz CD mesmo com Zone |
+| Signals | Principal motor de UI reativa em apps zoneless |
+| `NgZone.runOutsideAngular` | Padrão antigo para otimizar com Zone ainda ligado |
+
+## Exemplo funcional
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-tick',
+  standalone: true,
+  template: `
+    <p>Contador: {{ n() }}</p>
+    <button type="button" (click)="n.update((v) => v + 1)">+1</button>
+  `,
+})
+export class TickComponent {
+  readonly n = signal(0);
+}
+```
+
+Em zoneless, o clique do botão **ainda** atualiza a UI porque o handler do template é integrado ao scheduler do Angular.
+
+:::tip[Dica]
+
+Comece zoneless em **feature module** ou rota isolada antes de converter o app inteiro.
+
+:::
+
+## Armadilhas comuns
+
+### 1. `setInterval` sem integração
+
+```typescript
+// ❌ pode não atualizar template se nada marcar CD
+setInterval(() => this.n.update((x) => x + 1), 1000);
+```
+
+**Solução:** use `interval` do RxJS com `takeUntilDestroyed` + `async`/signal bridge, ou APIs que o Angular rastreia; em cenários avançados, `ChangeDetectorRef` / `ApplicationRef.tick` com critério.
+
+### 2. Lib que só funciona “dentro da Zone”
+
+**Solução:** wrapper com `NgZone.run`, migrar lib, ou adiar zoneless.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+Com Zone, monkey-patches encadeiam tasks e notificam o Angular. Sem Zone, o framework usa **schedulers** internos e marcação explícita para reconciliar views quando o grafo de signals ou eventos indica mudança.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Produtos **B2B** com tabelas pesadas e muitos timers adotam zoneless + OnPush para cortar trabalho por frame. **SSR** beneficia quando menos patch global no cliente.
+
+</details>
+
+## Migração
+
+1. Ative modo recomendado pela doc da sua versão (experimental → estável).
+2. Remova `import 'zone.js'` conforme guia.
+3. Corrija telas que pararam de atualizar (handlers, timers, libs).
+
+:::info[Informação]
+
+Leia [Signals](/docs/era-moderna/signals) e [Change detection (fundamentos)](/docs/fundamento-internos/change-detection/zoneless-v20) se aprofundar.
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Contador por clique</summary>
+
+**Enunciado:** Garanta que botão com `signal` incrementa sem `zone.js` (teste mental: handler de template).
+
+<details>
+<summary>✅ Solução</summary>
+
+O exemplo `TickComponent` desta página já cobre: `(click)` dispara atualização.
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — Checklist de migração</summary>
+
+**Enunciado:** Liste 3 áreas do app para auditar antes de zoneless.
+
+<details>
+<summary>✅ Solução</summary>
+
+1) Timers e `requestAnimationFrame` manuais; 2) integrações com chart libs; 3) código que muta DOM fora do Angular.
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — Zone e testes</summary>
+
+**Enunciado:** Por que alguns testes usam `fakeAsync`/`tick` com Zone?
+
+<details>
+<summary>✅ Solução</summary>
+
+`fakeAsync` emula o **task queue** que Zone coordena; sem Zone, estratégias de teste mudam (por exemplo `await fixture.whenStable()` ou APIs específicas do harness).
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Zoneless](https://angular.dev/guide/zoneless)
+- 📖 [Change detection](https://angular.dev/guide/change-detection)

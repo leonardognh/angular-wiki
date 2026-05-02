@@ -1,0 +1,39 @@
+---
+sidebar_position: 4
+title: "@defer com Hidratação"
+---
+
+# @defer com Hidratação
+
+## Contexto técnico
+
+Combinar `@defer` com SSR/hydration altera quando o browser baixa e hidrata pedaços da UI.
+O risco é “flash” e conteúdo atrasado demais.
+
+## O que observar internamente
+
+- Gatilhos e placeholders.
+- Prioridade de carregamento vs conteúdo crítico.
+
+## Quando ajuda
+
+- Seções pesadas não críticas no primeiro paint.
+
+## Quando evitar
+
+- Defer em conteúdo essencial para primeira interação.
+
+## Exemplo real
+
+```html
+@defer (on idle) {
+  <app-recommendations />
+} @placeholder {
+  <div aria-busy="true">Carregando recomendações…</div>
+}
+```
+
+## Checklist rápido
+
+- [ ] UX validou atraso.
+- [ ] Acessibilidade (aria) ok.

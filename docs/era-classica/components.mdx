@@ -1,0 +1,230 @@
+---
+sidebar_position: 2
+title: Components
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Components
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+No Angular clássico, um `@Component` define uma classe de apresentação ligada a um template HTML e estilos. É a principal unidade de composição de tela em aplicações v2-v14.
+
+## Pra que serve
+
+- Quebrar telas grandes em blocos reutilizáveis
+- Encapsular marcação, estilo e eventos de interface
+- Facilitar testes de comportamento de UI
+
+## Quando usar
+
+- Construção de páginas com seções independentes
+- Reuso de widgets (cards, tabelas, filtros)
+- Fronteira entre fluxo de tela e regra de domínio
+
+## Quando NÃO usar
+
+- Para lógica de infraestrutura (HTTP, cache, autenticação)
+- Como "componente Deus" com responsabilidade demais
+- Para comunicação global sem contrato claro
+
+:::warning[Atenção]
+
+Prefira componentes de apresentação enxutos e mova regras de negócio para services/facades.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-product-card',
+  template: `
+    <article>
+      <h3>{{ product.name }}</h3>
+      <p>{{ product.price | currency:'BRL':'symbol':'1.2-2' }}</p>
+      <button type="button" (click)="add.emit(product.id)">Adicionar</button>
+    </article>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class ProductCardComponent {
+  @Input() product!: { id: number; name: string; price: number };
+  @Output() add = new EventEmitter<number>();
+}
+```
+
+:::tip[Dica]
+
+Com `OnPush`, atualize referências de objetos/arrays em vez de mutar propriedades no mesmo objeto.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@NgModule({
+  declarations: [ProductListComponent, ProductCardComponent],
+  exports: [ProductListComponent]
+})
+export class ProductsModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-product-card',
+  imports: [CommonModule]
+})
+export class ProductCardComponent {}
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Exemplo moderno omitido de propósito nesta seção clássica.
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Na era clássica, a organização por `NgModule` é central para declarar/exportar componentes e controlar escopo de template.
+
+## Armadilhas comuns
+
+### 1. Mutar objeto de `@Input` em componente filho
+
+```typescript
+// ❌ Causa efeitos colaterais no pai
+this.product.price = 99;
+```
+
+**Solução:** Trate `@Input` como readonly e emita evento para o pai decidir atualização.
+
+### 2. Acoplar infraestrutura na camada de apresentação
+
+```typescript
+// ❌ Componente de card não deveria conhecer HTTP
+constructor(private http: HttpClient) {}
+```
+
+**Solução:** Use service em componente container e passe dados já prontos para o componente visual.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O compilador transforma template em instruções de binding. Com `OnPush`, o Angular executa verificação quando muda referência de `@Input`, há evento no template ou `markForCheck`.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um checkout legado, separar container e componentes de apresentação reduziu bugs de regressão e tempo de revisão de PR.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Lista com componente filho</summary>
+
+**Enunciado:** Monte uma listagem de produtos em que o pai renderiza cards e captura o evento de "adicionar ao carrinho".
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `@Output` no filho e trate a ação no componente pai.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+onAddToCart(productId: number): void {
+  this.cartService.add(productId);
+}
+```
+
+O card emite apenas o `id`; o pai coordena o caso de uso de carrinho.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Lista performática com trackBy</summary>
+
+**Enunciado:** Evite re-render desnecessário ao atualizar lista paginada de produtos.
+
+<details>
+<summary>💡 Dica</summary>
+
+Implemente `trackBy` por identificador estável.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+trackByProductId(index: number, item: { id: number }): number {
+  return item.id;
+}
+```
+
+`trackBy` evita recriação de nós DOM quando apenas parte da lista muda.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Refatoração para container/presentational</summary>
+
+**Enunciado:** Quebre uma tela de catálogo monolítica em container + componentes de apresentação sem alterar comportamento.
+
+<details>
+<summary>💡 Dica</summary>
+
+Defina claramente quais `@Input/@Output` representam contrato público.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({ selector: 'app-catalog-container', template: `
+  <app-catalog-filters (change)="onFilter($event)"></app-catalog-filters>
+  <app-product-list [products]="products" (add)="onAddToCart($event)"></app-product-list>
+`})
+export class CatalogContainerComponent {}
+```
+
+A tela passa a ter fronteiras explícitas, facilitando teste unitário e evolução por feature.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

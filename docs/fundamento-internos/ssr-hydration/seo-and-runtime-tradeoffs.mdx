@@ -1,0 +1,37 @@
+---
+sidebar_position: 5
+title: Trade-offs de SEO e Runtime
+---
+
+# Trade-offs de SEO e Runtime
+
+## Contexto técnico
+
+SSR melhora SEO/LCP, mas aumenta complexidade operacional e superfície de bugs de hidratação.
+Decisão é produto + engenharia.
+
+## O que observar internamente
+
+- Custo de servidor e cache.
+- Conteúdo dinâmico vs estático.
+
+## Quando ajuda
+
+- Páginas públicas indexáveis.
+
+## Quando evitar
+
+- App interno sem benefício.
+
+## Exemplo real
+
+```text
+Checklist:
+- páginas públicas: SSR
+- app autenticado: CSR + otimizações de bundle
+```
+
+## Checklist rápido
+
+- [ ] Métricas SEO/LCP medidas.
+- [ ] Custo de SSR entendido pelo time.

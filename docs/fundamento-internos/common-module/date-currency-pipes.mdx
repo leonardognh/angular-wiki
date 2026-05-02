@@ -1,0 +1,46 @@
+---
+sidebar_position: 2
+title: Pipes de Data e Moeda
+---
+
+# Pipes de Data e Moeda
+
+## Contexto técnico
+
+`DatePipe` e `CurrencyPipe` resolvem **formatação de apresentação**.
+Eles não substituem regras de domínio (timezone de negócio, arredondamento fiscal, impostos).
+
+## O que observar internamente
+
+- Locale ativo muda a saída (consistência entre telas importa).
+- Formatação no template aumenta acoplamento visual com regra de negócio se você não tiver limites.
+- Em apps internacionais, o time precisa de política clara de moeda e fuso.
+
+## Quando ajuda
+
+- Tabelas e detalhes com saída uniforme (`dd/MM`, `BRL`, etc.).
+- Quando o valor já chegou normalizado e você só precisa renderizar.
+
+## Quando evitar
+
+- Quando a regra de calendário/moeda é parte do domínio (faça antes no service).
+- Quando o template começa a “calcular” valores financeiros.
+
+## Exemplo real
+
+```html
+<time>{{ order.placedAt | date:'dd/MM/yyyy HH:mm' }}</time>
+<strong>{{ order.total | currency:'BRL':'symbol':'1.2-2' }}</strong>
+```
+
+:::warning[Atenção]
+
+Se você precisa exibir “valor do usuário” vs “valor convertido”, isso é regra de produto — não de pipe.
+
+:::
+
+## Checklist rápido
+
+- [ ] O time definiu locale padrão e exceções.
+- [ ] Valores sensíveis não vazam em logs por debug acidental.
+- [ ] A formatação não esconde bugs de domínio.

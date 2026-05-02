@@ -1,0 +1,37 @@
+---
+sidebar_position: 1
+title: Reactive Forms Moderno
+---
+
+# Reactive Forms Moderno
+
+## Contexto técnico
+
+Reactive Forms no v20+ funciona melhor com `nonNullable`, tipagem explícita e validação organizada.
+O foco é reduzir `any` e estado implícito.
+
+## O que observar internamente
+
+- `updateValueAndValidity` e performance.
+- Validação async e cancelamento.
+
+## Quando ajuda
+
+- Formulários médios/grandes.
+
+## Quando evitar
+
+- Form trivial (template-driven pode bastar).
+
+## Exemplo real
+
+```ts
+readonly form = this.fb.group({
+  email: this.fb.nonNullable.control('', { validators: [Validators.required, Validators.email] }),
+});
+```
+
+## Checklist rápido
+
+- [ ] Controles tipados.
+- [ ] Mensagens de erro consistentes.

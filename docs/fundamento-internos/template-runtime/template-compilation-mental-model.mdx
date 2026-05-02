@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+title: Modelo Mental da Compilação de Template
+---
+
+# Modelo Mental da Compilação de Template
+
+## Contexto técnico
+
+Template Angular não é “HTML com mágica”: ele vira instruções de atualização.
+Entender isso ajuda a prever custo e bugs quando você mistura `@if`, `@for`, bindings e componentes.
+
+## O que observar internamente
+
+- O que dispara atualização quando um signal muda.
+- Por que `track` importa em listas.
+- Como `@defer` separa carregamento de renderização.
+
+## Quando ajuda
+
+- Debug de performance e re-render inesperado.
+- Refactors grandes de UI.
+
+## Quando evitar
+
+- Não é um tópico “para evitar” — é base.
+
+## Exemplo real
+
+```html
+@if (vm().loading) {
+  <app-skeleton />
+} @else {
+  @for (row of vm().rows; track row.id) {
+    <app-row [data]="row" />
+  }
+}
+```
+
+## Checklist rápido
+
+- [ ] Você consegue explicar o que re-renderiza quando `vm()` muda.
+- [ ] `track` está correto.
+- [ ] `@defer` não está escondendo erro de import/lazy.

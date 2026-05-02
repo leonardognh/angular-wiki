@@ -1,0 +1,320 @@
+---
+sidebar_position: 2
+title: Signal Inputs & Outputs
+tags: [era-moderna, signals, components]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Signal Inputs & Outputs
+
+> **Era:** Moderna (v17.1+) · **Status:** `input()` / `output()` estáveis; `model()` para two-way binding reativo
+
+## O que é
+
+**Signal inputs** expõem `@Input()` como `InputSignal` — leitura com `()` no código e integração fina com `computed`. **Outputs** viram `OutputEmitterRef` via `output()`. **`model()`** combina leitura + emissão para cenários two-way (ex.: `[(ngModel)]`-like entre pai e filho) sem `@Input` + `@Output` duplicados.
+
+## Pra que serve
+
+- **API de componente previsível**: inputs somente leitura no filho
+- **`input.required()`** para contratos que não podem ser `undefined`
+- **`transform`** para coerção (`string` → `number`) na borda
+- **Menos boilerplate** que `@Input() set x(v) { ... }` + campo espelho
+
+## Quando usar
+
+- Novos componentes standalone em Angular 17+
+- Quando o pai passa dados que alimentam `computed` no filho
+- Form controls customizados com `model()` quando faz sentido expor valor duas vias
+
+## Quando NÃO usar
+
+- Libs que precisam manter **decorators `@Input`/`@Output`** por compatibilidade de API pública
+- Quando você **precisa de setters imperativos** com efeitos colaterais a cada mudança — repense o design; signal input prefere derivação
+
+:::warning[Atenção]
+
+`input()` **não** é mutável pelo filho: o pai é a fonte da verdade. Para two-way, use `model()` ou `output()` explícito.
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { Component, computed, input, model, output } from '@angular/core';
+
+@Component({
+  selector: 'app-user-card',
+  standalone: true,
+  template: `
+    <article>
+      <h3>{{ label() }}</h3>
+      <p>Score: {{ scoreLabel() }}</p>
+      <button type="button" (click)="liked.emit()">Curtir</button>
+      <label>
+        Nota
+        <input type="number" [value]="rating()" (input)="onRating($event)" />
+      </label>
+    </article>
+  `,
+})
+export class UserCardComponent {
+  // Obrigatório no compile-time
+  readonly userId = input.required<string>();
+
+  // Opcional com default
+  readonly showBadge = input(false, { transform: booleanAttribute });
+
+  // Two-way: pai usa [(rating)]
+  readonly rating = model(0);
+
+  readonly label = computed(() => `User ${this.userId()}`);
+  readonly scoreLabel = computed(() => `${this.rating()}/10`);
+
+  readonly liked = output<void>();
+
+  onRating(ev: Event) {
+    const v = Number((ev.target as HTMLInputElement).value);
+    this.rating.set(Number.isFinite(v) ? v : 0);
+  }
+}
+```
+
+| API | O que faz |
+| --- | --- |
+| `input<T>()` | `InputSignal<T \| undefined>` |
+| `input.required<T>()` | `InputSignal<T>` |
+| `input(default, opts?)` | default + `alias` / `transform` |
+| `output<T>()` | Evento tipado para o pai |
+| `model<T>(initial?)` | Two-way `ModelSignal<T>` |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="decorator" label="@Input / @Output" default>
+
+```typescript
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({ selector: 'app-old', template: `...` })
+export class OldComponent {
+  @Input() userId!: string;
+  @Output() liked = new EventEmitter<void>();
+}
+```
+
+  </TabItem>
+  <TabItem value="signals" label="input() / output()">
+
+```typescript
+import { Component, input, output } from '@angular/core';
+
+@Component({ selector: 'app-new', template: `...` })
+export class NewComponent {
+  readonly userId = input.required<string>();
+  readonly liked = output<void>();
+}
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Inputs viram **signals**: o template e `computed` reagem sem `ngOnChanges`. Outputs ficam **tipados** e alinhados ao padrão funcional do core.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `@Input()` clássico | Ainda suportado; signal input é o caminho novo |
+| `[(ngModel)]` | Para forms; `model()` cobre two-way **entre** componentes |
+| `outputToObservable` | Ponte para RxJS quando o pai prefere stream |
+
+## Exemplo funcional
+
+```typescript
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-pill',
+  standalone: true,
+  template: `<span class="pill">{{ text() }}</span>`,
+  styles: [
+    `
+      .pill {
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        background: #233;
+        color: #fff;
+      }
+    `,
+  ],
+})
+export class PillComponent {
+  readonly text = input.required<string>();
+}
+```
+
+Pai:
+
+```html
+<app-pill [text]="label()" />
+```
+
+:::tip[Dica]
+
+Use `input({ alias: 'legacyName' })` quando precisar renomear a API pública sem quebrar templates antigos.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Achar que `input()` pode ser `set` no filho
+
+```typescript
+// ❌ InputSignal não tem set público para o pai
+this.userId.set('x');
+```
+
+**Solução:** o pai passa `[userId]`; no filho só leia `this.userId()`. Fluxo volta com `output` ou `model`.
+
+### 2. Esquecer `required` e assumir string
+
+```typescript
+readonly id = input<string>(); // pode ser undefined
+```
+
+**Solução:** `input.required<string>()` ou default `input('')`.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O compilador trata signal inputs de forma que mudanças do pai **marcam** o componente filho de maneira integrada ao sistema de reatividade. `model()` expõe um `WritableSignal` com semântica two-way no template (`[(prop)]`).
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Design systems adotam `input.required` + `transform` para props de layout (`size: 'sm' | 'md'` a partir de string). `model()` aparece em **wrappers** de controles (slider, stepper) que espelham valor para o formulário pai.
+
+</details>
+
+## Migração
+
+1. Troque `@Input() x` por `readonly x = input...` mantendo o nome público.
+2. Troque `@Output() y` por `readonly y = output<Payload>()`.
+3. Remova `ngOnChanges` substituindo por `computed`/`effect` pontual.
+
+:::info[Informação]
+
+Veja também [Signals](/docs/era-moderna/signals) e [Signal Queries](/docs/era-moderna/signal-queries).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Saudação</summary>
+
+**Enunciado:** Componente com `name = input.required<string>()` e template `Olá, {{ name() }}`.
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+import { Component, input } from '@angular/core';
+
+@Component({
+  selector: 'app-hello',
+  standalone: true,
+  template: `<p>Olá, {{ name() }}</p>`,
+})
+export class HelloComponent {
+  readonly name = input.required<string>();
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — Transform numérico</summary>
+
+**Enunciado:** `pageSize = input(10, { transform: numberAttribute })` e documente que o pai pode passar string `"20"`.
+
+<details>
+<summary>💡 Dica</summary>
+
+Import `numberAttribute` de `@angular/core`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+import { Component, input, numberAttribute } from '@angular/core';
+
+@Component({
+  selector: 'app-pager',
+  standalone: true,
+  template: `<p>Tamanho: {{ pageSize() }}</p>`,
+})
+export class PagerComponent {
+  readonly pageSize = input(10, { transform: numberAttribute });
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — model two-way</summary>
+
+**Enunciado:** Filho com `keyword = model('')`; pai usa `[(keyword)]` com propriedade gravável simples.
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+import { Component, model } from '@angular/core';
+
+@Component({
+  selector: 'app-search-box',
+  standalone: true,
+  template: `
+    <input
+      type="search"
+      [value]="keyword()"
+      (input)="keyword.set(($any($event.target) as HTMLInputElement).value)"
+    />
+  `,
+})
+export class SearchBoxComponent {
+  readonly keyword = model('');
+}
+```
+
+```typescript
+import { Component } from '@angular/core';
+import { SearchBoxComponent } from './search-box.component';
+
+@Component({
+  standalone: true,
+  imports: [SearchBoxComponent],
+  template: `<app-search-box [(keyword)]="term" />`,
+})
+export class ParentComponent {
+  term = '';
+}
+```
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Signal inputs](https://angular.dev/guide/components/signal-inputs)
+- 📖 [Output fn](https://angular.dev/guide/components/output-fn)
+- 📖 [Model() two-way](https://angular.dev/guide/components/two-way-binding)

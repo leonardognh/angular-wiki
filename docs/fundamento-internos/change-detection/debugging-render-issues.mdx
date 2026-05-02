@@ -1,0 +1,38 @@
+---
+sidebar_position: 4
+title: Debug de Problemas de Renderização
+---
+
+# Debug de Problemas de Renderização
+
+## Contexto técnico
+
+Bugs de UI “fantasma” quase sempre são: estado não atualizado, dependência não rastreada, async fora do ciclo, ou erro silencioso no template.
+
+## O que observar internamente
+
+- Sinais lidos fora de contexto reativo.
+- `async`/`Promise` sem integração correta.
+- Diferenças SSR vs browser.
+
+## Quando ajuda
+
+- Quando a UI “às vezes” não atualiza.
+
+## Quando evitar
+
+- Não é tópico para evitar — é operação.
+
+## Exemplo real
+
+```ts
+// Checklist prático:
+// 1) o signal mudou? logar valor
+// 2) o template lê o signal certo?
+// 3) existe branch que não atualiza estado?
+```
+
+## Checklist rápido
+
+- [ ] Você consegue reproduzir com passos mínimos.
+- [ ] Consegue apontar qual camada (template/TS/DI) falhou.

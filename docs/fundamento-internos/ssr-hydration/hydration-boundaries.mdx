@@ -1,0 +1,37 @@
+---
+sidebar_position: 2
+title: Fronteiras de Hidratação
+---
+
+# Fronteiras de Hidratação
+
+## Contexto técnico
+
+Hidratação reconcilia HTML SSR com app cliente.
+“Boundary” é onde você aceita custo e risco de mismatch.
+
+## O que observar internamente
+
+- Componentes não determinísticos.
+- Timestamps e random no primeiro render.
+
+## Quando ajuda
+
+- Reduzir mismatch e melhorar estabilidade visual.
+
+## Quando evitar
+
+- Não é “evitar” — é planejar.
+
+## Exemplo real
+
+```html
+@if (showAds()) {
+  <app-ads />
+}
+```
+
+## Checklist rápido
+
+- [ ] Primeiro render é determinístico o suficiente.
+- [ ] Há plano para conteúdo dinâmico pós-hydration.

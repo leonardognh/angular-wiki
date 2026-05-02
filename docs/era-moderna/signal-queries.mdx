@@ -1,0 +1,253 @@
+---
+sidebar_position: 5
+title: Signal Queries
+tags: [era-moderna, signals, components]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Signal Queries
+
+> **Era:** Moderna (v17+) · **Status:** `viewChild` / `viewChildren` / `contentChild` / `contentChildren` como **funções** retornando `Signal`
+
+## O que é
+
+**Signal queries** substituem decorators `@ViewChild` / `@ContentChild` por funções **`viewChild`**, **`viewChildren`**, **`contentChild`**, **`contentChildren`** importadas de `@angular/core`. Elas retornam **signals** que atualizam quando a query encontra ou deixa de encontrar referências no template.
+
+## Pra que serve
+
+- Integrar com **computed** (“faça X quando o canvas existir”)
+- Evitar `ngAfterViewInit` só para “pegar referência e assinar”
+- Tipagem mais direta com **componente ou diretiva** como tipo genérico
+
+## Quando usar
+
+- Precisa de **referência a elemento** ou child component de forma reativa
+- Lógica que depende de **presença/ausência** de projeção (`contentChild`)
+
+## Quando NÃO usar
+
+- Quando **TemplateRef** dinâmico complexo é melhor com API antiga que o time já domina durante migração incremental
+- Queries que mudam **a cada CD** de forma caótica sem critério — revise o template
+
+:::warning[Atenção]
+
+Queries rodam após render — leitura no `constructor` pode ser **cedo demais**. Prefira `afterNextRender` / `effect` / template para consumo.
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { Component, ElementRef, computed, viewChild } from '@angular/core';
+
+@Component({
+  selector: 'app-ruler',
+  standalone: true,
+  template: `<canvas #cv width="300" height="80"></canvas>`,
+})
+export class RulerComponent {
+  // ElementRef do canvas quando existir
+  private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('cv');
+
+  readonly ready = computed(() => !!this.canvas());
+
+  drawLine() {
+    const el = this.canvas()?.nativeElement;
+    if (!el) return;
+    const ctx = el.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, el.width, el.height);
+    ctx.beginPath();
+    ctx.moveTo(0, 40);
+    ctx.lineTo(300, 40);
+    ctx.stroke();
+  }
+}
+```
+
+| Função | O que busca |
+| --- | --- |
+| `viewChild` / `viewChildren` | Filhos declarados **no template deste componente** |
+| `contentChild` / `contentChildren` | Conteúdo **projetado** (`<ng-content>`) |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="decorator" label="@ViewChild" default>
+
+```typescript
+import { Component, ElementRef, ViewChild } from '@angular/core';
+
+@Component({ template: `<canvas #cv></canvas>` })
+export class OldRuler {
+  @ViewChild('cv') canvas?: ElementRef<HTMLCanvasElement>;
+
+  ngAfterViewInit() {
+    const el = this.canvas?.nativeElement;
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="signals" label="viewChild()">
+
+```typescript
+import { Component, ElementRef, viewChild } from '@angular/core';
+
+@Component({ template: `<canvas #cv></canvas>` })
+export class NewRuler {
+  private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('cv');
+
+  paint() {
+    const el = this.canvas()?.nativeElement;
+  }
+}
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Referência vira **signal**: você reage com `computed`/`effect` em vez de hooks só para sincronizar.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `@ViewChild` estático | Ainda existe; signal query é o caminho novo |
+| `read: ElementRef` | Mesma ideia — generics em `viewChild` |
+| `Renderer2` | Para DOM imperativo sensível a SSR |
+
+## Exemplo funcional
+
+```typescript
+import { Component, ElementRef, effect, signal, viewChild } from '@angular/core';
+
+@Component({
+  selector: 'app-focus-demo',
+  standalone: true,
+  template: `
+    @if (visible()) {
+      <input #box type="text" placeholder="Foco aqui" />
+    }
+    <button type="button" (click)="visible.set(!visible())">Toggle</button>
+  `,
+})
+export class FocusDemoComponent {
+  readonly visible = signal(false);
+  private readonly box = viewChild<ElementRef<HTMLInputElement>>('box');
+
+  constructor() {
+    effect(() => {
+      if (!this.visible()) return;
+      const input = this.box()?.nativeElement;
+      if (input) {
+        input.focus();
+      }
+    });
+  }
+}
+```
+
+Quando `visible()` vira `true`, o `effect` roda de novo; quando o input entra no DOM, `viewChild` passa a resolver e o foco é aplicado.
+
+:::tip[Dica]
+
+`viewChild.required('ref')` falha em compile-time se a query pode não existir — use quando o template **garante** presença.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Query no `constructor`
+
+```typescript
+// ❌ ainda não há view
+constructor() {
+  console.log(this.canvas()?.nativeElement);
+}
+```
+
+**Solução:** `afterNextRender`, `effect`, ou método chamado após estabilizar a view.
+
+### 2. Nome de template errado
+
+```typescript
+// ❌ string não bate com #ref do template
+private readonly box = viewChild<ElementRef>('typo');
+```
+
+**Solução:** mesma string do `#typo` no HTML.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O runtime reconcilia resultados de query quando a árvore de view muda. Signal queries expõem isso como **valor reativo** em vez de campo mutado em hooks.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+**Editores** obtêm `contenteditable` ou canvas via `viewChild` e reagem a toggles de toolbar. **Modais** usam `viewChild` para focar o primeiro campo ao abrir.
+
+</details>
+
+## Migração
+
+1. Troque `@ViewChild('x')` por `viewChild('x')` ou `viewChild(Type)`.
+2. Remova `ngAfterViewInit` que só lia referência — use `effect`/`afterNextRender`.
+3. `viewChildren` retorna **SignalReadonly** de array-like — prefira iterar no TS, não misturar com `QueryList` antigo.
+
+:::info[Informação]
+
+Leia [Signal Inputs](/docs/era-moderna/signal-inputs-outputs) quando a comunicação for dados, não DOM.
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — canvas opcional</summary>
+
+**Enunciado:** `viewChild` para `#cv` e método `paint()` que só pinta se `nativeElement` existir.
+
+<details>
+<summary>✅ Solução</summary>
+
+Igual ao bloco “Anatomia” desta página: `if (!el) return;` dentro de `paint()`.
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — contentChild</summary>
+
+**Enunciado:** Componente com `<ng-content />` e `contentChild(TemplateRef)` — descreva quando o template projetado existe.
+
+<details>
+<summary>✅ Solução</summary>
+
+`contentChild` atualiza quando o slot de projeção recebe/remove conteúdo; combine com `@if` no pai para presença condicional.
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — viewChildren + track</summary>
+
+**Enunciado:** Por que `viewChildren` costuma retornar coleção que muda menos que `*ngFor` puro?
+
+<details>
+<summary>✅ Solução</summary>
+
+`viewChildren` reflete **queries estáveis** da view compilada; mudanças seguem o ciclo de query do Angular, não reatividade ad-hoc de arrays mutados sem atualizar a view.
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Signal queries](https://angular.dev/guide/components/signal-queries)
+- 📖 [ViewChild → viewChild](https://angular.dev/guide/components/signal-queries#migrate)

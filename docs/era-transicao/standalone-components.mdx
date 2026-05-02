@@ -1,0 +1,296 @@
+---
+sidebar_position: 1
+title: Standalone Components
+tags: [era-transicao, standalone]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Standalone Components
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+`standalone: true` elimina a necessidade de `NgModule` para declarar telas novas. Na era de transição, isso permite migrar por fatias do produto sem reescrever toda a base de uma vez.
+
+## Pra que serve
+
+- Reduzir acoplamento estrutural entre componentes e módulos grandes
+- Deixar dependências explícitas no próprio componente (`imports`)
+- Facilitar evolução incremental por domínio
+
+## Quando usar
+
+- Em features novas que já podem nascer fora do `AppModule`
+- Em rotas lazy que se beneficiam de isolamento por tela
+- Durante migração gradual de módulos legados
+
+## Quando NÃO usar
+
+- Quando o time não definiu convenção mínima de organização
+- Quando há dependência de biblioteca ainda centrada em módulo legado
+- Quando uma mudança ampla comprometeria um release crítico
+
+:::warning[Atenção]
+
+Standalone melhora arquitetura quando vem junto de fronteiras claras por feature; trocar apenas a sintaxe não resolve acoplamento.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-products-page',
+  imports: [CommonModule, ProductCardComponent],
+  template: `
+    <h2>Produtos</h2>
+    <app-product-card
+      *ngFor="let product of products"
+      [product]="product"
+    />
+  `,
+})
+export class ProductsPageComponent {
+  readonly products = [
+    { id: 1, name: 'Teclado Mecânico' },
+    { id: 2, name: 'Mouse Vertical' },
+  ];
+}
+```
+
+:::tip[Dica]
+
+Mantenha o `imports` do componente curto e orientado ao caso de uso da tela.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@NgModule({
+  declarations: [ProductsPageComponent, ProductCardComponent],
+  imports: [CommonModule],
+})
+export class ProductsModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+@Component({
+  standalone: true,
+  imports: [CommonModule, ProductCardComponent],
+  templateUrl: './products-page.component.html',
+})
+export class ProductsPageComponent {}
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+const products = signal<Product[]>([]);
+const hasProducts = computed(() => products().length > 0);
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** As dependências deixam de ficar escondidas no módulo e passam a ser parte explícita do contrato do componente.
+
+## Armadilhas comuns
+
+### 1. Criar componentes grandes com imports excessivos
+
+```typescript
+@Component({
+  standalone: true,
+  // ❌ lista extensa de imports sem recorte de responsabilidade
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ...shared],
+})
+export class DashboardComponent {}
+```
+
+**Solução:** divida em componentes standalone menores e componha por feature.
+
+### 2. Registrar provider de domínio no bootstrap global
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [ProductsApi], // ❌ deveria estar perto da feature
+});
+```
+
+**Solução:** use providers por rota/componente para regras específicas de domínio.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O compilador monta um grafo direto de dependências por componente. Isso simplifica tree-shaking e reduz impacto de alterações em cadeia.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Times que migraram por domínio (catálogo, checkout, perfil) reduziram conflitos em arquivos centrais e facilitaram ownership de cada squad.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Criar uma tela standalone</summary>
+
+**Enunciado:** Crie uma página standalone de produtos com botão para alternar a exibição de preços.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com estado local (`showPrice`) e template simples.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-products-page',
+  imports: [CommonModule],
+  template: `
+    <button (click)="togglePrice()">Alternar preço</button>
+    <ul>
+      <li *ngFor="let product of products">
+        {{ product.name }}
+        <span *ngIf="showPrice">- R$ {{ product.price }}</span>
+      </li>
+    </ul>
+  `,
+})
+export class ProductsPageComponent {
+  readonly products = [{ name: 'Monitor', price: 1299 }];
+  showPrice = false;
+
+  togglePrice(): void {
+    this.showPrice = !this.showPrice;
+  }
+}
+```
+
+A solução demonstra estado local e composição standalone sem dependência de módulo.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Consumir API da feature</summary>
+
+**Enunciado:** Carregue produtos de `/api/products` e trate estado de carregamento na tela.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe acesso HTTP em serviço injetável para não poluir o componente.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ProductsApi {
+  private readonly http = inject(HttpClient);
+  list() {
+    return this.http.get<Product[]>('/api/products');
+  }
+}
+
+@Component({
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <p *ngIf="loading">Carregando...</p>
+    <ul *ngIf="!loading">
+      <li *ngFor="let product of products">{{ product.name }}</li>
+    </ul>
+  `,
+})
+export class ProductsPageComponent {
+  private readonly api = inject(ProductsApi);
+  loading = true;
+  products: Product[] = [];
+
+  ngOnInit(): void {
+    this.api.list().subscribe((items) => {
+      this.products = items;
+      this.loading = false;
+    });
+  }
+}
+```
+
+O componente coordena estado visual enquanto o serviço centraliza a integração remota.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Escalar catálogo por rota</summary>
+
+**Enunciado:** Organize catálogo com shell standalone e rotas filhas lazy.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separar shell, listagem e detalhe facilita evolução independente por fluxo.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({
+  standalone: true,
+  selector: 'catalog-shell',
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
+})
+export class CatalogShellComponent {}
+
+export const CATALOG_ROUTES: Routes = [
+  {
+    path: '',
+    component: CatalogShellComponent,
+    children: [
+      { path: '', loadComponent: () => import('./list.page').then((m) => m.ListPage) },
+      { path: ':id', loadComponent: () => import('./detail.page').then((m) => m.DetailPage) },
+    ],
+  },
+];
+```
+
+Esse recorte mantém navegação da feature desacoplada do restante da aplicação.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Standalone components](https://angular.dev/guide/standalone-components)
+- 📖 [Angular.dev — API: Component](https://angular.dev/api/core/Component)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

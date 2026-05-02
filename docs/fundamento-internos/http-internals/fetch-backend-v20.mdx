@@ -1,0 +1,37 @@
+---
+sidebar_position: 4
+title: Backend Fetch no v20+
+---
+
+# Backend Fetch no v20+
+
+## Contexto técnico
+
+`withFetch()` muda o backend do `HttpClient` para `fetch`.
+Isso pode melhorar integração com APIs modernas do browser, mas muda detalhes de comportamento.
+
+## O que observar internamente
+
+- Semântica de cancelamento/abort.
+- Diferenças de ambiente (polyfills, SSR).
+
+## Quando ajuda
+
+- Quando você quer alinhar com `fetch` por padrão corporativo.
+
+## Quando evitar
+
+- Sem validação em SSR e ambientes legados.
+
+## Exemplo real
+
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withFetch())],
+});
+```
+
+## Checklist rápido
+
+- [ ] Testes passaram em SSR e browser.
+- [ ] Você entendeu diferenças vs XHR clássico.

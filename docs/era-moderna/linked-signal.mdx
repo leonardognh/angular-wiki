@@ -1,0 +1,226 @@
+---
+sidebar_position: 9
+title: LinkedSignal
+tags: [era-moderna, signals]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# LinkedSignal
+
+> **Era:** Moderna (v19.2+) · **Status:** `linkedSignal` deriva estado **gravável** a partir de uma **fonte** signal; confira disponibilidade exata no `package.json`
+
+## O que é
+
+**`linkedSignal`** cria um `WritableSignal` cuja **regra de derivação** roda quando a **fonte** muda — parecido com `computed`, mas você pode **`set`** / **`update`** o valor derivado localmente sem “quebrar” o vínculo com a fonte no próximo ciclo.
+
+## Pra que serve
+
+- **Sincronizar + editar**: ex.: lista de itens selecionados no pai e **quantidade editável** no filho
+- **Reset controlado** quando a fonte muda (novo `userId` → limpa rascunho)
+- Evitar padrão frágil de `effect` + `set` manual
+
+## Quando usar
+
+- Estado de **rascunho** ou **override** que nasce de outro signal mas o usuário altera
+- Quando `computed` é **read-only demais** e `signal` duplicado seria **fonte de verdade dupla**
+
+## Quando NÃO usar
+
+- Derivação **pura** — use `computed`
+- Fluxos **assíncronos** — `resource` / RxJS
+
+:::warning[Atenção]
+
+Sem entender a semântica de **recompute** ao mudar a fonte, é fácil **sobrescrever** edição do usuário no momento errado.
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { linkedSignal, signal } from '@angular/core';
+
+const selectedId = signal('a');
+
+const draftTitle = linkedSignal(() => {
+  // leia selectedId() — vira fonte
+  const id = selectedId();
+  return `Novo título para ${id}`;
+});
+
+// Usuário edita rascunho
+draftTitle.set('Meu título custom');
+
+// Quando selectedId muda, a função fonte roda de novo e redefine o draft
+selectedId.set('b');
+```
+
+Os nomes exatos (`linkedSignal`, opções de `source`, etc.) seguem a doc da versão — o conceito acima é o **modelo mental**.
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="effect" label="effect + set" default>
+
+```typescript
+const draft = signal('');
+effect(() => {
+  const id = selectedId();
+  draft.set(`Novo título para ${id}`);
+});
+// ❌ também roda em outras leituras — fácil de errar e loopar
+```
+
+  </TabItem>
+  <TabItem value="linked" label="linkedSignal">
+
+```typescript
+const draftTitle = linkedSignal(() => `Novo título para ${selectedId()}`);
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O framework encapsula **“derivar quando a fonte muda”** sem você escrever `effect` frágil.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `computed` | Sempre derivado; sem `set` |
+| `signal` + `effect` | Manual; maior risco |
+| `model()` | Two-way entre pai/filho em componentes |
+
+## Exemplo funcional
+
+```typescript
+import { Component, linkedSignal, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-line-editor',
+  standalone: true,
+  template: `
+    <p>SKU: {{ sku() }}</p>
+    <label>
+      Qtd
+      <input
+        type="number"
+        [value]="qty()"
+        (input)="qty.set(+($any($event.target).value) || 0)"
+      />
+    </label>
+  `,
+})
+export class LineEditorComponent {
+  readonly sku = signal('SKU-9');
+
+  /** Rascunho de quantidade reinicia quando o SKU muda. */
+  readonly qty = linkedSignal(() => {
+    this.sku(); // dependência: quando mudar, recalcula o valor inicial
+    return 1;
+  });
+}
+```
+
+:::tip[Dica]
+
+Comece descrevendo em uma frase: **“o que deve resetar quando a fonte muda?”** — isso guia o corpo do `linkedSignal`.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Usar `linkedSignal` para soma pura
+
+```typescript
+// ❌ computed basta
+const total = linkedSignal(() => a() + b());
+```
+
+**Solução:** `computed(() => a() + b())`.
+
+### 2. Fonte não lida dentro da fábrica
+
+```typescript
+// ❌ não depende de selectedId — não atualiza
+const x = linkedSignal(() => 'fixo');
+```
+
+**Solução:** leia explicitamente os signals-fonte dentro da função.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+A fábrica é reavaliada quando dependências **fonte** mudam, reaplicando o valor inicial derivado — edições locais ficam entre um ciclo e outro conforme a semântica da API.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+**Carrinho:** ao trocar de loja (`storeId`), `linkedSignal` zera cupom digitado mas mantém estrutura de UI. **Formulários** reiniciam campo “notas” quando muda o registro selecionado.
+
+</details>
+
+## Migração
+
+1. Liste `effect` que só resetam estado derivado.
+2. Substitua por `linkedSignal` quando houver **writable** com reset automático.
+
+:::info[Informação]
+
+Relacionado: [Signals](/docs/era-moderna/signals) e [Resource API](/docs/era-moderna/resource-api).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — mental model</summary>
+
+**Enunciado:** Em uma frase, diferença entre `computed` e `linkedSignal`.
+
+<details>
+<summary>✅ Solução</summary>
+
+`computed` é **somente leitura**; `linkedSignal` deriva valor inicial mas permite **`set`/`update`** entre mudanças da fonte.
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — reset</summary>
+
+**Enunciado:** Quando o signal `tenantId` muda, o `linkedSignal` `workspaceName` deve voltar a um texto padrão derivado desse id.
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+const tenantId = signal('t1');
+const workspaceName = linkedSignal(() => `Workspace ${tenantId()}`);
+// ao mudar tenantId, a fábrica roda de novo e redefine o writable
+```
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — conflito com edição</summary>
+
+**Enunciado:** Por que atualizar a fonte durante edição local pode ser surpresa UX?
+
+<details>
+<summary>✅ Solução</summary>
+
+A fábrica pode **resetar** o valor derivado — combine com debounce, confirmação, ou separação de “modo edição”.
+
+</details>
+</details>
+
+## Links úteis
+
+- 🎥 [linkedSignal — notas de release](https://blog.angular.dev)
+- 📖 [Signals guide](https://angular.dev/guide/signals)

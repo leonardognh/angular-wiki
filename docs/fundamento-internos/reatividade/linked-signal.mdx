@@ -1,0 +1,48 @@
+---
+sidebar_position: 2
+title: Uso do linkedSignal
+---
+
+# Uso do linkedSignal
+
+## Contexto técnico
+
+`linkedSignal` mantém um valor derivado sincronizado com uma fonte, preservando escolha quando ainda faz sentido.
+É o caso clássico de **lista que recarrega** sem perder seleção “por acidente”.
+
+## O que observar internamente
+
+- Definição explícita do fallback quando a lista muda.
+- Lista vazia: qual seleção faz sentido?
+- Evitar ciclos: seleção não pode reescrever a fonte de forma ping-pong.
+
+## Quando ajuda
+
+- Seleção em UI com refresh frequente.
+- Mestre-detalhe com fonte mutável.
+
+## Quando evitar
+
+- Quando `computed` resolve sem memória de escolha.
+- Quando UX ainda não definiu comportamento esperado.
+
+## Exemplo real
+
+```ts
+const products = signal<Product[]>([]);
+
+const selectedProductId = linkedSignal({
+  source: products,
+  computation: (list, previous) => {
+    const prev = previous?.value;
+    if (prev && list.some((p) => p.id === prev)) return prev;
+    return list[0]?.id ?? null;
+  },
+});
+```
+
+## Checklist rápido
+
+- [ ] Casos `[]`, troca de filtro e erro de rede estão cobertos.
+- [ ] UX validou o fallback.
+- [ ] Não há loop entre seleção e fonte.

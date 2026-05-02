@@ -1,0 +1,213 @@
+---
+sidebar_position: 14
+title: Testes
+tags: [era-classica, fundamentos, qualidade]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Testes
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Testes em Angular clássico cobrem componentes, serviços, pipes e rotas com Jasmine/Karma e `TestBed`. O objetivo é validar comportamento e evitar regressões.
+
+## Pra que serve
+
+- Garantir estabilidade durante refatorações
+- Validar fluxos críticos de UI e domínio
+- Documentar comportamento esperado por meio de specs
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Teste com foco em comportamento observável; evitar testar detalhe interno sem valor.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+it('deve desabilitar submit inválido', () => {
+  expect(button.disabled).toBeTrue();
+});
+```
+
+:::tip[Dica]
+
+Separe testes de unidade (rápidos) e integração de componente (template + dependências).
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de testes ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Teste quebradiço por seletor CSS frágil
+
+```typescript
+// ❌ Falha quando muda classe sem alterar comportamento
+fixture.nativeElement.querySelector('.btn-primary.big.rounded');
+```
+
+**Solução:** Use `By.css` com seletores estáveis ou harness quando disponível.
+
+### 2. Dependência real em teste unitário
+
+```typescript
+// ❌ Chama API real e deixa teste lento
+providers: [HttpClient]
+```
+
+**Solução:** Isolar com mocks/spies e `HttpClientTestingModule`.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de testes está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de testes evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Teste de serviço com spy</summary>
+
+**Enunciado:** Escreva teste de component verificando renderização de lista de pedidos no template.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+it('calcula imposto de 12%', () => {
+  const service = new TaxService();
+  expect(service.calculate(100)).toBe(12);
+});
+```
+
+O teste valida regra de negócio pura sem depender de Angular runtime.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Componente com TestBed</summary>
+
+**Enunciado:** Mocke serviço HTTP no TestBed e valide comportamento de loading e erro.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+it('desabilita submit quando formulário inválido', () => {
+  component.form.patchValue({ email: 'invalido' });
+  fixture.detectChanges();
+  expect(button.nativeElement.disabled).toBeTrue();
+});
+```
+
+Esse teste cobre template + validação reativa de forma integrada.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — HTTP com controlador de teste</summary>
+
+**Enunciado:** Cubra fluxo crítico de checkout com teste de integração de formulário e navegação.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+service.list().subscribe(items => expect(items.length).toBe(1));
+
+const req = httpMock.expectOne('/api/products');
+req.flush([{ id: 1, name: 'Mouse' }]);
+```
+
+`HttpTestingController` verifica URL/método e permite controlar resposta sem acesso real à rede.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

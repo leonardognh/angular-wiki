@@ -1,0 +1,208 @@
+---
+sidebar_position: 6
+title: Pipes
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Pipes
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Pipes transformam valores no template sem alterar o dado original. Na era clássica, pipes built-in e custom são usados para formatação e pequenas adaptações de exibição.
+
+## Pra que serve
+
+- Centralizar formatação reutilizável de dados
+- Deixar o template legível sem lógica repetida
+- Encapsular transformação de apresentação
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Evite pipe custom para regra de negócio; pipe é para transformação de apresentação.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Pipe({ name: 'statusLabel' })
+export class StatusLabelPipe implements PipeTransform {
+  transform(value: string): string { return value.toUpperCase(); }
+}
+```
+
+:::tip[Dica]
+
+Pipes puros são preferíveis para performance; impuros só quando necessário.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de pipes ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Pipe impuro sem necessidade
+
+```typescript
+// ❌ Reexecuta em todo ciclo de detecção
+@Pipe({ name: 'userFilter', pure: false })
+```
+
+**Solução:** Use `pure: true` e atualize referência da coleção.
+
+### 2. Colocar lógica pesada dentro do método transform
+
+```typescript
+// ❌ Filtro e ordenação custosos no template
+transform(items: Item[]): Item[] { /* ... */ }
+```
+
+**Solução:** Pré-processe no componente/service e use pipe apenas para formatação final.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de pipes está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de pipes evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Pipe custom de fallback</summary>
+
+**Enunciado:** Crie pipe customizado para formatar SKU de produto no padrão AAA-999.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+transform(value: string | null | undefined): string {
+  return value?.trim() ? value : 'Não informado';
+}
+```
+
+O pipe padroniza exibição de valores vazios sem duplicação no template.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Currency e locale corretos</summary>
+
+**Enunciado:** Torne o pipe configurável por argumento para suportar máscara curta e longa.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+{{ total | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+```
+
+A formatação respeita locale e evita gambiarras com `toFixed`.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Pipe de i18n com parâmetros</summary>
+
+**Enunciado:** Compare custo de pipe impuro vs pré-processamento e aplique a opção mais performática.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+transform(key: string, params?: Record<string, string | number>): string {
+  return this.i18nService.translate(key, params);
+}
+```
+
+O pipe centraliza tradução no template sem replicar chamadas de serviço em todos os componentes.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

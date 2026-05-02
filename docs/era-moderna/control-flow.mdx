@@ -1,0 +1,272 @@
+---
+sidebar_position: 3
+title: Novo Control Flow
+tags: [era-moderna, templates]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Novo Control Flow
+
+> **Era:** Moderna (v17+) · **Status:** Sintaxe estável (`@if`, `@for`, `@switch`); recomendado em projetos novos
+
+## O que é
+
+O **novo control flow** é sintaxe de template **nativa** que substitui `*ngIf`, `*ngFor` e `ngSwitch` por blocos `@if` / `@for` / `@switch`. O compilador gera código mais enxuto e dá suporte a **`track`** explícito em listas — essencial para performance e identidade estável de itens.
+
+## Pra que serve
+
+- **Condicionais legíveis** com `@else`, `@else if`
+- **Listas** com `track` obrigatório (boa prática forçada)
+- **Switch** expressivo com `@case` / `@default`
+- Menos `ng-container` só para agrupar diretivas
+
+## Quando usar
+
+- Todo template novo em Angular 17+
+- Quando refatorar telas com listas grandes (tabelas, feeds)
+- Quando quiser **diffs de template** mais claros no code review
+
+## Quando NÃO usar
+
+- Migração **big-bang** sem tempo — convive com `*ngFor` durante a transição
+- Código gerado por ferramentas que ainda emitem apenas microsyntax (avaliar pipeline)
+
+:::warning[Atenção]
+
+Sem `track` coerente, listas mutáveis podem **recriar DOM** demais ou associar estado errado ao item errado após reorder.
+
+:::
+
+## Anatomia / Sintaxe
+
+```html
+@if (user(); as u) {
+  <app-avatar [name]="u.name" />
+} @else if (loading()) {
+  <p>Carregando…</p>
+} @else {
+  <p>Sem usuário</p>
+}
+
+@for (order of orders(); track order.id) {
+  <app-order-row [order]="order" />
+} @empty {
+  <p>Nenhum pedido</p>
+}
+
+@switch (tab()) {
+  @case ('summary') {
+    <app-summary />
+  }
+  @case ('details') {
+    <app-details />
+  }
+  @default {
+    <app-fallback />
+  }
+}
+```
+
+| Bloco | Equivalente legado | Observação |
+| --- | --- | --- |
+| `@if` | `*ngIf` | Suporta `@else` / `@else if` |
+| `@for` | `*ngFor` | `track` é o coração da identidade |
+| `@switch` | `ngSwitch` | `@case` / `@default` |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="legado" label="*ngIf / *ngFor" default>
+
+```html
+<ng-container *ngIf="user$ | async as u; else loadingTpl">
+  <app-avatar [name]="u.name"></app-avatar>
+</ng-container>
+<ng-template #loadingTpl>Carregando…</ng-template>
+
+<div *ngFor="let order of orders; trackBy: trackOrder">{{ order.id }}</div>
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="@if / @for">
+
+```html
+@if (user(); as u) {
+  <app-avatar [name]="u.name" />
+} @else {
+  <p>Carregando…</p>
+}
+
+@for (order of orders(); track order.id) {
+  <div>{{ order.id }}</div>
+}
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Menos **async pipe aninhado** em templates complexos; `@for` deixa o **`track`** visível na mesma linha do loop.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `*ngFor` | Legado; mesmo papel |
+| `@defer` | Lazy de **blocos** / componentes — ortogonal ao `@for` |
+| `NgTemplateOutlet` | Ainda útil para composição dinâmica |
+
+## Exemplo funcional
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+type Order = { id: string; total: number };
+
+@Component({
+  selector: 'app-order-list',
+  standalone: true,
+  template: `
+    <h2>Pedidos</h2>
+    @for (o of orders(); track o.id) {
+      <article>
+        <strong>{{ o.id }}</strong>
+        — {{ o.total | currency : 'BRL' }}
+      </article>
+    } @empty {
+      <p>Nenhum pedido ainda.</p>
+    }
+  `,
+})
+export class OrderListComponent {
+  readonly orders = signal<Order[]>([
+    { id: 'A-1', total: 120 },
+    { id: 'A-2', total: 45.5 },
+  ]);
+}
+```
+
+:::tip[Dica]
+
+`track` com **id estável** (não índice) evita bugs quando a lista é filtrada ou reordenada.
+
+:::
+
+## Armadilhas comuns
+
+### 1. `track` com índice
+
+```html
+<!-- ❌ frágil quando a lista muda -->
+@for (item of items(); track $index) {
+  <div>{{ item }}</div>
+}
+```
+
+**Solução:** `track item.id` ou chave de negócio única.
+
+### 2. Objeto literal no `track`
+
+```html
+<!-- ❌ nova referência a cada CD -->
+@for (x of xs(); track x) { }
+```
+
+**Solução:** rastreie **primitivo** ou propriedade estável (`x.id`).
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O compilador transforma `@for` em lógica que reconcilia nós usando a chave de `track`, sem depender só da identidade de objeto em memória. Por isso `track` é parte do contrato de performance, não só “sugestão”.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em **tabelas virtualizadas** ou listas longas, `track` + change detection enxuta (signals/OnPush) reduz trabalho. Em **feature flags**, `@if` aninha variantes de UI sem explosão de `*ngIf` encadeados.
+
+</details>
+
+## Migração
+
+1. Substitua `*ngIf="cond"` por `@if (cond) { ... }`.
+2. Substitua `*ngFor` por `@for (...; track key)`.
+3. Migre `ngSwitch` para `@switch`.
+
+:::info[Informação]
+
+Combine com [Signals](/docs/era-moderna/signals) para ler estado no template com `()`.
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Lista vazia</summary>
+
+**Enunciado:** `@for` de `names()` com `@empty` mostrando “Nada aqui”.
+
+<details>
+<summary>✅ Solução</summary>
+
+```html
+@for (n of names(); track n) {
+  <li>{{ n }}</li>
+} @empty {
+  <p>Nada aqui</p>
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — else if</summary>
+
+**Enunciado:** `@if (score() < 5) { Ruim } @else if (score() < 8) { Médio } @else { Bom }` com `score = signal(7)`.
+
+<details>
+<summary>✅ Solução</summary>
+
+Use três ramos `@if` / `@else if` / `@else` como no enunciado; `score` como `signal(7)`.
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — track estável com imutável</summary>
+
+**Enunciado:** Lista de `todo` com `{ id, title }`; ao “arquivar”, filtre fora do signal — garanta que `track todo.id` continua correto.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `update` imutável (`filter`).
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly todos = signal([
+  { id: '1', title: 'A' },
+  { id: '2', title: 'B' },
+]);
+
+archive(id: string) {
+  this.todos.update((list) => list.filter((t) => t.id !== id));
+}
+```
+
+Template: `@for (todo of todos(); track todo.id) { ... }`.
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Control flow](https://angular.dev/guide/templates/control-flow)
+- 📖 [Migrating to control flow](https://angular.dev/guide/templates/migration)

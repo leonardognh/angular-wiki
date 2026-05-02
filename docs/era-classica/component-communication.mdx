@@ -1,0 +1,210 @@
+---
+sidebar_position: 9
+title: Comunicação entre Components
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Comunicação entre Components
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Comunicação entre componentes na era clássica ocorre principalmente por `@Input`, `@Output`, `@ViewChild` e mediação por service para componentes sem relação direta de árvore.
+
+## Pra que serve
+
+- Definir contratos explícitos entre pai e filho
+- Reduzir acoplamento entre camadas de UI
+- Permitir evolução isolada de componentes
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Escolha inadequada de canal de comunicação gera eventos difíceis de rastrear.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Input() value = 1;
+@Output() valueChange = new EventEmitter<number>();
+```
+
+:::tip[Dica]
+
+Regra prática: pai->filho por `@Input`, filho->pai por `@Output`, irmãos por serviço.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de comunicação entre components ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Passar objeto gigante por `@Input`
+
+```typescript
+// ❌ Filho acoplado ao modelo interno do pai
+@Input() dashboardState!: any;
+```
+
+**Solução:** Passe somente dados necessários em DTO específico.
+
+### 2. Usar EventEmitter em service
+
+```typescript
+// ❌ EventEmitter é para output de componente
+public changed = new EventEmitter<void>();
+```
+
+**Solução:** Em serviço, use `Subject`/`BehaviorSubject`.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de comunicação entre components está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de comunicação entre components evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Contrato pai/filho com Input/Output</summary>
+
+**Enunciado:** Implemente comunicação pai-filho para catálogo e carrinho usando Input e Output com tipagem forte.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Input() item!: Product;
+@Output() remove = new EventEmitter<number>();
+```
+
+O filho exibe `item` e emite o `id` para o pai decidir a ação.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Irmãos via serviço mediador</summary>
+
+**Enunciado:** Adicione comunicação entre componentes irmãos via serviço compartilhado com Subject.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+private readonly selectedIdSubject = new BehaviorSubject<number | null>(null);
+selectedId$ = this.selectedIdSubject.asObservable();
+
+select(id: number): void {
+  this.selectedIdSubject.next(id);
+}
+```
+
+A lista publica seleção e o painel de detalhes consome o stream.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Facade para comunicação em feature complexa</summary>
+
+**Enunciado:** Refatore uma tela grande quebrando comunicação acoplada em contratos claros e testáveis.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly vm$ = combineLatest([this.items$, this.selection$]).pipe(
+  map(([items, selectedId]) => ({ items, selectedId }))
+);
+```
+
+A facade vira ponto único de leitura/escrita, evitando encadeamento de outputs em vários níveis.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

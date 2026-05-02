@@ -1,0 +1,41 @@
+---
+sidebar_position: 5
+title: Performance de Roteamento
+---
+
+# Performance de Roteamento
+
+## Contexto técnico
+
+Performance de router é bundle + latência de navegação + estratégia de preload.
+O erro comum é achar que lazy loading “resolve tudo” sem medir.
+
+## O que observar internamente
+
+- Tamanho de chunks por feature.
+- Preload agressivo vs rede móvel.
+
+## Quando ajuda
+
+- Apps grandes com muitas rotas.
+
+## Quando evitar
+
+- Preload sem critério.
+
+## Exemplo real
+
+```ts
+provideRouter(routes, withPreloading(PreloadAllModules));
+```
+
+:::warning[Atenção]
+
+`PreloadAllModules` pode aumentar consumo de dados. Avalie estratégia custom.
+
+:::
+
+## Checklist rápido
+
+- [ ] Você mediu tempo de navegação e tamanho de chunk.
+- [ ] Preload tem política explícita.

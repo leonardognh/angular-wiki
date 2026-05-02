@@ -1,0 +1,39 @@
+---
+sidebar_position: 3
+title: Binding de Inputs via Router
+---
+
+# Binding de Inputs via Router
+
+## Contexto técnico
+
+Com `withComponentInputBinding`, params/query podem virar `@Input()` no componente roteado.
+Isso reduz boilerplate, mas exige disciplina de contrato de inputs.
+
+## O que observar internamente
+
+- Tipagem e conversão (`string` vs `number`).
+- Renomeação de rotas e impacto em inputs.
+- Componentes usados fora do router.
+
+## Quando ajuda
+
+- CRUDs e telas de detalhe com params.
+
+## Quando evitar
+
+- Quando o componente é reutilizado fora do router sem os mesmos inputs.
+
+## Exemplo real
+
+```ts
+@Component({ standalone: true, template: `<h1>User {{ userId }}</h1>` })
+export class UserPageComponent {
+  @Input({ required: true }) userId!: string;
+}
+```
+
+## Checklist rápido
+
+- [ ] Inputs batem com params reais.
+- [ ] Há fallback/404 quando param inválido.

@@ -1,0 +1,31 @@
+---
+sidebar_position: 0
+title: Injeção de Dependência
+---
+
+# Injeção de Dependência
+
+Em **Dependency Injection**, você aprofunda a arquitetura de provedores do Angular v20+, com `inject()`, `EnvironmentInjector`, composição de providers e execução em contexto de injeção. O objetivo é ganhar domínio sobre escopo, modularidade e testabilidade.
+
+## O que você vai ganhar
+- Entendimento claro de escopos de injeção em aplicações standalone e por feature.
+- Técnicas para criar APIs com `InjectionToken` mais seguras e evolutivas.
+- Capacidade de compor providers de forma previsível e reutilizável.
+- Controle para executar código fora de classes via contexto de injeção.
+
+## Quando entrar nesta trilha
+- Quando há dependências acopladas demais entre componentes, serviços e libs.
+- Quando você está estruturando bibliotecas internas com configuração extensível.
+- Quando precisa evitar efeitos colaterais em bootstrap e inicialização.
+- Quando quer melhorar isolamento e clareza dos testes com DI moderna.
+
+## Como estudar (ordem sugerida)
+1. [Função inject()](/docs/fundamento-internos/dependency-injection/inject-function)
+2. [EnvironmentInjector](/docs/fundamento-internos/dependency-injection/environment-injector)
+3. [Padrões com InjectionToken](/docs/fundamento-internos/dependency-injection/injectiontoken-patterns)
+4. [Composição de Providers](/docs/fundamento-internos/dependency-injection/provider-composition)
+5. [runInInjectionContext](/docs/fundamento-internos/dependency-injection/run-in-injection-context)
+
+:::tip[Dica]
+Sempre valide escopo e ciclo de vida de providers em um exemplo mínimo antes de aplicar em larga escala.
+:::

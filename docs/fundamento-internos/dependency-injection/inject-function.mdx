@@ -1,0 +1,39 @@
+---
+sidebar_position: 1
+title: Função inject()
+---
+
+# Função inject()
+
+## Contexto técnico
+
+`inject()` resolve dependências fora do construtor, habilitando factories, guards e funções pequenas.
+No v20+, isso é parte do estilo “funções + composição”.
+
+## O que observar internamente
+
+- Só funciona em contexto de injeção (senão: runtime error).
+- Dependências principais da classe ainda podem ficar como campos no topo para leitura.
+
+## Quando ajuda
+
+- `CanActivateFn`, interceptors, factories de providers.
+
+## Quando evitar
+
+- Quando esconder `inject()` no meio de funções longas piora leitura.
+
+## Exemplo real
+
+```ts
+export const adminGuard: CanActivateFn = () => {
+  const session = inject(SessionService);
+  const router = inject(Router);
+  return session.isAdmin() ? true : router.createUrlTree(['/403']);
+};
+```
+
+## Checklist rápido
+
+- [ ] Não há `inject()` fora de contexto.
+- [ ] Guards/interceptors ficaram pequenos e testáveis.

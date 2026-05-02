@@ -1,0 +1,28 @@
+---
+sidebar_position: 3
+title: "Trilha: Migração Standalone"
+tags: [trilha, migracao]
+---
+
+# Trilha: Migração para Standalone
+
+> Seu projeto tem NgModules por todo lado? Essa trilha te mostra como migrar sem quebrar nada.
+
+## Sequência sugerida
+
+1. [Standalone Components](/docs/era-transicao/standalone-components) — Entendendo o modelo
+2. [inject()](/docs/era-transicao/inject-function) — Substituindo constructor injection
+3. [Router Standalone](/docs/era-transicao/router-standalone) — provideRouter
+4. [HttpClient Standalone](/docs/era-transicao/httpclient-standalone) — provideHttpClient
+5. [Functional Guards & Resolvers](/docs/era-transicao/functional-guards-resolvers) — Guards como funções
+6. [DestroyRef](/docs/era-transicao/destroy-ref) — Cleanup moderno
+7. [Required Inputs](/docs/era-transicao/required-inputs) — Inputs obrigatórios
+
+:::info[Informação]
+
+O Angular CLI tem um schematic que faz boa parte da migração automaticamente:
+```bash
+ng generate @angular/core:standalone
+```
+
+:::

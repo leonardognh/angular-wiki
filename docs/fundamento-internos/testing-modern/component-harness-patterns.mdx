@@ -1,0 +1,36 @@
+---
+sidebar_position: 2
+title: Padrões com Component Harness
+---
+
+# Padrões com Component Harness
+
+## Contexto técnico
+
+Harness abstrai interação com UI e reduz acoplamento a CSS frágil (`querySelector` no escuro).
+
+## O que observar internamente
+
+- API do harness como contrato.
+- Performance (não abrir harness gigante para tudo).
+
+## Quando ajuda
+
+- Design system interno e componentes compartilhados.
+
+## Quando evitar
+
+- Componente trivial.
+
+## Exemplo real
+
+```ts
+const loader = TestbedHarnessEnvironment.loader(fixture);
+const harness = await loader.getHarness(UploadHarness);
+await harness.pickFile('invoice.pdf');
+```
+
+## Checklist rápido
+
+- [ ] Harness cobre interações reais do usuário.
+- [ ] Testes não quebram com mudança cosmética de CSS.

@@ -1,0 +1,52 @@
+---
+sidebar_position: 4
+title: Uso do NgComponentOutlet
+---
+
+# Uso do NgComponentOutlet
+
+## Contexto técnico
+
+`NgComponentOutlet` renderiza um `Type` de componente em runtime.
+Isso é poderoso para dashboards plugáveis, mas exige **contrato de inputs** e fallback seguro.
+
+## O que observar internamente
+
+- Como você passa dados para o componente dinâmico (inputs, DI, tokens).
+- O que acontece quando o tipo não existe ou config veio inválida.
+- Performance: criar componentes dinamicamente pode ser mais caro que rotas estáticas.
+
+## Quando ajuda
+
+- Catálogo de widgets por configuração.
+- Feature flags que trocam implementação sem redeploy de template.
+
+## Quando evitar
+
+- Poucas variações fixas (use `@switch` + componentes explícitos).
+- Quando o time não consegue testar bem o “matriz de tipos”.
+
+## Exemplo real
+
+```ts
+@Component({
+  standalone: true,
+  selector: 'app-widget-host',
+  template: `<ng-container *ngComponentOutlet="kind"></ng-container>`,
+})
+export class WidgetHostComponent {
+  kind = inject(WidgetRegistry).resolve(config());
+}
+```
+
+:::info[Informação]
+
+Se você está no v20+, avalie também composição com rotas/`@defer` antes de generalizar `NgComponentOutlet` como padrão principal.
+
+:::
+
+## Checklist rápido
+
+- [ ] Existe fallback para tipo desconhecido.
+- [ ] Inputs/DI do widget dinâmico estão documentados.
+- [ ] Há testes cobrindo os tipos suportados.

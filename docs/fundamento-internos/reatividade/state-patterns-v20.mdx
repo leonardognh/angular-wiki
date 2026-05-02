@@ -1,0 +1,44 @@
+---
+sidebar_position: 5
+title: Padrões de Estado no v20+
+---
+
+# Padrões de Estado no v20+
+
+## Contexto técnico
+
+No v20+, o erro mais comum é **estado global demais cedo**.
+A decisão correta depende do escopo: componente, feature, app.
+
+## O que observar internamente
+
+- Ownership: quem pode escrever?
+- Imutabilidade vs mutação controlada.
+- Como isso aparece em testes e em navegação.
+
+## Quando ajuda
+
+- Quando o time precisa de padrão único para crescer sem caos.
+- Quando várias squads tocam o mesmo domínio.
+
+## Quando evitar
+
+- Quando um signal global vira “Deus sabe o quê”.
+
+## Exemplo real
+
+```ts
+type Filters = { category: string; term: string };
+
+const filters = signal<Filters>({ category: 'all', term: '' });
+
+function patchFilters(patch: Partial<Filters>) {
+  filters.update((current) => ({ ...current, ...patch }));
+}
+```
+
+## Checklist rápido
+
+- [ ] Cada estado tem dono claro.
+- [ ] Não existe “importar signal de tudo” de qualquer lugar.
+- [ ] Há testes de invariantes do estado do domínio.

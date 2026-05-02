@@ -1,0 +1,254 @@
+---
+sidebar_position: 7
+title: DestroyRef & takeUntilDestroyed
+tags: [era-transicao, lifecycle, rxjs]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# DestroyRef & takeUntilDestroyed
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+`DestroyRef` (v16) permite registrar cleanup no contexto atual de injeção, e `takeUntilDestroyed` simplifica unsubscribe de streams RxJS em componentes/serviços.
+
+## Pra que serve
+
+- Evitar vazamento de subscriptions em telas dinâmicas
+- Substituir `Subject<void> + ngOnDestroy` repetitivo
+- Tornar ciclo de vida explícito em código assíncrono
+
+## Quando usar
+
+- Em componentes com múltiplos streams de UI
+- Em integrações com WebSocket/EventSource
+- Em efeitos de formulário com `valueChanges`
+
+## Quando NÃO usar
+
+- Para streams de vida curta que completam sozinhos (ex.: `HttpClient`)
+- Em código síncrono sem recursos para limpar
+- Quando não há contexto de injeção disponível
+
+:::warning[Atenção]
+
+`takeUntilDestroyed()` depende de contexto DI; em funções externas, injete `DestroyRef` explicitamente.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Component({
+  standalone: true,
+  template: `{{ onlineUsers }}`,
+})
+export class PresenceWidgetComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly presence = inject(PresenceService);
+  onlineUsers = 0;
+
+  ngOnInit(): void {
+    this.presence.stream()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((count) => (this.onlineUsers = count));
+  }
+}
+```
+
+:::tip[Dica]
+
+Quando possível, passe `DestroyRef` explicitamente para ficar claro qual contexto controla o teardown.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+private readonly destroy$ = new Subject<void>();
+
+ngOnDestroy(): void {
+  this.destroy$.next();
+  this.destroy$.complete();
+}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+private readonly destroyRef = inject(DestroyRef);
+stream$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+effect((onCleanup) => {
+  const sub = stream$.subscribe();
+  onCleanup(() => sub.unsubscribe());
+});
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O cleanup passa a ficar acoplado ao contexto real de vida do componente, sem `Subject` manual.
+
+## Armadilhas comuns
+
+### 1. Usar `takeUntilDestroyed()` sem contexto
+
+```typescript
+// ❌ função utilitária sem injector ativo
+export function bind(stream$: Observable<number>) {
+  return stream$.pipe(takeUntilDestroyed());
+}
+```
+
+**Solução:** receba `DestroyRef` por parâmetro ou chame dentro de classe/guard com DI.
+
+### 2. Misturar unsubscribe manual e automático
+
+```typescript
+// ❌ dupla estratégia no mesmo fluxo
+sub = stream$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+sub.unsubscribe();
+```
+
+**Solução:** escolha uma estratégia por stream; na transição, prefira o teardown automático.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+`DestroyRef` dispara callbacks ao encerrar o contexto DI. `takeUntilDestroyed` conecta esse evento ao operador RxJS sem `Subject` intermediário.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em dashboards com polling e websockets, esse padrão reduz vazamentos após navegação entre abas internas.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Limpar stream de formulário</summary>
+
+**Enunciado:** Escute `valueChanges` de um campo de busca e limpe no destroy.
+
+<details>
+<summary>💡 Dica</summary>
+
+Injete `DestroyRef` no componente e aplique no pipe.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({ standalone: true, template: `<input [formControl]="search" />` })
+export class SearchBoxComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  readonly search = new FormControl('');
+
+  ngOnInit(): void {
+    this.search.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((term) => console.log(term));
+  }
+}
+```
+
+O fluxo para automaticamente ao destruir o componente, sem `ngOnDestroy` manual.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Encerrar websocket por contexto</summary>
+
+**Enunciado:** Conecte a um websocket de notificações e encerre ao sair da página.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use callback `destroyRef.onDestroy` para fechar conexão nativa.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Component({ standalone: true, template: `Notificações ativas` })
+export class NotificationsPage {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly socket = new WebSocket('wss://api.example.com/notifications');
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.socket.close());
+  }
+}
+```
+
+A conexão externa é finalizada no mesmo ciclo de vida da página, evitando conexões órfãs.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Padronizar teardown em serviço de feature</summary>
+
+**Enunciado:** Crie serviço de polling que respeita destruição da feature.
+
+<details>
+<summary>💡 Dica</summary>
+
+Injete `DestroyRef` no serviço com provider no escopo da rota.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Injectable()
+export class MetricsPollingService {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly http = inject(HttpClient);
+
+  start() {
+    interval(10000)
+      .pipe(
+        switchMap(() => this.http.get('/api/metrics')),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
+  }
+}
+```
+
+Quando a rota/feature é desmontada, o polling para automaticamente sem teardown manual extra.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — API: DestroyRef](https://angular.dev/api/core/DestroyRef)
+- 📖 [Angular.dev — API: takeUntilDestroyed](https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

@@ -1,0 +1,37 @@
+---
+sidebar_position: 4
+title: Performance de Formulários
+---
+
+# Performance de Formulários
+
+## Contexto técnico
+
+Formulários grandes custam quando cada keystroke dispara validação pesada ou re-renderiza árvore grande.
+
+## O que observar internamente
+
+- `updateOn: 'blur' | 'submit'`.
+- Validators caros.
+
+## Quando ajuda
+
+- Formulários longos (checkout, cadastro).
+
+## Quando evitar
+
+- Micro-otimização sem evidência.
+
+## Exemplo real
+
+```ts
+this.fb.group(
+  { notes: [''] },
+  { updateOn: 'blur' },
+);
+```
+
+## Checklist rápido
+
+- [ ] Você mediu custo de validação.
+- [ ] Evita re-render desnecessário.

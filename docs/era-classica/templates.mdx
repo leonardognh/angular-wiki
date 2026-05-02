@@ -1,0 +1,207 @@
+---
+sidebar_position: 3
+title: Templates
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Templates
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Templates são HTMLs estendidos pelo compilador do Angular (`{{ }}`, property/event binding, diretivas estruturais e de atributo). Na era clássica, o template é o ponto central de renderização declarativa.
+
+## Pra que serve
+
+- Declarar UI com bindings previsíveis
+- Expressar regras simples de apresentação sem lógica de domínio
+- Reaproveitar marcação com `ng-template` e `ng-container`
+
+## Quando usar
+
+- Exibição e formatação de dados de componente
+- Regras de visibilidade, classes e estilos condicionais
+- Composição de blocos reutilizáveis no mesmo componente
+
+## Quando NÃO usar
+
+- Para cálculos pesados em cada ciclo de detecção
+- Para regras de negócio transacionais
+- Para chamadas assíncronas diretas
+
+:::warning[Atenção]
+
+Template com expressão complexa degrada performance e dificulta debugging.
+
+:::
+
+## Exemplo funcional
+
+```html
+<section *ngIf="orders.length; else empty">
+  <li *ngFor="let order of orders">{{ order.customer }}</li>
+</section>
+<ng-template #empty>Sem pedidos</ng-template>
+```
+
+:::tip[Dica]
+
+Mantenha o exemplo coerente com a era e com o problema real do tópico.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de templates ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Misturar estilos sem padrão
+
+```typescript
+// ❌ Cada arquivo usa uma estratégia diferente sem guideline
+```
+
+**Solução:** Defina padrão por contexto (feature, shared, data-access) e aplique em code review.
+
+### 2. Ignorar cleanup de efeitos assíncronos
+
+```typescript
+// ❌ Observable sem teardown claro
+```
+
+**Solução:** Use `ngOnDestroy` com `Subject`/`Subscription` para teardown explícito no modelo clássico.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de templates está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de templates evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Aplicar o básico de Templates</summary>
+
+**Enunciado:** Monte template com ngIf, ngFor e trackBy para lista de produtos.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+<li *ngFor="let user of users; trackBy: trackByUserId">
+  {{ user.name }} - {{ user.createdAt | date:'shortDate' }}
+</li>
+```
+Use binding declarativo para manter o template simples e testável.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Evitar funções no template</summary>
+
+**Enunciado:** Adicione ng-template para estados de empty e loading sem duplicar marcação.
+
+<details>
+<summary>💡 Dica</summary>
+
+Pré-calcule o valor na classe e exponha propriedade pronta para render.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly visibleUsers$ = this.users$.pipe(
+  map(users => users.filter(u => u.active))
+);
+```
+A filtragem sai do template e passa para fluxo reativo controlado.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Compor templates reutilizáveis</summary>
+
+**Enunciado:** Refatore template inchado em componentes menores preservando legibilidade e performance.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `ng-template` com `context` para injetar conteúdo customizado.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+<ng-template #priceCell let-item>
+  <strong>{{ item.price | currency:'BRL' }}</strong>
+</ng-template>
+
+<app-table [rows]="products" [cellTpl]="priceCell"></app-table>
+```
+Com `ng-template`, o componente base continua genérico e as variações ficam em cada tela.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

@@ -1,0 +1,44 @@
+---
+sidebar_position: 3
+title: NgClass e NgStyle
+---
+
+# NgClass e NgStyle
+
+## Contexto técnico
+
+`NgClass` e `NgStyle` são ferramentas de **estado visual dinâmico**.
+No v20+, elas continuam úteis, mas competem com abordagens mais “design system first” (classes estáveis + tokens).
+
+## O que observar internamente
+
+- Objetos gigantes de classes no HTML viram ruído em PR.
+- `NgStyle` inline pode dificultar tema/dark mode se crescer demais.
+- Prefira semântica de classe quando o estado é reutilizável.
+
+## Quando ajuda
+
+- Estados simples (`loading`, `error`, `active`).
+- Ajustes pontuais de opacidade/transform em interação.
+
+## Quando evitar
+
+- Quando o template acumula regra visual complexa.
+- Quando o mesmo padrão visual se repete em muitos lugares (extraia componente).
+
+## Exemplo real
+
+```html
+<button
+  [ngClass]="{ 'btn--danger': hasError, 'btn--busy': saving }"
+  [ngStyle]="{ pointerEvents: saving ? 'none' : 'auto' }"
+>
+  Salvar
+</button>
+```
+
+## Checklist rápido
+
+- [ ] O PR continua legível para alguém fora do time.
+- [ ] Você não escondeu regra de negócio em `ngStyle`.
+- [ ] Existe alternativa de componente quando o padrão se repetir.

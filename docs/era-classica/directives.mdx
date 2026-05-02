@@ -1,0 +1,218 @@
+---
+sidebar_position: 5
+title: Directives
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Directives
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Directives são classes que adicionam comportamento a elementos do DOM. Na era clássica, estruturais (`*ngIf`, `*ngFor`) e de atributo são fundamentais para composição de templates.
+
+## Pra que serve
+
+- Reutilizar comportamentos de UI sem copiar código
+- Encapsular interação com host element
+- Separar regra de apresentação transversal
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Diretiva que manipula DOM de forma agressiva tende a quebrar SSR/testes e dificulta manutenção.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+import { Directive, ElementRef, HostListener, Renderer2 } from '@angular/core';
+
+@Directive({ selector: '[appHighlight]' })
+export class HighlightDirective {
+  constructor(private host: ElementRef<HTMLElement>, private renderer: Renderer2) {}
+  @HostListener('mouseenter') onEnter(): void { this.renderer.setStyle(this.host.nativeElement, 'backgroundColor', '#fff3cd'); }
+  @HostListener('mouseleave') onLeave(): void { this.renderer.removeStyle(this.host.nativeElement, 'backgroundColor'); }
+}
+```
+
+:::tip[Dica]
+
+Use `Renderer2` e `HostListener` para manter compatibilidade com plataforma.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de directives ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Manipular DOM direto com `nativeElement.style`
+
+```typescript
+// ❌ Acoplado ao browser e difícil de testar
+this.el.nativeElement.style.display = 'none';
+```
+
+**Solução:** Use `Renderer2.setStyle` e APIs de host.
+
+### 2. Criar diretiva para regra que pertence ao componente
+
+```typescript
+// ❌ Complexidade sem ganho real
+@Directive({ selector: '[appSimpleTitle]' })
+```
+
+**Solução:** Se não há reuso transversal, mantenha a lógica no componente.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de directives está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de directives evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Diretiva de highlight</summary>
+
+**Enunciado:** Monte um exemplo prático de Directives em um fluxo de e-commerce (catálogo/carrinho/checkout), com cenário funcional mínimo.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@HostListener('mouseenter')
+onMouseEnter(): void {
+  this.renderer.setStyle(this.el.nativeElement, 'backgroundColor', '#fff3cd');
+}
+```
+
+A diretiva encapsula comportamento de hover reaproveitável em múltiplos componentes.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Diretiva com input configurável</summary>
+
+**Enunciado:** Evolua o exemplo de Directives para um caso intermediário com regras reais de negócio, tratamento de erro e organização de código.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Input('appAutoFocus') enabled = true;
+ngAfterViewInit(): void {
+  if (enabled) { this.el.nativeElement.focus(); }
+}
+```
+
+Um `@Input` torna a diretiva reutilizável sem duplicar comportamento em cada formulário.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Diretiva estrutural customizada</summary>
+
+**Enunciado:** Reestruture a implementação de Directives para escalar em projeto legado, com foco em manutenção e testes de regressão.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+if (this.hasPermission) {
+  this.viewContainer.createEmbeddedView(this.templateRef);
+} else {
+  this.viewContainer.clear();
+}
+```
+
+A diretiva estrutural centraliza controle de permissão no template sem espalhar `*ngIf` complexo.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

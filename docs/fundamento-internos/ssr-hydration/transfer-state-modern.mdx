@@ -1,0 +1,41 @@
+---
+sidebar_position: 3
+title: TransferState Moderno
+---
+
+# TransferState Moderno
+
+## Contexto técnico
+
+`TransferState` evita double-fetch: servidor busca, cliente reutiliza.
+No v20+, isso continua sendo peça-chave de SSR bem feito.
+
+## O que observar internamente
+
+- Chaves estáveis e versionamento.
+- Tamanho do payload transferido.
+
+## Quando ajuda
+
+- Dados iniciais caros (catálogo, config).
+
+## Quando evitar
+
+- Transferir objetos enormes sem necessidade.
+
+## Exemplo real
+
+```ts
+const key = makeStateKey<string>('bootstrap-config');
+
+if (isPlatformServer(inject(PLATFORM_ID))) {
+  transferState.set(key, JSON.stringify(config));
+} else {
+  const cached = transferState.get(key, null);
+}
+```
+
+## Checklist rápido
+
+- [ ] Chave única e estável.
+- [ ] Payload minimizado.

@@ -1,0 +1,597 @@
+---
+sidebar_position: 1
+title: NgModules
+tags: [era-classica, fundamentos, organização]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# NgModules
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional, mas sendo substituído por Standalone Components
+
+## O que é
+
+Um **NgModule** é uma classe TypeScript decorada com `@NgModule()` que funciona como um **container organizacional** para a aplicação Angular. Ele agrupa components, directives, pipes e services relacionados, e define o que é visível para outras partes da aplicação.
+
+Pense nele como uma "caixa" que diz pro Angular: "Esses components existem, eles precisam dessas dependências, e eles exportam essas coisas."
+
+## Pra que serve
+
+- **Organizar** a aplicação em blocos coesos
+- **Declarar** quais components, directives e pipes existem
+- **Importar** funcionalidades de outros modules (como `FormsModule`, `HttpClientModule`)
+- **Exportar** elementos para que outros modules possam usá-los
+- **Prover** services com escopo específico
+
+## Quando usar
+
+- Quando você está trabalhando em um projeto **Angular < 14** (não tem opção)
+- Quando está mantendo um **projeto legado** que já usa modules extensivamente
+- Quando precisa de **lazy loading por módulos** (o formato original de code splitting do Angular)
+
+## Quando NÃO usar
+
+- Em **projetos novos** (a partir do Angular 15+), prefira standalone components
+- Quando o module seria **tão pequeno** que só teria 1 component — provavelmente standalone resolve
+- Quando está criando uma **lib reutilizável** moderna — standalone components são mais flexíveis
+
+:::warning[Atenção]
+
+A partir do Angular 17, o CLI gera projetos **sem** `AppModule` por padrão. NgModules ainda funcionam e serão suportados por muito tempo, mas o futuro do Angular é standalone.
+
+:::
+
+## Anatomia de um NgModule
+
+```typescript
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
+import { FooterComponent } from './footer/footer.component';
+
+@NgModule({
+  // Components, directives e pipes que PERTENCEM a este module
+  declarations: [
+    AppComponent,
+    HeaderComponent,
+    FooterComponent,
+  ],
+
+  // Outros modules cujas exports este module precisa
+  imports: [
+    BrowserModule,
+  ],
+
+  // O que este module torna disponível para quem importá-lo
+  exports: [
+    HeaderComponent,
+    FooterComponent,
+  ],
+
+  // Services com escopo deste module (raro — prefira providedIn: 'root')
+  providers: [],
+
+  // O component raiz da aplicação (só no AppModule)
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+### Propriedades do `@NgModule()`
+
+| Propriedade | O que faz | Quando usar |
+|---|---|---|
+| `declarations` | Registra components, directives e pipes | Sempre — é obrigatório declarar antes de usar |
+| `imports` | Traz funcionalidades de outros modules | Quando você precisa de algo externo (Forms, HTTP, Router, etc.) |
+| `exports` | Torna elements visíveis pra quem importar este module | Quando outros modules precisam usar seus components |
+| `providers` | Registra services com escopo do module | Raramente — prefira `providedIn: 'root'` |
+| `bootstrap` | Define o component raiz | Só no `AppModule` |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Com NgModule" default>
+
+```typescript
+// app.module.ts
+@NgModule({
+  declarations: [AppComponent, UserListComponent, UserCardComponent],
+  imports: [BrowserModule, HttpClientModule, FormsModule],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+
+// main.ts
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule } from './app/app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Standalone (v15+)">
+
+```typescript
+// app.component.ts
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [UserListComponent, HttpClientModule, FormsModule],
+  template: `<app-user-list />`,
+})
+export class AppComponent {}
+
+// main.ts
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppComponent } from './app/app.component';
+
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** No modelo standalone, cada component gerencia suas próprias dependências. Não precisa de um module centralizador pra declarar quem existe. É como se cada component tivesse um mini-module embutido.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação com NgModule |
+|---|---|
+| **Standalone Components** | Substituto moderno — cada component é "self-contained" |
+| **Feature Modules** | Padrão de organização usando NgModule para agrupar por domínio |
+| **Shared Module** | Padrão para centralizar components/pipes/directives reutilizáveis |
+| **Core Module** | Padrão para services singleton (hoje resolvido com `providedIn: 'root'`) |
+
+## Exemplo funcional
+
+Um mini-app com `AppModule` e `SharedModule`:
+
+```typescript
+// shared/shared.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { TruncatePipe } from './pipes/truncate.pipe';
+
+@NgModule({
+  declarations: [LoadingSpinnerComponent, TruncatePipe],
+  imports: [CommonModule],
+  exports: [LoadingSpinnerComponent, TruncatePipe, CommonModule],
+})
+export class SharedModule {}
+```
+
+```typescript
+// features/users/users.module.ts
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../../shared/shared.module';
+import { UserListComponent } from './user-list/user-list.component';
+import { UserDetailComponent } from './user-detail/user-detail.component';
+import { UsersRoutingModule } from './users-routing.module';
+
+@NgModule({
+  declarations: [UserListComponent, UserDetailComponent],
+  imports: [SharedModule, UsersRoutingModule],
+})
+export class UsersModule {}
+```
+
+```typescript
+// app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, AppRoutingModule],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+:::tip[Dica]
+
+Pra que quem importar `SharedModule` já tenha acesso a `ngIf`, `ngFor` e outros — sem precisar importar `CommonModule` separadamente em cada feature module. Economia de boilerplate.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Declarar o mesmo component em dois modules
+
+```typescript
+// ❌ ERRO: UserCardComponent declarado em dois modules
+@NgModule({ declarations: [UserCardComponent] })
+export class UsersModule {}
+
+@NgModule({ declarations: [UserCardComponent] }) // 💥 Runtime error
+export class AdminModule {}
+```
+
+**Solução:** Coloque o component em um `SharedModule` e importe-o nos dois.
+
+### 2. Esquecer de exportar
+
+```typescript
+// ❌ O component existe no module, mas não é visível pra quem importa
+@NgModule({
+  declarations: [LoadingSpinnerComponent],
+  // exports: [] ← esqueceu de exportar!
+})
+export class SharedModule {}
+```
+
+**Solução:** Se outro module precisa usar o component, ele precisa estar em `exports`.
+
+### 3. Importar `BrowserModule` em feature modules
+
+```typescript
+// ❌ BrowserModule só pode ser importado UMA VEZ (no AppModule)
+@NgModule({
+  imports: [BrowserModule], // 💥 Erro em feature modules
+})
+export class UsersModule {}
+```
+
+**Solução:** Use `CommonModule` em feature modules. `BrowserModule` é só pro `AppModule`.
+
+### 4. Circular dependency entre modules
+
+```typescript
+// ❌ Module A importa B, Module B importa A = 💥
+@NgModule({ imports: [ModuleB] })
+export class ModuleA {}
+
+@NgModule({ imports: [ModuleA] })
+export class ModuleB {}
+```
+
+**Solução:** Extraia o que é compartilhado para um terceiro module.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+### Como o Angular processa NgModules
+
+Quando a aplicação inicia, o Angular:
+
+1. **Analisa** o `@NgModule()` decorator e lê as metadata (declarations, imports, exports)
+2. **Compila** cada component declarado, resolvendo seus templates e estilos
+3. **Cria** um `ModuleInjector` — a árvore de dependency injection hierárquica
+4. **Registra** os providers definidos no module
+5. **Monta** um "compilation scope" — a lista de components/directives/pipes que cada template pode usar
+
+É por isso que se você esquecer de declarar um component, o Angular reclama que não reconhece o selector no template. O component **existe** no código, mas o module não sabe que ele existe.
+
+#### Compilation Scope
+
+O "compilation scope" de um module é:
+
+- Tudo que está em `declarations`
+- Tudo que está em `exports` dos modules que estão em `imports`
+
+É assim que o Angular sabe quais tags HTML customizadas são válidas em cada template.
+
+#### Eager vs Lazy Modules
+
+- **Eager modules** (importados diretamente) são carregados junto com o `AppModule` no startup
+- **Lazy modules** (carregados via router com `loadChildren`) criam um **chunk separado** e um **child injector** próprio
+
+Isso significa que services providos em um lazy module **não são singletons globais** — eles existem apenas no escopo daquele module.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+### E-commerce com Feature Modules
+
+Imagine um e-commerce com estas áreas:
+
+- **Catálogo** (listagem, filtros, busca)
+- **Carrinho** (items, cupons, frete)
+- **Checkout** (pagamento, endereço)
+- **Admin** (dashboard, gestão de produtos)
+
+Cada área vira um **Feature Module** com lazy loading:
+
+```typescript
+// app-routing.module.ts
+const routes: Routes = [
+  { path: 'catalog', loadChildren: () => import('./catalog/catalog.module').then(m => m.CatalogModule) },
+  { path: 'cart', loadChildren: () => import('./cart/cart.module').then(m => m.CartModule) },
+  { path: 'checkout', loadChildren: () => import('./checkout/checkout.module').then(m => m.CheckoutModule) },
+  { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
+];
+```
+
+**Resultado:** O user que só navega no catálogo não carrega o código do admin. Cada módulo é um chunk separado no bundle.
+
+Em projetos modernos, esse mesmo padrão é feito com standalone components e `loadComponent` — mas a lógica de code splitting é a mesma.
+
+</details>
+
+## Migração
+
+Se você quer migrar de NgModules para Standalone Components, o Angular CLI oferece um schematic automático:
+
+```bash
+ng generate @angular/core:standalone
+```
+
+Esse comando faz a migração em 3 etapas:
+
+1. Converte components, directives e pipes para standalone
+2. Remove NgModules desnecessários
+3. Atualiza o bootstrap da aplicação
+
+:::info[Informação]
+
+Veja o guia completo de migração em [Era Transição → Standalone Components](/docs/era-transicao/standalone-components).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Crie um SharedModule</summary>
+
+**Enunciado:** Crie um `SharedModule` que contenha:
+- Um `ButtonComponent` com input de `label` e `variant` ('primary' | 'secondary')
+- Um `HighlightDirective` que muda a cor de fundo no hover
+- Um `CapitalizePipe` que transforma text pra Title Case
+
+O module deve exportar tudo para uso em outros modules.
+
+<details>
+<summary>💡 Dica</summary>
+
+- Lembre-se de importar `CommonModule` no `SharedModule`
+- Exporte tanto os elements quanto o `CommonModule`
+- Use `@HostListener` na directive
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+// shared/button/button.component.ts
+@Component({
+  selector: 'app-button',
+  template: `
+    <button [class]="'btn btn-' + variant">
+      {{ label }}
+    </button>
+  `,
+})
+export class ButtonComponent {
+  @Input() label = '';
+  @Input() variant: 'primary' | 'secondary' = 'primary';
+}
+
+// shared/directives/highlight.directive.ts
+@Directive({ selector: '[appHighlight]' })
+export class HighlightDirective {
+  @Input() appHighlight = '#ffff00';
+
+  constructor(private el: ElementRef) {}
+
+  @HostListener('mouseenter') onMouseEnter() {
+    this.el.nativeElement.style.backgroundColor = this.appHighlight;
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    this.el.nativeElement.style.backgroundColor = '';
+  }
+}
+
+// shared/pipes/capitalize.pipe.ts
+@Pipe({ name: 'capitalize' })
+export class CapitalizePipe implements PipeTransform {
+  transform(value: string): string {
+    if (!value) return '';
+    return value.replace(/\b\w/g, char => char.toUpperCase());
+  }
+}
+
+// shared/shared.module.ts
+@NgModule({
+  declarations: [ButtonComponent, HighlightDirective, CapitalizePipe],
+  imports: [CommonModule],
+  exports: [ButtonComponent, HighlightDirective, CapitalizePipe, CommonModule],
+})
+export class SharedModule {}
+```
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Feature Module com Lazy Loading</summary>
+
+**Enunciado:** Crie um `ProductsModule` lazy-loaded com:
+- `ProductListComponent` que mostra uma lista de produtos (dados mockados)
+- `ProductDetailComponent` que mostra detalhes de um produto por ID (via route param)
+- Routing interno do module
+- Importe e use o `SharedModule` do desafio anterior
+
+<details>
+<summary>💡 Dica</summary>
+
+- Crie um `ProductsRoutingModule` separado
+- Use `ActivatedRoute` pra pegar o param do ID
+- Registre a rota lazy no `AppRoutingModule` com `loadChildren`
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+// products/products-routing.module.ts
+const routes: Routes = [
+  { path: '', component: ProductListComponent },
+  { path: ':id', component: ProductDetailComponent },
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
+})
+export class ProductsRoutingModule {}
+
+// products/product-list/product-list.component.ts
+@Component({
+  selector: 'app-product-list',
+  template: `
+    <h2>Produtos</h2>
+    <div *ngFor="let product of products">
+      <app-button
+        [label]="product.name | capitalize"
+        variant="primary"
+        (click)="goToProduct(product.id)"
+      />
+    </div>
+  `,
+})
+export class ProductListComponent {
+  products = [
+    { id: 1, name: 'camiseta angular' },
+    { id: 2, name: 'caneca typescript' },
+    { id: 3, name: 'adesivo rxjs' },
+  ];
+
+  constructor(private router: Router) {}
+
+  goToProduct(id: number) {
+    this.router.navigate(['/products', id]);
+  }
+}
+
+// products/product-detail/product-detail.component.ts
+@Component({
+  selector: 'app-product-detail',
+  template: `
+    <h2>Produto #{{ productId }}</h2>
+    <a routerLink="/products">← Voltar</a>
+  `,
+})
+export class ProductDetailComponent implements OnInit {
+  productId = '';
+
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.productId = this.route.snapshot.paramMap.get('id') ?? '';
+  }
+}
+
+// products/products.module.ts
+@NgModule({
+  declarations: [ProductListComponent, ProductDetailComponent],
+  imports: [SharedModule, ProductsRoutingModule],
+})
+export class ProductsModule {}
+
+// app-routing.module.ts (adicionar a rota lazy)
+const routes: Routes = [
+  {
+    path: 'products',
+    loadChildren: () => import('./products/products.module').then(m => m.ProductsModule),
+  },
+];
+```
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Migre um módulo para Standalone</summary>
+
+**Enunciado:** Pegue o `ProductsModule` do desafio anterior e migre completamente para standalone components. Requisitos:
+
+- Todos os components devem ser `standalone: true`
+- Remova o `ProductsModule` e o `ProductsRoutingModule`
+- Use `loadComponent` ao invés de `loadChildren`
+- O `SharedModule` deve continuar sendo importável (ou seus components também devem virar standalone)
+- A aplicação deve funcionar exatamente igual
+
+<details>
+<summary>💡 Dica</summary>
+
+- Comece convertendo os components do `SharedModule` para standalone
+- Depois converta os components de Products
+- Troque `loadChildren` por `loadComponent` com rotas lazy
+- Use `Routes` como default export do arquivo de rotas
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+// shared/button/button.component.ts
+@Component({
+  selector: 'app-button',
+  standalone: true,
+  template: `<button [class]="'btn btn-' + variant">{{ label }}</button>`,
+})
+export class ButtonComponent {
+  @Input() label = '';
+  @Input() variant: 'primary' | 'secondary' = 'primary';
+}
+
+// products/product-list/product-list.component.ts
+@Component({
+  selector: 'app-product-list',
+  standalone: true,
+  imports: [ButtonComponent, CapitalizePipe],
+  template: `
+    <h2>Produtos</h2>
+    <li *ngFor="let product of products">
+      <app-button
+        [label]="product.name | capitalize"
+        variant="primary"
+        (click)="goToProduct(product.id)"
+      />
+    </li>
+  `,
+})
+export class ProductListComponent {
+  // ... mesmo código
+}
+
+// products/routes.ts
+export default [
+  { path: '', component: ProductListComponent },
+  { path: ':id', component: ProductDetailComponent },
+] satisfies Routes;
+
+// app.routes.ts
+export const routes: Routes = [
+  {
+    path: 'products',
+    loadChildren: () => import('./products/routes'),
+  },
+];
+```
+
+Sem `ProductsModule`. Sem `ProductsRoutingModule`. Cada component sabe exatamente do que depende.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — NgModules](https://angular.dev/guide/ngmodules)
+- 📖 [Angular.dev — Migration to Standalone](https://angular.dev/reference/migrations/standalone)
+- 🎥 [Angular Blog — Standalone Components RFC](https://blog.angular.dev/angular-v15-is-now-available-df7be7f2f4c8)

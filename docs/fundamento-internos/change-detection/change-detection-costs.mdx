@@ -1,0 +1,37 @@
+---
+sidebar_position: 3
+title: Custos de Detecção de Mudanças
+---
+
+# Custos de Detecção de Mudanças
+
+## Contexto técnico
+
+Mesmo com Angular moderno, custo de atualização existe: listas grandes, bindings caros, templates profundos.
+Este tópico é sobre medir e cortar o que não precisa re-renderizar.
+
+## O que observar internamente
+
+- `track` em listas.
+- Componentes “burros” vs “inteligentes”.
+- Evitar trabalho pesado no template.
+
+## Quando ajuda
+
+- Telas com performance ruim e difícil de achar culpado.
+
+## Quando evitar
+
+- Otimização sem evidência.
+
+## Exemplo real
+
+```ts
+// Evite: getter pesado chamado várias vezes no template
+// Prefira: computed/signal/materializar no TS
+```
+
+## Checklist rápido
+
+- [ ] Você mediu antes de mudar arquitetura.
+- [ ] Listas grandes têm estratégia de atualização.

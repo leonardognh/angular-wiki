@@ -1,0 +1,248 @@
+---
+sidebar_position: 8
+title: Resource API
+tags: [era-moderna, signals, http]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Resource API
+
+> **Era:** Moderna (v19+) · **Status:** `resource()` está **experimental** no Angular — use com olho no changelog; integra estado assíncrono com **signals**
+
+## O que é
+
+**`resource()`** é uma primitiva de alto nível que combina:
+
+- **Parâmetros reativos** (via `signal` / `computed`)
+- **Loader assíncrono** (ex.: `HttpClient` ou `fetch`)
+- **Estados** `idle` → `loading` → `resolved` / `error`
+
+Você para de espalhar `isLoading` / `errorMessage` manual em cada componente de tela de dados.
+
+## Pra que serve
+
+- **Fetch declarativo** acoplado ao grafo de signals
+- **Reexecução** automática quando parâmetros mudam
+- UX consistente para telas de **detalhe** (id na rota → reload)
+
+## Quando usar
+
+- Leituras **HTTP** simples ou `fetch` ligadas a `signal` de filtro/rota
+- Quer **padronizar** loading/erro em várias telas
+
+## Quando NÃO usar
+
+- Fluxos com **múltiplos streams** combinados (`switchMap`, `debounce`) — RxJS continua melhor
+- Quando a versão do projeto **ainda não** oferece `resource` estável o suficiente para o time
+
+:::warning[Atenção]
+
+O loader precisa ser **puro em relação ao contrato**: evite efeitos colaterais fora do fetch (logs ok; mutar estado global não).
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { inject, resource, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+const userId = signal('42');
+const http = inject(HttpClient);
+
+const userRes = resource({
+  params: () => ({ id: userId() }),
+  loader: ({ params }) => http.get<User>(`/api/users/${params.id}`),
+});
+
+// No template / computed: userRes.value(), userRes.isLoading(), userRes.error(), userRes.reload(), …
+interface User {
+  id: string;
+  name: string;
+}
+```
+
+Use **`hasValue()`** antes de ler `value()` quando o status pode ser erro — a doc oficial recomenda como type guard.
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="manual" label="Flags manuais" default>
+
+```typescript
+readonly loading = signal(false);
+readonly error = signal<string | null>(null);
+readonly user = signal<User | null>(null);
+
+load(id: string) {
+  this.loading.set(true);
+  this.http.get<User>(`/api/users/${id}`).subscribe({
+    next: (u) => {
+      this.user.set(u);
+      this.loading.set(false);
+    },
+    error: (e) => {
+      this.error.set(String(e));
+      this.loading.set(false);
+    },
+  });
+}
+```
+
+  </TabItem>
+  <TabItem value="resource" label="resource()">
+
+```typescript
+const userRes = resource({
+  params: () => ({ id: userId() }),
+  loader: ({ params }) => this.http.get<User>(`/api/users/${params.id}`),
+});
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O **ciclo de vida** do fetch vira parte da primitiva — menos código repetido.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| `http.get` + `toSignal` | Ponte RxJS → signal, sem `resource` |
+| `rxResource` | Variante orientada a RxJS em versões que expõem |
+| `async` pipe | Continua válido em templates com Observables |
+
+## Exemplo funcional
+
+```typescript
+import { Component, inject, resource, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+interface Product {
+  id: string;
+  title: string;
+}
+
+@Component({
+  selector: 'app-product',
+  standalone: true,
+  template: `
+    @if (product.isLoading()) {
+      <p>Carregando…</p>
+    } @else if (product.error(); as err) {
+      <p>Erro: {{ err }}</p>
+    } @else if (product.hasValue()) {
+      <h1>{{ product.value()!.title }}</h1>
+    }
+  `,
+})
+export class ProductComponent {
+  private readonly http = inject(HttpClient);
+  readonly id = signal('sku-1');
+
+  readonly product = resource({
+    params: () => ({ id: this.id() }),
+    loader: ({ params }) =>
+      this.http.get<Product>(`https://api.example.com/products/${params.id}`),
+  });
+}
+```
+
+:::tip[Dica]
+
+Centralize URLs e mapeamento de erro em um **service**; o `loader` fica fino.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Loader que ignora `params`
+
+```typescript
+// ❌ sempre busca o mesmo id
+loader: () => http.get('/api/users/1'),
+```
+
+**Solução:** sempre derive da função `params`.
+
+### 2. Objeto `params` não estável
+
+```typescript
+// ❌ novo objeto identico a cada CD pode refetch em loop
+params: () => ({ id: this.id(), meta: {} }),
+```
+
+**Solução:** só inclua dados que **mudam** de verdade; objetos estáveis ou primitivos.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+`resource` agenda o loader quando `params` muda, mantendo estado da última requisição e cancelando/repriorizando conforme a implementação da versão.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+**Detalhe de pedido** e **perfil de usuário** são reads id→HTTP perfeitos para `resource`. Listagens com debounce ainda costumam ficar em RxJS.
+
+</details>
+
+## Migração
+
+1. Identifique telas com trio `loading/error/data`.
+2. Extraia `params` como signals.
+3. Substitua subscribe manual por `resource`.
+
+:::info[Informação]
+
+Veja [Signals](/docs/era-moderna/signals) e [HTTP (era transição)](/docs/era-transicao/httpclient-standalone).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — params mínimo</summary>
+
+**Enunciado:** `resource` com `params: () => ({ q: query() })` e loader que retorna `of({ q: params.q })` (RxJS) — conceito apenas.
+
+<details>
+<summary>✅ Solução</summary>
+
+Use `from`/`lastValueFrom` se o loader precisa retornar `Promise`; na doc oficial o loader costuma ser `async` retornando dados.
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — reload</summary>
+
+**Enunciado:** Quando usar `.reload()` de um resource?
+
+<details>
+<summary>✅ Solução</summary>
+
+Quando o usuário força **atualizar** os dados sem mudar `params` (pull-to-refresh).
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — cancelamento</summary>
+
+**Enunciado:** Por que trocar `id` rapidamente pode exigir atenção com requisições HTTP?
+
+<details>
+<summary>✅ Solução</summary>
+
+Requisições **fora de ordem** podem retornar depois — `resource`/`switchMap` tentam mitigar; ainda assim evite efeitos globais no loader e trate erro de rede.
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Resource (Angular)](https://angular.dev/guide/signals/resource)

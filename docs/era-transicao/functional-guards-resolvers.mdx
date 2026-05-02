@@ -1,0 +1,242 @@
+---
+sidebar_position: 3
+title: Functional Guards & Resolvers
+tags: [era-transicao, routing]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Functional Guards & Resolvers
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+`CanActivateFn`, `CanMatchFn` e `ResolveFn` substituem classes de guard/resolver por funções com `inject()`, mais diretas para regras de navegação.
+
+## Pra que serve
+
+- Remover boilerplate de classes apenas para uma regra simples
+- Encapsular autorização e pré-carga junto da rota
+- Facilitar testes unitários de regras isoladas
+
+## Quando usar
+
+- Em rotas standalone com `provideRouter`
+- Em cenários de autorização por perfil/permissão
+- Quando a tela depende de dados antes de renderizar
+
+## Quando NÃO usar
+
+- Quando a regra é global e mais adequada a interceptor/middleware
+- Quando resolver executa consulta pesada sem cache
+- Quando múltiplas regras estão misturadas numa função única gigante
+
+:::warning[Atenção]
+
+Resolver não substitui estado global; ele prepara dados mínimos para navegação segura.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+export const authGuard: CanActivateFn = () => {
+  const session = inject(SessionService);
+  const router = inject(Router);
+  return session.isAuthenticated() ? true : router.createUrlTree(['/login']);
+};
+
+export const orderResolver: ResolveFn<Order> = (route) =>
+  inject(OrdersApi).byId(route.paramMap.get('id')!);
+```
+
+:::tip[Dica]
+
+Mantenha cada guard/resolver com responsabilidade única e nome orientado à regra de negócio.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(private session: SessionService, private router: Router) {}
+  canActivate(): boolean | UrlTree {
+    return this.session.isAuthenticated() || this.router.parseUrl('/login');
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+export const authGuard: CanActivateFn = () =>
+  inject(SessionService).isAuthenticated() || inject(Router).parseUrl('/login');
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+export const orderResolver: ResolveFn<Order> = (route) =>
+  firstValueFrom(inject(OrdersStore).load(route.paramMap.get('id')!));
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A regra deixa de depender de classe e passa a viver como função pura de navegação.
+
+## Armadilhas comuns
+
+### 1. Resolver com side effect de UI
+
+```typescript
+// ❌ abre snackbar dentro do resolver
+export const resolver: ResolveFn<Data> = () => {
+  inject(MatSnackBar).open('Carregando...');
+  return inject(Api).load();
+};
+```
+
+**Solução:** deixe resolver apenas preparar dados; feedback de UI fica no componente.
+
+### 2. Guard com acesso remoto desnecessário
+
+```typescript
+// ❌ request em toda navegação
+export const guard: CanActivateFn = () => inject(Api).validateSession();
+```
+
+**Solução:** use estado local/cache para validação rápida e reserve API para refresh controlado.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+Funções de guarda/resolução executam dentro de contexto DI do router, então `inject()` resolve serviços sem instanciar classe intermediária.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em painéis administrativos, separar `authGuard`, `roleGuard` e `prefetchResolver` costuma reduzir regressões ao adicionar novas páginas.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Guard funcional de autenticação</summary>
+
+**Enunciado:** Bloqueie `/account` para usuários não autenticados.
+
+<details>
+<summary>💡 Dica</summary>
+
+Retorne `UrlTree` apontando para `/login`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const accountGuard: CanActivateFn = () => {
+  const session = inject(SessionService);
+  const router = inject(Router);
+  return session.isAuthenticated() ? true : router.createUrlTree(['/login']);
+};
+
+const routes: Routes = [{ path: 'account', canActivate: [accountGuard], loadComponent: ... }];
+```
+
+A regra fica curta, explícita e diretamente anexada à rota protegida.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Resolver funcional de detalhe</summary>
+
+**Enunciado:** Pré-carregue pedido por `id` antes de abrir a página de detalhe.
+
+<details>
+<summary>💡 Dica</summary>
+
+Leia `route.paramMap` no resolver.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const orderResolver: ResolveFn<Order> = (route) => {
+  const id = route.paramMap.get('id')!;
+  return inject(OrdersApi).byId(id);
+};
+
+const routes: Routes = [
+  {
+    path: 'orders/:id',
+    resolve: { order: orderResolver },
+    loadComponent: () => import('./order-detail.page').then((m) => m.OrderDetailPage),
+  },
+];
+```
+
+A página recebe dados prontos em `ActivatedRoute.data`, reduzindo lógica assíncrona no componente.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Encadear canMatch + resolver</summary>
+
+**Enunciado:** Permita rota somente para admin e pré-carregue usuários ativos.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `canMatch` para barrar acesso antes do carregamento do componente.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const adminMatch: CanMatchFn = () => inject(SessionService).hasRole('admin');
+export const usersResolver: ResolveFn<User[]> = () => inject(UsersApi).listActive();
+
+const routes: Routes = [
+  {
+    path: 'admin/users',
+    canMatch: [adminMatch],
+    resolve: { users: usersResolver },
+    loadComponent: () => import('./users-admin.page').then((m) => m.UsersAdminPage),
+  },
+];
+```
+
+Esse arranjo evita carregar bundle/admin data para usuários sem permissão.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Route guards](https://angular.dev/guide/routing/route-guards)
+- 📖 [Angular.dev — Data resolvers](https://angular.dev/guide/routing/data-resolvers)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

@@ -1,0 +1,236 @@
+---
+sidebar_position: 6
+title: HttpClient Standalone
+tags: [era-transicao, http, standalone]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# HttpClient Standalone
+
+> **Era:** Transição (v14–16) · **Status:** Ponte para o modelo moderno
+
+## O que é
+
+Com `provideHttpClient`, o `HttpClient` passa a ser configurado no bootstrap standalone, incluindo interceptors funcionais.
+
+## Pra que serve
+
+- Remover dependência de `HttpClientModule` em módulos raiz
+- Declarar interceptors no mesmo ponto do bootstrap
+- Compor recursos HTTP com `withInterceptors` e afins
+
+## Quando usar
+
+- Em apps iniciadas com `bootstrapApplication`
+- Em migração de interceptors de classe para função
+- Quando precisa separar interceptors por ambiente
+
+## Quando NÃO usar
+
+- Quando há configuração duplicada em módulo e bootstrap
+- Quando interceptors fazem regra de negócio de UI
+- Quando chamadas sem tipagem dificultam manutenção
+
+:::warning[Atenção]
+
+Não mantenha `HttpClientModule` e `provideHttpClient` ao mesmo tempo no mesmo fluxo de inicialização.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(SessionService).token();
+  const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+  return next(authReq);
+};
+
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+});
+```
+
+:::tip[Dica]
+
+Use serviço de API por domínio (`OrdersApi`, `UsersApi`) para centralizar endpoints e tipos.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+@NgModule({
+  imports: [HttpClientModule],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+})
+export class CoreModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+});
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withFetch(), withInterceptors([authInterceptor]))],
+});
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A configuração HTTP vira provider funcional, alinhada ao bootstrap standalone.
+
+## Armadilhas comuns
+
+### 1. Interceptor com lógica de tela
+
+```typescript
+// ❌ manipulação de snackbar/navigation diretamente no interceptor
+```
+
+**Solução:** mantenha interceptor focado em request/response cross-cutting (token, trace, retry).
+
+### 2. Serviço sem tipagem de retorno
+
+```typescript
+list() {
+  return this.http.get('/api/orders'); // ❌ any implícito
+}
+```
+
+**Solução:** tipar sempre os retornos (`get<Order[]>()`) para contratos estáveis.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+`provideHttpClient` adiciona providers no injector raiz e permite encadear features HTTP em ordem explícita no bootstrap.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Projetos com múltiplos backends costumam separar interceptors por concern (auth, observabilidade, retry), evitando classes monolíticas.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Configurar HttpClient standalone</summary>
+
+**Enunciado:** Ative `HttpClient` no bootstrap e faça um GET de usuários.
+
+<details>
+<summary>💡 Dica</summary>
+
+Configure provider no `main.ts` e injete `HttpClient` em serviço.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient()],
+});
+
+@Injectable({ providedIn: 'root' })
+export class UsersApi {
+  private readonly http = inject(HttpClient);
+  list() {
+    return this.http.get<User[]>('/api/users');
+  }
+}
+```
+
+O setup habilita chamadas tipadas sem depender de módulo de infraestrutura.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Adicionar interceptor funcional</summary>
+
+**Enunciado:** Injete token JWT em todas as requisições autenticadas.
+
+<details>
+<summary>💡 Dica</summary>
+
+Crie `HttpInterceptorFn` com `inject(SessionService)`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const token = inject(SessionService).token();
+  return next(
+    token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req,
+  );
+};
+
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+});
+```
+
+O interceptor fica declarativo e reutilizável sem classe dedicada.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Compor interceptors por ambiente</summary>
+
+**Enunciado:** Aplique interceptor de log apenas em desenvolvimento e auth em todos os ambientes.
+
+<details>
+<summary>💡 Dica</summary>
+
+Monte o array de interceptors antes do bootstrap.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+const interceptors = [authInterceptor, ...(environment.dev ? [devLogInterceptor] : [])];
+
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors(interceptors))],
+});
+```
+
+A composição evita condicionais espalhadas e mantém estratégia HTTP centralizada.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — API: provideHttpClient](https://angular.dev/api/common/http/provideHttpClient)
+- 📖 [Angular.dev — API: HttpInterceptorFn](https://angular.dev/api/common/http/HttpInterceptorFn)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

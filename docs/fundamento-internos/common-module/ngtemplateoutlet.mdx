@@ -1,0 +1,42 @@
+---
+sidebar_position: 5
+title: Uso do NgTemplateOutlet
+---
+
+# Uso do NgTemplateOutlet
+
+## Contexto técnico
+
+`NgTemplateOutlet` injeta um `TemplateRef` com contexto explícito.
+É ótimo para “slots” simples sem criar componente novo para cada variação.
+
+## O que observar internamente
+
+- Contexto (`$implicit` vs nomeado) precisa ser padronizado no time.
+- Templates grandes viram difíceis de manter (limite de extração para componente).
+- Segurança: não passe objetos enormes no contexto só por conveniência.
+
+## Quando ajuda
+
+- Linhas customizáveis de tabela/lista.
+- Layout com pequenas variações de markup.
+
+## Quando evitar
+
+- Quando o template cresce e vira mini-aplicação.
+- Quando há comportamento complexo (melhor componente).
+
+## Exemplo real
+
+```html
+<ng-container
+  [ngTemplateOutlet]="rowTpl"
+  [ngTemplateOutletContext]="{ $implicit: user, isAdmin: user.role === 'admin' }"
+></ng-container>
+```
+
+## Checklist rápido
+
+- [ ] O contrato de contexto está documentado.
+- [ ] Você consegue testar o template isolado sem dor.
+- [ ] Não virou atalho para evitar componentização.

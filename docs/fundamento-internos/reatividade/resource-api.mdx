@@ -1,0 +1,47 @@
+---
+sidebar_position: 3
+title: API de Resource
+---
+
+# API de Resource
+
+## Contexto técnico
+
+`resource()` modela leitura assíncrona com estados integrados e cancelamento quando o request muda.
+Ele substitui bem o padrão “flags + subscribe” para **leituras orientadas a parâmetros**.
+
+## O que observar internamente
+
+- Chave de request: mudou? cancela anterior.
+- Erro deve ser tratável no template sem mascarar falha real.
+- Não use `resource` como “atalho” para mutação complexa.
+
+## Quando ajuda
+
+- Detalhe de entidade por `id` reativo.
+- Busca com parâmetros reativos.
+
+## Quando evitar
+
+- Quando seu data layer já resolve cache/retry com contrato próprio.
+
+## Exemplo real
+
+```ts
+const productId = signal(1);
+
+const product = resource({
+  request: () => ({ id: productId() }),
+  loader: async ({ request }) => {
+    const res = await fetch(`/api/products/${request.id}`);
+    if (!res.ok) throw new Error('Falha ao carregar produto');
+    return (await res.json()) as Product;
+  },
+});
+```
+
+## Checklist rápido
+
+- [ ] Estados `loading/value/error` estão claros na UI.
+- [ ] Troca rápida de parâmetro não causa race visual.
+- [ ] Erros não idempotentes não são “retry infinito”.

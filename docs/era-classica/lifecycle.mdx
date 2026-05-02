@@ -1,0 +1,223 @@
+---
+sidebar_position: 8
+title: Lifecycle Hooks
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Lifecycle Hooks
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Lifecycle hooks são métodos da classe de componente/diretiva executados em momentos definidos pelo Angular (`ngOnInit`, `ngOnChanges`, `ngOnDestroy` etc.).
+
+## Pra que serve
+
+- Controlar inicialização e teardown de recursos
+- Reagir a mudanças de `@Input` com previsibilidade
+- Evitar vazamentos de memória
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Escolha hook pelo momento correto do ciclo; usar hook errado introduz bugs sutis.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+export class OrdersPageComponent implements OnInit, OnDestroy {
+  ngOnInit(): void {}
+  ngOnDestroy(): void {}
+}
+```
+
+:::tip[Dica]
+
+`ngOnDestroy` é obrigatório quando há subscriptions manuais ou listeners externos.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de lifecycle hooks ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Buscar dados no construtor
+
+```typescript
+// ❌ Construtor deve só receber dependências
+constructor(private usersService: UsersService) {
+  this.usersService.load().subscribe();
+}
+```
+
+**Solução:** Inicie fluxo em `ngOnInit`.
+
+### 2. Ignorar limpeza em `ngOnDestroy`
+
+```typescript
+// ❌ Subscription vazando após navegação
+this.sub = this.stream$.subscribe();
+```
+
+**Solução:** Cancele `Subscription` ou use `takeUntil`.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de lifecycle hooks está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de lifecycle hooks evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Inicialização em ngOnInit</summary>
+
+**Enunciado:** Demonstre ngOnInit e ngOnDestroy em componente que abre stream de dados.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+ngOnInit(): void {
+  this.loadProducts();
+}
+```
+
+Carregamento é disparado no hook apropriado, mantendo construtor enxuto.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Reagir a mudanças de Input</summary>
+
+**Enunciado:** Adicione ngOnChanges para reagir a Input de filtro em lista paginada.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+ngOnChanges(changes: SimpleChanges): void {
+  if (changes['userId'] && !changes['userId'].firstChange) {
+    this.loadPermissions(changes['userId'].currentValue);
+  }
+}
+```
+
+`ngOnChanges` evita lógica duplicada para recarregar dados derivados de `@Input`.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Teardown padronizado com Subject</summary>
+
+**Enunciado:** Remova vazamento de memória em tela com múltiplas subscriptions e teardown explícito.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+private readonly destroy$ = new Subject<void>();
+
+ngOnInit(): void {
+  this.notifications$
+    .pipe(takeUntil(this.destroy$))
+    .subscribe();
+}
+
+ngOnDestroy(): void {
+  this.destroy$.next();
+  this.destroy$.complete();
+}
+```
+
+O padrão elimina vazamentos quando a feature cresce e acumula múltiplos streams.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

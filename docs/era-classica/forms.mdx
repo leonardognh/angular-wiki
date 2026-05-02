@@ -1,0 +1,213 @@
+---
+sidebar_position: 11
+title: Formulários
+tags: [era-classica, fundamentos]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Formulários
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Formulários em Angular clássico podem ser template-driven ou reativos. Em v2-v14, `ReactiveFormsModule` é o padrão para fluxos complexos e validação robusta.
+
+## Pra que serve
+
+- Capturar entrada do usuário com validações consistentes
+- Representar estado (`valid`, `dirty`, `touched`, `pending`)
+- Padronizar envio de dados para APIs
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Não misture template-driven e reactive forms no mesmo contexto sem necessidade.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+readonly form = this.fb.group({
+  email: ['', [Validators.required, Validators.email]],
+  password: ['', [Validators.required, Validators.minLength(8)]],
+});
+```
+
+:::tip[Dica]
+
+Reactive forms facilitam testes unitários e validação assíncrona.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de formulários ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Criar formulário sem modelar estado explicitamente
+
+```typescript
+// ❌ Difícil de validar e testar
+name = '';
+```
+
+**Solução:** Use `FormGroup` com validadores e erros de campo previsíveis.
+
+### 2. Disparar submit sem bloquear estado inválido
+
+```typescript
+// ❌ Requisição enviada com dados inválidos
+this.userService.save(this.form.value).subscribe();
+```
+
+**Solução:** Verifique `form.invalid`, marque campos e só submeta com estado válido.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de formulários está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de formulários evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Cadastro reativo simples</summary>
+
+**Enunciado:** Monte um checkout com Reactive Forms e validações obrigatórias de nome, email e endereço.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+form = this.fb.group({
+  name: ['', [Validators.required, Validators.minLength(3)]],
+  email: ['', [Validators.required, Validators.email]]
+});
+```
+
+O formulário passa a ter contrato claro de validação e estado por campo.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Validação assíncrona de usuário</summary>
+
+**Enunciado:** Inclua FormArray para múltiplos itens e validação customizada de quantidade mínima.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+username: ['', null, [this.userValidators.usernameAvailable()]]
+```
+
+A validação assíncrona evita conflito de cadastro antes do submit.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Formulário dinâmico com FormArray</summary>
+
+**Enunciado:** Reorganize o formulário em subgrupos reutilizáveis mantendo mensagens de erro consistentes.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+phones = this.fb.array([
+  this.fb.control('', Validators.required)
+]);
+
+addPhone(): void {
+  this.phones.push(this.fb.control('', Validators.required));
+}
+```
+
+`FormArray` permite escalar múltiplos campos repetíveis sem gambiarras no template.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

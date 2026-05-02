@@ -1,0 +1,39 @@
+---
+sidebar_position: 3
+title: Padrões com InjectionToken
+---
+
+# Padrões com InjectionToken
+
+## Contexto técnico
+
+`InjectionToken` cria contratos tipados para configuração e integrações.
+É a forma “Angular idiomática” de evitar strings mágicas e `useValue` frágil.
+
+## O que observar internamente
+
+- `providedIn` vs provider no bootstrap.
+- Fabric factories (`useFactory`) e dependências.
+
+## Quando ajuda
+
+- Config de API, feature flags, adapters.
+
+## Quando evitar
+
+- Quando um simples `signal` de config local resolve.
+
+## Exemplo real
+
+```ts
+export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
+
+bootstrapApplication(AppComponent, {
+  providers: [{ provide: API_BASE_URL, useValue: 'https://api.example.com' }],
+});
+```
+
+## Checklist rápido
+
+- [ ] Tokens têm nome/clareza.
+- [ ] Factories não escondem dependências circulares.

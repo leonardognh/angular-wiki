@@ -1,0 +1,214 @@
+---
+sidebar_position: 10
+title: Routing
+tags: [era-classica, fundamentos, navegação]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Routing
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Routing define navegação por URL com mapeamento de rotas para componentes/módulos. Em v2-v14, `RouterModule` e lazy loading por `loadChildren` são padrões.
+
+## Pra que serve
+
+- Organizar navegação por features
+- Habilitar deep link e histórico de browser
+- Aplicar guardas de acesso antes da ativação da rota
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Rotas mal planejadas geram módulos acoplados e navegação difícil de manter.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule) },
+];
+```
+
+:::tip[Dica]
+
+Separe `AppRoutingModule` e routing de feature para escalar sem conflitos.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de routing ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Colocar todas as rotas no módulo raiz
+
+```typescript
+// ❌ Dificulta manutenção por domínio
+const routes: Routes = [/* 200 rotas */];
+```
+
+**Solução:** Crie módulos/arquivos de rota por feature e use lazy loading.
+
+### 2. Redirecionamento em componente em vez de guard
+
+```typescript
+// ❌ Usuário vê tela e é chutado depois
+ngOnInit() { if (!this.auth.isLogged()) this.router.navigate(['/login']); }
+```
+
+**Solução:** Use `CanActivate`/`CanLoad` para bloquear antes de renderizar.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de routing está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de routing evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Rotas raiz com fallback</summary>
+
+**Enunciado:** Configure rotas de lista e detalhe com parâmetro id e navegação por routerLink.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'users', component: UsersComponent },
+  { path: '**', redirectTo: '' }
+];
+```
+
+O fallback evita rota quebrada e mantém navegação previsível.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Lazy loading por feature</summary>
+
+**Enunciado:** Proteja rota administrativa com CanActivate class-based e redirecionamento ao login.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+{ path: 'admin', loadChildren: () =>
+    import('./admin/admin.module').then(m => m.AdminModule) }
+```
+
+O bundle inicial diminui e a área administrativa carrega sob demanda.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Guard com autorização por perfil</summary>
+
+**Enunciado:** Estruture lazy loading por feature module sem quebrar breadcrumbs e guards existentes.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+canActivate(): Observable<boolean> {
+  return this.auth.user$.pipe(
+    map(user => user.roles.includes('admin')),
+    tap(allowed => !allowed && this.router.navigate(['/forbidden']))
+  );
+}
+```
+
+O acesso fica centralizado em guard, sem duplicar checagens em componentes.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

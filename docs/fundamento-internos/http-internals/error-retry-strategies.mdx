@@ -1,0 +1,42 @@
+---
+sidebar_position: 5
+title: Estratégias de Erro e Retry
+---
+
+# Estratégias de Erro e Retry
+
+## Contexto técnico
+
+Retry é ótimo para falhas transitórias e terrível para erros de negócio ou operações não idempotentes.
+
+## O que observar internamente
+
+- Status code (429/503 vs 400).
+- Jitter/backoff.
+- Limite máximo.
+
+## Quando ajuda
+
+- Integrações externas instáveis.
+
+## Quando evitar
+
+- POST financeiro sem idempotência.
+
+## Exemplo real
+
+```ts
+export const retryInterceptor: HttpInterceptorFn = (req, next) =>
+  next(req).pipe(retry({ count: 2, delay: () => timer(200) }));
+```
+
+:::danger[Perigo]
+
+Retry em pagamento sem idempotency key pode duplicar cobrança.
+
+:::
+
+## Checklist rápido
+
+- [ ] Retry só onde é seguro.
+- [ ] Erros 4xx não viram storm de retry.

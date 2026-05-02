@@ -1,0 +1,38 @@
+---
+sidebar_position: 1
+title: Zoneless no v20+
+---
+
+# Zoneless no v20+
+
+## Contexto técnico
+
+Zoneless remove a dependência ampla de `zone.js` e torna atualizações mais explícitas.
+Isso melhora previsibilidade, mas aumenta responsabilidade do time em marcar mudanças corretamente.
+
+## O que observar internamente
+
+- Onde a UI deixa de atualizar “sozinha”.
+- Interação com signals/async.
+- Debugging de “UI congelada”.
+
+## Quando ajuda
+
+- Apps que querem performance e previsibilidade.
+
+## Quando evitar
+
+- Time sem maturidade para diagnosticar atualização.
+
+## Exemplo real
+
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [provideExperimentalZonelessChangeDetection()],
+});
+```
+
+## Checklist rápido
+
+- [ ] Você tem checklist de debug para UI stale.
+- [ ] Há métrica antes/depois.

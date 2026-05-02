@@ -1,0 +1,46 @@
+---
+sidebar_position: 4
+title: Interoperabilidade com RxJS
+---
+
+# Interoperabilidade com RxJS
+
+## Contexto técnico
+
+`toSignal()` e `toObservable()` são pontes.
+O objetivo é migração incremental sem criar **pingue-pong** entre stream e signal sem necessidade.
+
+## O que observar internamente
+
+- Cada conversão tem custo e semântica (erro/completar).
+- Hot vs cold observables: compartilhamento e cancelamento.
+- Onde fica a “fonte da verdade” após a migração.
+
+## Quando ajuda
+
+- Legado RxJS convivendo com UI signal-first.
+- Integração com libs que só expõem `Observable`.
+
+## Quando evitar
+
+- Quando dá para modelar o caso inteiro com `resource()` ou stream no service.
+
+## Exemplo real
+
+```ts
+const term = signal('');
+
+const results$ = toObservable(term).pipe(
+  debounceTime(250),
+  distinctUntilChanged(),
+  switchMap((q) => inject(SearchApi).search(q)),
+);
+
+const results = toSignal(results$, { initialValue: [] });
+```
+
+## Checklist rápido
+
+- [ ] Você sabe qual é a fonte da verdade (stream vs signal).
+- [ ] Não há conversão duplicada sem necessidade.
+- [ ] Erros do stream têm destino claro na UI.

@@ -1,0 +1,42 @@
+---
+sidebar_position: 2
+title: Control Flow no v20+
+---
+
+# Control Flow no v20+
+
+## Contexto técnico
+
+`@if`, `@for`, `@switch` e `@let` reduzem ruído e deixam fluxo visual explícito.
+Para código novo, isso costuma ser mais legível que micro-sintaxe legada.
+
+## O que observar internamente
+
+- `track` estável.
+- Aninhamento excessivo (sintaxe nova não cura arquitetura ruim).
+- `@let` para reduzir repetição sem esconder estado.
+
+## Quando ajuda
+
+- Templates complexos com muitos estados.
+- Times padronizando moderno em arquivos novos.
+
+## Quando evitar
+
+- Refactor cosmético sem ganho de produto.
+
+## Exemplo real
+
+```html
+@switch (payment().status) {
+  @case ('paid') { <app-receipt [payment]="payment()" /> }
+  @case ('failed') { <app-retry [payment]="payment()" /> }
+  @default { <app-pending /> }
+}
+```
+
+## Checklist rápido
+
+- [ ] Estados estão explícitos.
+- [ ] `track` correto em listas.
+- [ ] Legibilidade sobrevive a code review de outra pessoa.

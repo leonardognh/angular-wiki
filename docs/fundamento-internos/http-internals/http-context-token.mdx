@@ -1,0 +1,36 @@
+---
+sidebar_position: 3
+title: HttpContextToken
+---
+
+# HttpContextToken
+
+## Contexto técnico
+
+`HttpContextToken` transporta metadados por request sem “inventar header”.
+
+## O que observar internamente
+
+- Tipagem e defaults.
+- Onde o interceptor lê o token.
+
+## Quando ajuda
+
+- Feature flags por request, tracing interno, bypass de cache.
+
+## Quando evitar
+
+- Quando header/query já é contrato explícito e melhor.
+
+## Exemplo real
+
+```ts
+export const SKIP_AUTH = new HttpContextToken<boolean>(() => false);
+
+http.get('/public', { context: new HttpContext().set(SKIP_AUTH, true) });
+```
+
+## Checklist rápido
+
+- [ ] Tokens bem nomeados.
+- [ ] Sem metadado secreto vazando.

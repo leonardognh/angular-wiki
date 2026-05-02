@@ -1,0 +1,227 @@
+---
+sidebar_position: 4
+title: Defer Views (@defer)
+tags: [era-moderna, performance, lazy-loading]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Defer Views (@defer)
+
+> **Era:** Moderna (v17+) · **Status:** `@defer` estável para adiar carregamento/render de blocos de template
+
+## O que é
+
+**`@defer`** adia o carregamento (e muitas vezes o **download do chunk**) de um pedaço do template até um **gatilho** (`on viewport`, `on idle`, `on interaction`, etc.). Você define **placeholders** (`@placeholder`, `@loading`, `@error`) para o usuário ver feedback enquanto o trecho não está pronto.
+
+## Pra que serve
+
+- **Reduzir JS inicial** (charts, mapas, editores pesados)
+- **Melhorar TTI/LCP** em dashboards e homepages marketing
+- **Carregar sob demanda** por scroll ou interação
+
+## Quando usar
+
+- Componentes **não críticos** no primeiro paint
+- Bibliotecas grandes usadas só depois de ação do usuário
+- Seções abaixo da dobra com `@defer (on viewport)`
+
+## Quando NÃO usar
+
+- Conteúdo **acima da dobra** essencial para LCP (não adie o hero)
+- Blocos **minúsculos** onde o custo de chunk + estado de defer supera o ganho
+- Quando o time ainda não domina **tratamento de erro** e placeholders — UX quebra fácil
+
+:::warning[Atenção]
+
+`@defer` **não substitui** lazy routes do router — são estratégias complementares (template vs rota).
+
+:::
+
+## Anatomia / Sintaxe
+
+```html
+@defer (on viewport; prefetch on idle) {
+  <app-heavy-chart [data]="series()" />
+} @placeholder (minimum 300ms) {
+  <p>Preparando gráfico…</p>
+} @loading (after 100ms; minimum 400ms) {
+  <p>Carregando módulo…</p>
+} @error {
+  <p>Não foi possível carregar o gráfico.</p>
+}
+```
+
+| Gatilho | Quando dispara |
+| --- | --- |
+| `on idle` | Quando o browser estiver ocioso |
+| `on viewport` | Quando o bloco entra na viewport |
+| `on interaction` | Clique/tecla no placeholder |
+| `on hover` | Hover no placeholder |
+| `on timer(5s)` | Após timeout |
+| `when condicao` | Expressão booleana |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="legado" label="Lazy route / *ngIf" default>
+
+```typescript
+// Muitos times lazy-load só por rota e mantêm *ngIf gigante
+@Component({
+  template: `
+    <button (click)="show = true">Mostrar</button>
+    <app-chart *ngIf="show"></app-chart>
+  `,
+})
+export class OldHost {
+  show = false;
+}
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="@defer">
+
+```html
+@defer (on interaction) {
+  <app-heavy-chart />
+} @placeholder {
+  <button type="button">Carregar gráfico</button>
+}
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** O framework **orquestra** chunk + momento de render com gatilhos declarativos, em vez de você manualmente importar dinâmico + flag.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| Lazy `loadComponent` | Code splitting por **navegação** |
+| `NgComponentOutlet` | Dinâmico, mas sem semântica de defer integrada |
+| `@if` + import dinâmico manual | Mais controle, mais boilerplate |
+
+## Exemplo funcional
+
+```html
+<section>
+  <h2>Relatório</h2>
+  @defer (on viewport) {
+    <app-sales-report />
+  } @placeholder {
+    <div class="skeleton">Carregando relatório…</div>
+  }
+</section>
+```
+
+:::tip[Dica]
+
+Combine `prefetch on idle` com `on viewport` para **baixar antes** do usuário rolar até o bloco, sem renderizar cedo demais.
+
+:::
+
+## Armadilhas comuns
+
+### 1. `@defer` escondendo erro de import
+
+```typescript
+// ❌ componente com path errado só falha quando o defer dispara
+```
+
+**Solução:** teste o bloco com `on immediate` em dev ou carregue uma vez sem defer.
+
+### 2. Placeholder sem mínimo → flash
+
+```html
+<!-- ❌ loading some e aparece “nada” por um frame -->
+@defer (on idle) { ... } @loading { }
+```
+
+**Solução:** `minimum` em `@loading` / `@placeholder` para evitar flicker.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O compilador quebra o template em partes que podem virar **chunks separados**. Gatilhos conectam ao runtime do browser (`requestIdleCallback`, `IntersectionObserver`, etc.) conforme disponível.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+**E-commerce** adia reviews e “quem comprou também comprou” abaixo da dobra. **Admin** adia editores WYSIWYG até o usuário abrir a aba “Descrição longa”.
+
+</details>
+
+## Migração
+
+1. Liste componentes pesados ainda importados estaticamente.
+2. Escolha gatilho (`viewport` / `interaction`).
+3. Defina `@placeholder`/`@loading` com tempos mínimos.
+
+:::info[Informação]
+
+Veja [Novo Control Flow](/docs/era-moderna/control-flow) — `@defer` compõe com `@if`/`@for`.
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — on idle</summary>
+
+**Enunciado:** `@defer (on idle)` com placeholder “Esperando ociosidade…”.
+
+<details>
+<summary>✅ Solução</summary>
+
+```html
+@defer (on idle) {
+  <app-widget />
+} @placeholder {
+  <p>Esperando ociosidade…</p>
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — timer</summary>
+
+**Enunciado:** `@defer (on timer(2s))` exibindo conteúdo após 2s.
+
+<details>
+<summary>✅ Solução</summary>
+
+```html
+@defer (on timer(2s)) {
+  <p>Apareci depois de 2s</p>
+} @placeholder {
+  <p>Aguardando timer…</p>
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — prefetch + viewport</summary>
+
+**Enunciado:** Explique em 2 frases por que `prefetch on idle` + `on viewport` pode melhorar UX em lista longa.
+
+<details>
+<summary>✅ Solução</summary>
+
+O **prefetch** começa a baixar o chunk quando o browser está ocioso, antes do usuário chegar no bloco. Quando o bloco entra na **viewport**, o código já pode estar em cache — o placeholder some mais rápido sem bloquear o scroll.
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Defer blocks](https://angular.dev/guide/templates/defer)
+- 📖 [Defer triggers & prefetch](https://angular.dev/guide/templates/defer#triggers)

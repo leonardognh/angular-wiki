@@ -1,0 +1,44 @@
+---
+sidebar_position: 3
+title: "Runtime do @defer"
+---
+
+# Runtime do @defer
+
+## Contexto técnico
+
+`@defer` adia carregamento e execução de partes do template.
+O ponto interno é combinar **gatilho** (`on viewport`, `on idle`, etc.) com UX e métricas.
+
+## O que observar internamente
+
+- O que aparece no placeholder e no loading.
+- Erros de chunk/import e fallback.
+- Interação do usuário com área ainda não carregada.
+
+## Quando ajuda
+
+- Seções pesadas abaixo da dobra.
+- Dashboards com widgets opcionais.
+
+## Quando evitar
+
+- Quando adia algo crítico para primeira interação sem medir.
+
+## Exemplo real
+
+```html
+@defer (on viewport) {
+  <app-analytics-panel />
+} @placeholder {
+  <div class="panel-placeholder"></div>
+} @loading {
+  <app-spinner />
+}
+```
+
+## Checklist rápido
+
+- [ ] O gatilho foi escolhido com métrica (LCP/TTI).
+- [ ] Há fallback de erro.
+- [ ] UX não “pula” de layout de forma confusa.

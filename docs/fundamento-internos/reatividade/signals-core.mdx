@@ -1,0 +1,50 @@
+---
+sidebar_position: 1
+title: Núcleo de Signals
+---
+
+# Núcleo de Signals
+
+## Contexto técnico
+
+`signal`, `computed` e `effect` são a base da reatividade síncrona.
+A regra de ouro: **`computed` puro** e **`effect` para integração externa** (não regra de negócio central).
+
+## O que observar internamente
+
+- Granularidade: um signal gigante invalida mais do que o necessário.
+- Leituras “escondidas” (funções que leem signal sem intenção) criam dependências surpresa.
+- Testabilidade: derivações (`computed`) são ótimas para asserts.
+
+## Quando ajuda
+
+- Estado local de UI com múltiplas derivações.
+- Reduzir `BehaviorSubject` para tudo quando o caso é simples.
+
+## Quando evitar
+
+- Fluxos stream-first complexos (RxJS continua sendo ferramenta certa).
+- `effect` como coração do domínio.
+
+## Exemplo real
+
+```ts
+const cart = signal<CartItem[]>([]);
+const discount = signal(0);
+
+const subtotal = computed(() =>
+  cart().reduce((sum, item) => sum + item.price * item.quantity, 0),
+);
+
+const total = computed(() => Math.max(0, subtotal() - discount()));
+
+effect(() => {
+  analytics.track('cart_total', { total: total() });
+});
+```
+
+## Checklist rápido
+
+- [ ] `computed` não faz side effect.
+- [ ] `effect` não virou “controller” da feature.
+- [ ] Estado foi particionado com intenção.

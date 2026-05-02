@@ -1,0 +1,39 @@
+---
+sidebar_position: 4
+title: Ciclo de Vida da Navegação
+---
+
+# Ciclo de Vida da Navegação
+
+## Contexto técnico
+
+Eventos do router (`NavigationStart`, `NavigationEnd`, etc.) são o “osciloscópio” de bugs intermitentes de navegação.
+
+## O que observar internamente
+
+- Ordem dos eventos.
+- Cancelamentos e redirects.
+- Telemetria segura (sem dados sensíveis).
+
+## Quando ajuda
+
+- Bugs “só em produção” ligados a navegação.
+
+## Quando evitar
+
+- Não transformar router em analytics dumping ground.
+
+## Exemplo real
+
+```ts
+router.events.subscribe((e) => {
+  if (e instanceof NavigationError) {
+    console.error('navigation_error', e.error);
+  }
+});
+```
+
+## Checklist rápido
+
+- [ ] Você sabe quais eventos logar.
+- [ ] Não há vazamento de PII na URL logada.

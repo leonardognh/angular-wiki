@@ -1,0 +1,214 @@
+---
+sidebar_position: 7
+title: Services & Dependency Injection
+tags: [era-classica, fundamentos, arquitetura]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Services & Dependency Injection
+
+> **Era:** Clássica (v2–14) · **Status:** Funcional e relevante em legados
+
+## O que é
+
+Services encapsulam regras reutilizáveis e acesso a infraestrutura. A injeção de dependência resolve instâncias por hierarquia de providers no Angular clássico.
+
+## Pra que serve
+
+- Separar regra de negócio da camada de UI
+- Compartilhar estado/controladores de caso de uso
+- Facilitar teste com doubles e mocks
+
+## Quando usar
+
+- Quando há fluxo de UI e estado que tende a crescer
+- Quando múltiplos componentes compartilham padrão técnico
+- Quando você quer deixar o código pronto para refactor incremental
+
+## Quando NÃO usar
+
+- Quando um caso pontual pode ser resolvido com solução menor
+- Quando a equipe ainda não combinou convenções básicas
+- Quando você não consegue justificar ganho sobre a abordagem atual
+
+:::warning[Atenção]
+
+Escolher escopo de provider errado cria estado duplicado ou vazamento de responsabilidade.
+
+:::
+
+## Exemplo funcional
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class ProductsService {
+  constructor(private http: HttpClient) {}
+}
+```
+
+:::tip[Dica]
+
+Para singleton global em aplicações clássicas, use `providedIn: 'root'` quando disponível.
+
+:::
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="Era Clássica" default>
+
+```typescript
+// Abordagem class-based com configuração centralizada
+@NgModule({ imports: [CommonModule] })
+export class FeatureModule {}
+```
+
+  </TabItem>
+  <TabItem value="standalone" label="Era Transição">
+
+```typescript
+// Abordagem standalone com providers por bootstrap
+platformBrowserDynamic().bootstrapModule(AppModule);
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Era Moderna">
+
+```typescript
+// Abordagem moderna com APIs reativas novas
+const state = 'ready';
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** A implementação de services & dependency injection ficou mais explícita, local e fácil de manter ao longo das eras.
+
+## Armadilhas comuns
+
+### 1. Instanciar service manualmente com `new`
+
+```typescript
+// ❌ Quebra DI e dificulta testes
+const svc = new OrdersService();
+```
+
+**Solução:** Deixe o Angular injetar dependências via construtor.
+
+### 2. Registrar provider em módulo errado
+
+```typescript
+// ❌ Instância nova por lazy module sem intenção
+providers: [CartService]
+```
+
+**Solução:** Defina estratégia de escopo (`root`, feature, componente) com critério claro.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O Angular transforma metadata e templates em instruções otimizadas. Quando o uso de services & dependency injection está explícito, a engine consegue atualizar somente o necessário, com menos acoplamento entre camadas.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em um dashboard com vários squads, um padrão consistente de services & dependency injection evita regressões em fluxo crítico e reduz tempo de troubleshooting após deploy.
+
+</details>
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Service para caso de uso</summary>
+
+**Enunciado:** Crie um ProductsService com providedIn root e consumo em componente de listagem.
+
+<details>
+<summary>💡 Dica</summary>
+
+Comece com dados mockados e foque em clareza antes de otimização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class TaxService {
+  calculate(total: number): number {
+    return total * 0.12;
+  }
+}
+```
+
+O componente chama um serviço testável e desacoplado de UI.
+
+</details>
+
+</details>
+
+<details>
+<summary>🟡 Intermediário — Token de injeção para configuração</summary>
+
+**Enunciado:** Use InjectionToken para configuração de API base URL em ambiente legado.
+
+<details>
+<summary>💡 Dica</summary>
+
+Padronize estados (`idle`, `loading`, `success`, `error`) para simplificar renderização.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+export const API_URL = new InjectionToken<string>('API_URL');
+
+constructor(@Inject(API_URL) private apiUrl: string) {}
+```
+
+O token permite variar endpoint por ambiente sem acoplar string no serviço.
+
+</details>
+
+</details>
+
+<details>
+<summary>🔴 Avançado — Hierarquia de providers por feature</summary>
+
+**Enunciado:** Quebre dependência circular entre serviços extraindo responsabilidade para uma terceira classe.
+
+<details>
+<summary>💡 Dica</summary>
+
+Separe responsabilidades em camadas pequenas e aplique contratos explícitos entre elas.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+@NgModule({
+  providers: [CheckoutFacade]
+})
+export class CheckoutModule {}
+```
+
+A facade fica isolada na feature de checkout, evitando acoplamento com outras áreas.
+
+</details>
+
+</details>
+
+## Links úteis
+
+- 📖 [Angular.dev — Guia oficial](https://angular.dev/guide)
+- 📖 [Angular.dev — API Reference](https://angular.dev/api)
+- 🎥 [Angular Blog](https://blog.angular.dev/)

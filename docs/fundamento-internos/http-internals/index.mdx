@@ -1,0 +1,31 @@
+---
+sidebar_position: 0
+title: Internos de HTTP
+---
+
+# Internos de HTTP
+
+A trilha de **HTTP Internals** mostra como o Angular v20+ organiza transporte, interceptação, contexto de requisição e estratégias de erro/retry. Você ganha repertório para construir camadas HTTP robustas, observáveis e alinhadas ao domínio.
+
+## O que você vai ganhar
+- Arquitetura mental clara de `provideHttpClient` e suas extensões.
+- Domínio de interceptors funcionais para cross-cutting concerns sem excesso de acoplamento.
+- Uso correto de `HttpContextToken` para regras contextuais por requisição.
+- Estratégias de retry e tratamento de erro orientadas a confiabilidade.
+
+## Quando entrar nesta trilha
+- Quando o cliente HTTP está espalhado e difícil de padronizar.
+- Quando você precisa separar políticas de autenticação, cache e observabilidade.
+- Quando falhas transitórias impactam UX e exigem retry inteligente.
+- Quando quer avaliar adoção de backend `fetch` com critérios técnicos.
+
+## Como estudar (ordem sugerida)
+1. [Uso do provideHttpClient](/docs/fundamento-internos/http-internals/provide-http-client)
+2. [Interceptors Funcionais](/docs/fundamento-internos/http-internals/functional-interceptors)
+3. [HttpContextToken](/docs/fundamento-internos/http-internals/http-context-token)
+4. [Backend Fetch no v20+](/docs/fundamento-internos/http-internals/fetch-backend-v20)
+5. [Estratégias de Erro e Retry](/docs/fundamento-internos/http-internals/error-retry-strategies)
+
+:::tip[Dica]
+Crie um catálogo de erros por tipo (rede, timeout, autorização) antes de definir política global de retry.
+:::

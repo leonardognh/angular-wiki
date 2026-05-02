@@ -1,0 +1,39 @@
+---
+sidebar_position: 3
+title: Testes com Signals
+---
+
+# Testes com Signals
+
+## Contexto técnico
+
+Testar signals é testar estado derivado e efeitos colaterais controlados.
+O erro comum é assert antes de `fixture.detectChanges()` sem entender atualização.
+
+## O que observar internamente
+
+- `computed` puro: asserts determinísticos.
+- `effect`: normalmente não assertir efeito externo sem mock.
+
+## Quando ajuda
+
+- Componentes signal-first.
+
+## Quando evitar
+
+- Não tentar “testar framework” — teste comportamento.
+
+## Exemplo real
+
+```ts
+const fixture = TestBed.createComponent(CounterComponent);
+fixture.detectChanges();
+expect(fixture.componentInstance.value()).toBe(0);
+fixture.componentInstance.increment();
+expect(fixture.componentInstance.value()).toBe(1);
+```
+
+## Checklist rápido
+
+- [ ] Assertions após mudanças de estado coerentes.
+- [ ] Efeitos externos mockados.

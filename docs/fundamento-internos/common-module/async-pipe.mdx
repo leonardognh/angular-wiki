@@ -1,0 +1,59 @@
+---
+sidebar_position: 1
+title: Uso do AsyncPipe
+---
+
+# Uso do AsyncPipe
+
+## Contexto técnico
+
+No Angular v20+, o `AsyncPipe` ainda existe como ponte para `Observable`/`Promise` no template, mas **não é o padrão recomendado para estado novo**.
+Para leituras orientadas a parâmetros e estados de carregamento, o time normalmente migra para `resource()` ou `toSignal()`.
+
+## O que observar internamente
+
+- O `AsyncPipe` faz subscribe na view e unsubscribe quando a view é destruída.
+- Se a referência do `Observable` muda, o pipe precisa re-subscrever (cuidado com recriação desnecessária).
+- Misturar `AsyncPipe` com control flow moderno é ok, mas evite “Observable em tudo” só porque é conveniente.
+
+## Quando ajuda
+
+- Integração com libs que expõem `Observable` e você quer bind direto no template.
+- Telas simples onde o stream é curto e o ciclo de vida do componente é claro.
+- Migração incremental: você ainda não quer converter o stream para `signal`/`resource`.
+
+## Quando evitar
+
+- Quando o fluxo precisa de composição complexa (melhor na classe com `toSignal()`/`resource()`).
+- Quando o template vira um “mini programa” de streams encadeados.
+
+## Exemplo real (v20+ com control flow)
+
+```ts
+@Component({
+  standalone: true,
+  selector: 'app-orders',
+  template: `
+    @if (orders$ | async; as orders) {
+      <p>{{ orders.length }} pedidos</p>
+    } @else {
+      <app-skeleton />
+    }
+  `,
+})
+export class OrdersComponent {
+  readonly orders$ = inject(OrdersApi).list();
+}
+```
+
+:::tip[Dica]
+
+Se o `Observable` é o “estado principal” da tela, considere `toSignal()` ou `resource()` para reduzir surpresas de subscribe e melhorar testabilidade.
+
+:::
+
+## Checklist rápido
+
+- [ ] O stream tem teardown claro e não vaza em navegação.
+- [ ] Você evitou recriar `Observable` a cada change detection sem necessidade.
+- [ ] Existe plano de migração se isso virou padrão repetido no projeto.

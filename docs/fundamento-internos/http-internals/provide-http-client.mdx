@@ -1,0 +1,36 @@
+---
+sidebar_position: 1
+title: Uso do provideHttpClient
+---
+
+# Uso do provideHttpClient
+
+## Contexto técnico
+
+`provideHttpClient` é o bootstrap moderno do `HttpClient` com composição (`withInterceptors`, `withFetch`, etc.).
+
+## O que observar internamente
+
+- Interceptors funcionais vs interceptors via DI clássica.
+- `withFetch` e semântica de backend.
+
+## Quando ajuda
+
+- Apps standalone e configuração modular.
+
+## Quando evitar
+
+- Copiar providers HTTP sem entender ordem.
+
+## Exemplo real
+
+```ts
+bootstrapApplication(AppComponent, {
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
+});
+```
+
+## Checklist rápido
+
+- [ ] HTTP está configurado uma vez, de forma previsível.
+- [ ] Interceptors documentados.

@@ -1,0 +1,185 @@
+---
+sidebar_position: 7
+title: SSR & Hydration
+tags: [era-moderna, performance, ssr]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# SSR & Hydration
+
+> **Era:** Moderna (v17+) · **Status:** `provideClientHydration` e opções incrementais evoluem release a release — valide na doc oficial
+
+## O que é
+
+**SSR (Server-Side Rendering)** gera HTML no **servidor** para a URL pedida. **Hydration** “liga” esse HTML no cliente: o Angular **reusa nós** em vez de recriar tudo do zero, preservando estado e melhorando **TTFB/LCP**. Event replay e incremental hydration são melhorias relacionadas à UX.
+
+## Pra que serve
+
+- **SEO** e compartilhamento em redes (conteúdo real no HTML)
+- **Primeira pintura** mais rápida em redes lentas
+- Menos **layout shift** quando bem configurado
+
+## Quando usar
+
+- Sites **públicos** (marketing, docs, e-commerce vitrine)
+- Apps que já usam **Angular Universal** / `@angular/ssr`
+
+## Quando NÃO usar
+
+- **Admin interno** com auth pesada e zero requisito SEO — custo operacional pode não valer
+- Quando o time não pode garantir **código sem acesso a `window`/`document`** no servidor
+
+:::warning[Atenção]
+
+Código que acessa `window` no top-level de serviços que rodam no server **quebra** o build SSR.
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { provideClientHydration } from '@angular/platform-browser';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideClientHydration(),
+    // withEventReplay(), withIncrementalHydration() — ver doc da versão
+  ],
+});
+```
+
+No **server**, o bootstrap usa `bootstrapApplication` via entry server; no cliente, os providers de hydration alinham o DOM.
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="csr" label="Só CSR" default>
+
+O browser baixa bundle, executa, **monta** do zero — usuário vê vazio até JS.
+
+  </TabItem>
+  <TabItem value="ssr" label="SSR + hydration">
+
+HTML útil chega no primeiro response; no cliente o Angular **hidrata** e torna interativo.
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Você troca **primeiro paint vazio** por **HTML útil + continuidade** no cliente.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação |
+| --- | --- |
+| Prerender | Gera HTML estático em build para rotas conhecidas |
+| `@defer` | Lazy de blocos **no cliente**; ortogonal mas combina |
+| `TransferState` | Passa dados server→client sem refetch |
+
+## Exemplo funcional
+
+```typescript
+// app.config.ts (trecho)
+import { ApplicationConfig } from '@angular/core';
+import { provideClientHydration } from '@angular/platform-browser';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideClientHydration()],
+};
+```
+
+:::tip[Dica]
+
+Isole **browser-only** em `afterNextRender` ou `isPlatformBrowser` para não quebrar SSR.
+
+:::
+
+## Armadilhas comuns
+
+### 1. IDs de DOM diferentes entre server e client
+
+```html
+<!-- ❌ random sem seed consistente -->
+<div [attr.data-id]="crypto.randomUUID()"></div>
+```
+
+**Solução:** IDs estáveis ou gerados só no browser após hydration.
+
+### 2. Fetch duplicado
+
+**Solução:** `TransferState` para cachear payload crítico da rota.
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O cliente percorre a árvore e **associa** nós do servidor a componentes, aplicando listeners e reconciliando estado. Incremental hydration adia partes não críticas da hidratação.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+**Lojas** usam SSR na home e prerender em páginas de campanha. **Docs** (como esta wiki) ganham indexação com conteúdo no HTML.
+
+</details>
+
+## Migração
+
+1. Adote `@angular/ssr` schematics oficiais.
+2. Corrija acessos a APIs globais.
+3. Ative `provideClientHydration` e meça LCP/CLS.
+
+:::info[Informação]
+
+Aprofunde em [SSR e Hydration (fundamentos)](/docs/fundamento-internos/ssr-hydration/ssr-pipeline).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — isPlatformBrowser</summary>
+
+**Enunciado:** Explique por que `localStorage` deve ser lido só no browser.
+
+<details>
+<summary>✅ Solução</summary>
+
+No servidor não existe `localStorage`; ler no constructor quebra render. Use `inject(PLATFORM_ID)` + `isPlatformBrowser` ou `afterNextRender`.
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — TransferState</summary>
+
+**Enunciado:** Nomeie um dado que vale a pena transferir do server pro client.
+
+<details>
+<summary>✅ Solução</summary>
+
+Payload de **GET inicial da página** (produto, artigo) para evitar segundo fetch idêntico na hidratação.
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — hidratação incremental</summary>
+
+**Enunciado:** Em uma frase, qual problema de performance ela ataca?
+
+<details>
+<summary>✅ Solução</summary>
+
+Reduz o **trabalho de hidratação** no primeiro instante, adiando partes abaixo da dobra ou não críticas.
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [SSR com Angular](https://angular.dev/guide/ssr)
+- 📖 [Hydration](https://angular.dev/guide/hydration)

@@ -1,0 +1,338 @@
+---
+sidebar_position: 1
+title: Signals
+tags: [era-moderna, reatividade, signals]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Signals
+
+> **Era:** Moderna (v17+) · **Status:** API estável para `signal`, `computed` e `effect`; base recomendada para estado local e UI
+
+## O que é
+
+**Signals** são primitivas reativas **síncronas**: um `signal()` guarda um valor; `computed()` deriva outro valor a partir de leituras; `effect()` roda um efeito colateral quando dependências mudam. O Angular rastreia dependências de forma fina — só o que leu o signal de fato reage.
+
+Pense em **variável + grafo de dependências**, sem você gerenciar `subscribe`/`unsubscribe` para estado de tela simples.
+
+## Pra que serve
+
+- **Estado local de componente** sem `BehaviorSubject` para tudo
+- **Derivações** com `computed` (cache automático enquanto deps não mudam)
+- **Integração com template** (leitura de signal dispara atualização da view)
+- **Interoperar com RxJS** via `toSignal` / `outputToObservable` quando o fluxo ainda é stream-first
+
+## Quando usar
+
+- Estado de UI que cabe na memória e atualiza de forma **síncrona** (contador, seleção, filtros simples)
+- Derivações que você escreveria como “função pura dos inputs”
+- Migração incremental: um pedaço do componente em signal, o resto continua em RxJS
+
+## Quando NÃO usar
+
+- **Orquestração assíncrona complexa** (debounce, switchMap, múltiplos streams combinados) — RxJS continua sendo a ferramenta certa
+- **Estado global enorme** sem estratégia — signals não substituem arquitetura; combinam com patterns (stores, facades)
+- Colocar **lógica de negócio pesada** dentro de `effect` — `effect` é para integração (DOM, storage, logs), não para regra central
+
+:::warning[Atenção]
+
+`effect` roda em contexto especial: evite atualizar o mesmo signal que dispara o effect sem critério (risco de loop). Prefira `computed` para derivação e `signal.set`/`update` em eventos explícitos.
+
+:::
+
+## Anatomia / Sintaxe
+
+```typescript
+import { Component, computed, effect, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-cart-summary',
+  standalone: true,
+  template: `
+    <p>Itens: {{ itemCount() }}</p>
+    <p>Subtotal: {{ subtotal() | number : '1.2-2' }}</p>
+  `,
+})
+export class CartSummaryComponent {
+  // Estado gravado
+  private readonly items = signal<{ price: number; qty: number }[]>([]);
+
+  // Derivação pura
+  readonly itemCount = computed(() => this.items().length);
+  readonly subtotal = computed(() =>
+    this.items().reduce((sum, i) => sum + i.price * i.qty, 0),
+  );
+
+  constructor() {
+    // Efeito: ótimo para log, analytics, persistência best-effort — não como “coração” do domínio
+    effect(() => {
+      // leitura de signals aqui cria dependência
+      void this.subtotal();
+    });
+  }
+
+  addItem(price: number) {
+    this.items.update((list) => [...list, { price, qty: 1 }]);
+  }
+}
+```
+
+| API | O que faz | Quando usar |
+| --- | --- | --- |
+| `signal(initial)` | Valor reativo gravável | Estado que muda com `set`/`update` |
+| `computed(() => …)` | Valor derivado, memoizado | Transformações puras dos signals lidos |
+| `effect(() => …)` | Reação a mudanças | Side effects, integração externa |
+| `untracked(() => …)` | Lê signals sem criar dependência | Dentro de `effect`/`computed` quando precisa “peek” |
+
+## Antes vs Depois
+
+<Tabs>
+  <TabItem value="classico" label="RxJS (Subject)" default>
+
+```typescript
+import { Component, OnDestroy } from '@angular/core';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-counter',
+  standalone: true,
+  template: `<p>{{ count$ | async }}</p>`,
+})
+export class CounterComponent implements OnDestroy {
+  private readonly count = new BehaviorSubject(0);
+  readonly count$ = this.count.asObservable();
+  private sub?: Subscription;
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  inc() {
+    this.count.next(this.count.value + 1);
+  }
+}
+```
+
+  </TabItem>
+  <TabItem value="moderno" label="Signals">
+
+```typescript
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-counter',
+  standalone: true,
+  template: `<p>{{ count() }}</p>`,
+})
+export class CounterComponent {
+  readonly count = signal(0);
+
+  inc() {
+    this.count.update((c) => c + 1);
+  }
+}
+```
+
+  </TabItem>
+</Tabs>
+
+**O que mudou?** Você troca **stream + async pipe + unsubscribe** por **valor + leitura `()` no template**, com rastreamento explícito de dependências. Menos boilerplate para estado local; RxJS fica para fluxos assíncronos de verdade.
+
+## Alternativas / Semelhantes
+
+| Conceito | Relação com Signals |
+| --- | --- |
+| `BehaviorSubject` | Equivalente imperativo/stream; use quando precisa de operadores RxJS |
+| `computed` vs `map` | `computed` é síncrono e memoizado por dependências de signals |
+| `async` pipe | Continua válido para Observables; `toSignal` faz ponte para template |
+| Zone.js | Ainda dispara CD em muitos apps; signals + zoneless mudam o jogo (ver [Zoneless](/docs/era-moderna/zoneless)) |
+
+## Exemplo funcional
+
+```typescript
+import { Component, computed, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-price-tag',
+  standalone: true,
+  template: `
+    <label>
+      Preço base
+      <input type="number" [value]="base()" (input)="onBase($event)" />
+    </label>
+    <p>Com taxa (10%): {{ withTax() | number : '1.2-2' }}</p>
+  `,
+})
+export class PriceTagComponent {
+  readonly base = signal(100);
+  readonly withTax = computed(() => this.base() * 1.1);
+
+  onBase(ev: Event) {
+    const v = Number((ev.target as HTMLInputElement).value);
+    this.base.set(Number.isFinite(v) ? v : 0);
+  }
+}
+```
+
+:::tip[Dica]
+
+No template, chame **sempre** `meuSignal()` — esquecer os `()` lê o function object, não o valor, e quebra a reatividade.
+
+:::
+
+## Armadilhas comuns
+
+### 1. Escrever em `computed`
+
+```typescript
+// ❌ computed precisa ser puro / sem efeitos colaterais
+const bad = computed(() => {
+  this.http.get('/x').subscribe(); // 💥 efeito + async fora do modelo
+  return this.a() + 1;
+});
+```
+
+**Solução:** `computed` só deriva valor. Busca HTTP → `resource`, `http` + `toSignal`, ou `effect` com cuidado (e preferência por APIs feitas para async).
+
+### 2. Criar signal novo a cada change detection
+
+```typescript
+// ❌ recria o signal a cada CD — perde estado e referência
+get items() {
+  return signal([]);
+}
+```
+
+**Solução:** `readonly items = signal([])` como campo da classe (ou `inject` + factory uma vez).
+
+<details>
+<summary>🔎 Por baixo dos panos</summary>
+
+O runtime registra **quem leu qual signal** durante a execução de `computed`/`effect`/template. Ao `set`/`update`, só consumidores dependentes são marcados. Isso é diferente do “dirty check” genérico da Zone em apps clássicos — embora Zone e signals possam coexistir durante migração.
+
+</details>
+
+<details>
+<summary>🏢 No mundo real</summary>
+
+Em **dashboards**, signals modelam filtros locais (período, aba, seleção de série) e `computed` agrega totais. Streams (`WebSocket`, `HTTP` paginado) entram via serviços RxJS e são convertidos na borda com `toSignal` quando a UI é majoritariamente síncrona.
+
+</details>
+
+## Migração
+
+1. Identifique `BehaviorSubject` **só** para estado de UI local.
+2. Troque por `signal` + `computed`; remova `async` pipe onde virou `()`.
+3. Mantenha RxJS para debounce, cancelamento, combinação de fontes.
+
+:::info[Informação]
+
+Leia também [Signal Inputs](/docs/era-moderna/signal-inputs-outputs) e [Resource API](/docs/era-moderna/resource-api).
+
+:::
+
+## Desafios
+
+<details>
+<summary>🟢 Iniciante — Carrinho mínimo</summary>
+
+**Enunciado:** Crie `items` como `signal<{ name: string; price: number }[]>` e um `computed` que retorna o total. Botão adiciona um item fixo.
+
+<details>
+<summary>💡 Dica</summary>
+
+Use `update` para imutabilidade.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+import { Component, computed, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-mini-cart',
+  standalone: true,
+  template: `
+    <p>Total: {{ total() | number : '1.2-2' }}</p>
+    <button type="button" (click)="add()">Add notebook</button>
+  `,
+})
+export class MiniCartComponent {
+  readonly items = signal<{ name: string; price: number }[]>([]);
+  readonly total = computed(() => this.items().reduce((s, i) => s + i.price, 0));
+
+  add() {
+    this.items.update((list) => [...list, { name: 'Notebook', price: 3500 }]);
+  }
+}
+```
+
+</details>
+</details>
+
+<details>
+<summary>🟡 Intermediário — Imposto progressivo</summary>
+
+**Enunciado:** `base = signal(0)` e `computed` que aplica 10% até 1000 e 15% acima.
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+readonly tax = computed(() => {
+  const b = this.base();
+  return b <= 1000 ? b * 0.1 : 1000 * 0.1 + (b - 1000) * 0.15;
+});
+```
+
+</details>
+</details>
+
+<details>
+<summary>🔴 Avançado — Effect sem loop</summary>
+
+**Enunciado:** Dentro de `effect`, leia `userId` e chame `console.log` com `untracked` para logar também `sessionId` sem criar dependência em `sessionId`.
+
+<details>
+<summary>💡 Dica</summary>
+
+Import `effect`, `untracked` de `@angular/core`.
+
+</details>
+
+<details>
+<summary>✅ Solução</summary>
+
+```typescript
+import { Component, effect, signal, untracked } from '@angular/core';
+
+@Component({
+  selector: 'app-audit',
+  standalone: true,
+  template: '',
+})
+export class AuditComponent {
+  readonly userId = signal('u1');
+  readonly sessionId = signal('s9');
+
+  constructor() {
+    effect(() => {
+      const uid = this.userId();
+      const sid = untracked(() => this.sessionId());
+      console.log({ uid, sid });
+    });
+  }
+}
+```
+
+</details>
+</details>
+
+## Links úteis
+
+- 📖 [Signals na documentação oficial](https://angular.dev/guide/signals)
+- 🎥 [Angular blog — Signals](https://blog.angular.dev)
