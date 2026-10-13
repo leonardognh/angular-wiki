@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkangular_helper=self.webpackChunkangular_helper||[]).push([[1903],{1912:a=>{a.exports=JSON.parse('{"blogBasePath":"/angular-wiki/blog","blogTitle":"Blog","authorsListPath":"/angular-wiki/blog/authors"}')}}]);

@@ -1,0 +1,109 @@
+1. Introdução
+O que é Angular
+Diferença AngularJS vs Angular 2+
+Filosofia do framework (SPA, Typescript, RxJS)
+Por que usar Angular
+2. Primeiros Passos
+Instalação e configuração de ambiente
+Estrutura de um projeto Angular
+Angular CLI
+Hello World (primeiro componente)
+3. Fundamentos
+Módulos
+Componentes
+Templates & Data Binding
+Diretivas (ngIf, ngFor, ngSwitch, etc.)
+Pipes (built-in e customizados)
+Services & Dependency Injection
+4. Formulários
+Template-driven Forms
+Reactive Forms
+Validações síncronas e assíncronas
+Criação de validadores customizados
+5. Navegação e Rotas
+Configuração de rotas
+Rotas filhas e lazy loading
+Guards (canActivate, canDeactivate, etc.)
+Resolvers
+Router events
+6. Consumo de APIs
+HttpClient
+Interceptors
+Tratamento de erros
+Autenticação com JWT
+Upload & Download de arquivos
+7. RxJS e Programação Reativa
+Observables vs Promises
+Operadores mais usados (map, switchMap, mergeMap, debounceTime, etc.)
+Subject, BehaviorSubject, ReplaySubject
+Gerenciamento de assinaturas
+8. Gerenciamento de Estado
+Services com BehaviorSubject
+NgRx (Store, Effects, Reducers, Actions)
+SignalStore (Angular 16+)
+Comparação: NgRx vs Signals vs Akita vs NGXS
+9. Arquitetura e Boas Práticas
+Estrutura de pastas para projetos pequenos, médios e grandes
+Clean Architecture no Angular
+SOLID no front-end
+DDD aplicado ao Angular
+Microfrontends (Module Federation, Native Federation, Single-spa)
+10. Estilização e UI
+CSS/SCSS no Angular
+Angular Material
+PrimeNG
+Tailwind + Angular
+Temas dinâmicos (dark/light mode)
+11. Testes
+Unit Tests (Karma + Jasmine)
+Testes de componentes
+Testes de serviços
+Testes de rotas
+E2E (Protractor, Cypress, Playwright)
+12. Internacionalização (i18n)
+Configuração de i18n nativo do Angular
+ngx-translate
+Estratégias para múltiplos idiomas
+13. Performance e Otimização
+Change Detection Strategy (Default vs OnPush)
+trackBy no *ngFor
+Pré-carregamento de módulos
+Lazy loading avançado
+Signals (Angular 16+) e impacto na performance
+Otimização para Core Web Vitals
+14. SSR e SSG
+Angular Universal
+Server-side Rendering
+Static Site Generation
+Hidratação (Angular 17+)
+15. Integração e Deploy
+Integração com APIs REST e GraphQL
+CI/CD (GitHub Actions, GitLab, Azure DevOps, etc.)
+Docker + Angular
+Deploy em Vercel, Netlify, AWS Amplify, Firebase Hosting
+16. Segurança
+Autenticação e Autorização (JWT, OAuth2, OpenID Connect)
+Proteção contra XSS, CSRF
+Sanitização de inputs
+Boas práticas de segurança no Angular
+17. Avançado
+Web Workers no Angular
+PWA (Progressive Web Apps)
+Microfrontends avançados
+Monorepos (Nx + Angular)
+Arquitetura de bibliotecas compartilhadas
+Signals avançados e interoperabilidade com RxJS
+18. Histórico de Versões
+Novidades e breaking changes de cada versão
+Angular 2 → Standalone Components no Angular 14+ → Signals no Angular 16 → SSR/Hidratação no Angular 17 → Angular 18/19/20 features
+19. Casos de Uso Reais
+CRUD completo (com Angular Material / PrimeNG)
+Dashboard dinâmico com charts
+Autenticação JWT + Refresh token
+Microfrontend real (shell + remote)
+Integração com backend NestJS
+20. Recursos Extras
+Extensões úteis do VS Code para Angular
+Angular DevTools
+Padrões de commit (Conventional Commits)
+Versionamento de pacotes Angular internos (Design System, libs internas)
